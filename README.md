@@ -1,2 +1,9 @@
 # OS-MainlineProject1
-Repository for our group for Mainline Project 1 in Operating Systems class.
+Repository for our group for mainline projects in Operating Systems class.
+
+Project: Project 1 - Memory Hierarchy Simulator
+
+Isaiah Jayne
+Zachary Lykins
+Jacob Manis
+Bobby Mullins
