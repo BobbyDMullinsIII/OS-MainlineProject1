@@ -17,7 +17,7 @@
 #include <vector>
 using namespace std;
 
-//Struct for storing Memory References in and easier to use format
+//Struct for storing Memory References in an easier to use format
 struct MemRef 
 {
   string type;    //Memory Access Type (Can be 'R' or 'W')
