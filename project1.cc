@@ -38,7 +38,7 @@ int main()
   //Insert memory trace references from stdin into vector
   MemReferences = insertTrace(MemReferences);
 
-  //Test if vector fill from stdin actually worked (It does work!)
+  //Test if vector fill from stdin (standard input) actually worked (It does work!)
   //testVectorOutput(MemReferences);
 
   return 0;
