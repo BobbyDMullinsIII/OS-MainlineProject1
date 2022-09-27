@@ -28,7 +28,7 @@ struct MemRef
 struct TraceConfig 
 {
   //Data TLB Configuration
-  int numTLBSets;                 //Number of sets within TLB (Max: 8 sets,  1 set = direct mapped, Must be power of 2)
+  int numTLBSets;                 //Number of sets within TLB (Max: 8 sets, 1 set = direct mapped, 16 sets = fully associative, Must be power of 2)
   int TLBSetSize;                 //Number of entries in each set (Max: 64 entries, Must be power of 2)
 
   //Page Table Configuration
