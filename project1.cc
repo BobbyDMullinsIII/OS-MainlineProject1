@@ -17,40 +17,72 @@
 #include <vector>
 using namespace std;
 
-//Struct for storing Memory References in a simple and easier to use format
+//Struct for storing Memory References in and easier to use format
 struct MemRef 
 {
-  string type;    //Memory access type as string (Can only be 'R' or 'W')
-  string address; //Hex address as string (Ranges from 000 (8-bit) to FFFFFFFF (32-bit))
+  string type;    //Memory Access Type (Can be 'R' or 'W')
+  string address; //Hex Address (Ranges from 000 (8-bit) to FFFFFFFF (32-bit))
+};
+
+//Struct for storing trace.config information within single structure
+struct TraceConfig 
+{
+  //Data TLB Configuration
+  int numTLBSets;                 //Number of sets within TLB
+  int TLBSetSize;                 //Number of entries in each set
+
+  //Page Table Configuration
+  int numVirtPages;               //Number of virtual pages in page table
+  int numPhysPages;               //Number of physical pages in page table
+  int pageSize;                   //Size (in bytes) of each page
+
+  //L1 Cache Configuration
+  int L1NumSets;                  //Number of sets in L1
+  int L1SetSize;                  //Number of entries in each set in L1
+  int L1LineSize;                 //Size (in bytes) of each line in L1
+  bool L1WriteThrough;            //Switch for L1 to be write-through or not
+
+  //L2 Cache Configuration
+  int L2NumSets;                  //Number of sets in L2
+  int L2SetSize;                  //Number of entries in each set in L2
+  int L2LineSize;                 //Size (in bytes) of each line in L2
+  bool L2WriteThrough;            //Switch for L2 to be write-through or not
+
+  //Active Modules Configuration
+  bool VirtAddressActive;         //Determines if addresses read in are virtual or physical
+  bool TLBActive;                 //Switch for TLB to be active or not
+  bool L2Active;                  //Switch for L2 Cahce to be active or not
 };
 
 
-//Method declarations
+//Initial Method Declarations
 vector<MemRef> insertTrace(vector<MemRef> testVector);
 void testVectorOutput(vector<MemRef> testVector);
 
 
 int main()
 {
-  //Vector of Memory References to work from (Similar to array, but does not have definite size)
-  vector<MemRef> MemReferences;
+  vector<MemRef> MemReferences; //Vector of MemRef's to work from
+  TraceConfig config;           //Data struture of values taken from trace.config file
 
-  //Insert memory trace references from stdin into vector
+  //Insert memory references from stdin into MemRef vector
   MemReferences = insertTrace(MemReferences);
 
-  //Test if vector fill from stdin (standard input) actually worked (It does work!)
-  //testVectorOutput(MemReferences);
+
+  //Memory hierarchy code should go here or in another class object file (.hpp and/or .cpp)
+
 
   return 0;
 }
 
 
-//Method for inserting Memory References from a string into the given MemRef vector
+//Method for inserting Memory References from stdin into the given vector
+//Returns a vector containing MemRef variables
 vector<MemRef> insertTrace(vector<MemRef> memRefVector)
 {
-  string RawMemRef;   //Raw full memory reference in '<accesstype>:<hexaddress>' format
-  MemRef tempRef;     //Temporary MemRef for each line of memory reference into vector
-  int stringPosition; //Int variable for splittinf memory reference by colon
+  string RawMemRef;   //Raw memory reference in '<accesstype>:<hexaddress>' format
+  MemRef tempRef;     //Temporary MemRef for inserting each line of memory references into vector
+  int stringPosition; //Position variable for splitting memory references by colon
 
   while (getline(cin, RawMemRef))
   {   
@@ -69,7 +101,7 @@ vector<MemRef> insertTrace(vector<MemRef> memRefVector)
 
 }//end insertTrace()
 
-//Method for testing if inserting the trace input into the vector with a custom struct worked
+//Method for testing if inserting the stding into the vector with MemRef's worked
 void testVectorOutput(vector<MemRef> memRefVector)
 {
   //Test to see if input to vector code worked correctly
