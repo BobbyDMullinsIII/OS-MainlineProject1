@@ -57,17 +57,17 @@ vector<MemRef> insertTrace(vector<MemRef> memRefVector)
 {
     string RawMemRef;   //Raw memory reference in '<accesstype>:<hexaddress>' format
     MemRef tempRef;     //Temporary MemRef for inserting each line of memory references into vector
-    int stringPosition; //Position variable for splitting memory references by colon
+    int stringIndex;    //Variable for keeping track of index of colon in string
 
     //Goes through each line in standard input and returns a single Raw Memory Reference string
     while (getline(cin, RawMemRef))
     {   
-        //Get position of colon character
-        stringPosition = RawMemRef.find_first_of(':');
+        //Get index of colon character
+        stringIndex = RawMemRef.find_first_of(':');
 
         //Split RawMemRef into two strings for tempRef variable
-        tempRef.type = RawMemRef.substr(0, stringPosition);
-        tempRef.address = RawMemRef.substr(stringPosition + 1);
+        tempRef.type = RawMemRef.substr(0, stringIndex);
+        tempRef.address = RawMemRef.substr(stringIndex + 1);
 
         //Insert tempRef variable into memRefVector
         memRefVector.push_back(tempRef);
@@ -82,13 +82,35 @@ vector<MemRef> insertTrace(vector<MemRef> memRefVector)
 //Returns TraceConfig struct contaning all config data present in trace.config file
 TraceConfig insertConfig(TraceConfig traceConfig)
 {
-    ifstream in("trace.config", ios_base::in);
+    string currentLine; //Variable for storing entire current line
+    string tempString;  //Variable for storing current int or bool value before conversion
+    int stringIndex;    //Variable for keeping track of index of colon in string
+    int tempInt;        //Variable for storing current int value for power of two and min/max checks
 
-    //Method not finished yet - Bobby
+    ifstream filein("trace.config");
+
+    getline(filein, currentLine);
+    
+    getline(filein, currentLine);
+    stringIndex = currentLine.find_first_of(':');
+    tempString = currentLine.substr(stringIndex + 2);
+    tempInt = stoi(tempString);
+    if(tempInt < 1 || tempInt > 16 || IsPowerOfTwo(tempInt) != true )
+    {
+        cout << "Number of TLB sets should be at least 1, at most 16, and a power of 2.\n";
+        cout << "Value read was: " << tempInt <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        traceConfig.numTLBSets = tempInt;
+    }
+
+    //NOT DONE YET!
 
     return traceConfig;
 
-}//end insertConfig
+}//end insertConfig()
 
 //Method for testing if inserting the stdin into the vector with MemRef's was successful
 void testVectorOutput(vector<MemRef> memRefVector)
@@ -101,3 +123,12 @@ void testVectorOutput(vector<MemRef> memRefVector)
     }
 
 }//end testVectorOutput()
+
+//Method for checking if number is a power of two
+//Stolen from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2
+//Returns if the input number (x) is a power of 2
+bool IsPowerOfTwo(int x)
+{
+    return (x != 0) && ((x & (x - 1)) == 0);
+
+}//end IsPowerOfTwo()
