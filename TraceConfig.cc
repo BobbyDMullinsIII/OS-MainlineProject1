@@ -14,20 +14,40 @@ TraceConfig::TraceConfig()
     numVirtPages = 0;
     numPhysPages = 0;
     pageSize = 0;
+    pageTableIndexBits = 0;
+    pageOffsetBits = 0;
 
     L1NumSets = 0;
     L1SetSize = 0;
     L1LineSize = 0;
     L1WriteThrough = false;
+    L1IndexBits = 0;
+    L1OffestBits = 0;
 
     L2NumSets = 0;
     L2SetSize = 0;
     L2LineSize = 0;
     L2WriteThrough = false;
+    L2IndexBits = 0;
+    L2OffestBits = 0;
 
     VirtAddressActive = false;
     TLBActive = false;
     L2Active = false;
+
+    int dtlbHitCount = 0;
+    int dtlbMissCount = 0;
+    int ptHitCount = 0;
+    int ptFaultCount = 0;
+    int dcHitCount = 0;
+    int dcMissCount = 0;
+    int l2HitCount = 0;
+    int l2MissCount = 0;
+    int readsCount = 0;
+    int writesCount = 0;
+    int mainMemRefsCount = 0;
+    int pageTableRefsCount = 0;
+    int diskRefsCount = 0;
 }
 
 //Deconstructor
@@ -37,26 +57,67 @@ TraceConfig::~TraceConfig(){}
 void TraceConfig::outputRawConfigValues()
 {
     cout << "Current Config Values:\n";
-    cout << "numTLBSets: " << numTLBSets << "\n";
-    cout << "TLBSetSize: " << TLBSetSize << "\n";
+    cout << "Data TLB contains " << numTLBSets << " sets.\n";
+    cout << "Each set contains " << TLBSetSize << " entries.\n";
     cout << "\n";
-    cout << "numVirtPages: " << numVirtPages << "\n";
-    cout << "numPhysPages: " << numPhysPages << "\n";
-    cout << "pageSize: " << pageSize << "\n";
+    cout << "Number of virtual pages is " << numVirtPages << ".\n";
+    cout << "Number of physical pages is " << numPhysPages << ".\n";
+    cout << "Each page contains " << pageSize << " bytes.\n";
+    cout << "Number of bits used for page table index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for page offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "L1NumSets: " << L1NumSets << "\n";
     cout << "L1SetSize: " << L1SetSize << "\n";
     cout << "L1LineSize: " << L1LineSize << "\n";
     cout << "L1WriteThrough: " << boolalpha << L1WriteThrough << "\n";
+    cout << "Number of bits used for L1 index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L1 offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "L2NumSets: " << L2NumSets << "\n";
     cout << "L2SetSize: " << L2SetSize << "\n";
     cout << "L2LineSize: " << L2LineSize << "\n";
     cout << "L2WriteThrough: " << boolalpha << L2WriteThrough << "\n";
+    cout << "Number of bits used for L2 index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L2 offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
     cout << "L2Active: " << boolalpha << L2Active << "\n";
+    cout << "\n";
+    cout << "\n";
+    cout << "Virtual  Virt.\tPage\tTLB\tTLB\tTLB\tPT\tPhys\t\tDC\tDC\t\tL2\tL2\n";
+    cout << "Address  Page #\tOff\tTag\tInd\tRes.\tRes.\tPg #\tDC Tag\tInd\tRes.\tL2 Tag\tInd\tRes.\n";
+    cout << "-------- ------\t----\t------\t---\t----\t----\t----\t------\t---\t---\t------\t---\t----\n";
+    // here we should be able to plug in values for each item here as we find them. 
+    // I believe format should follow something very close to: (number of spaces between each being important)
+    //cout << "00000c84      c\t  84\t     6\t  0\tmiss\tmiss\t   0\t     2\t  0\tmiss\t     0\t  8\tmiss\n";
+    //this should put values at back of comumn like in spec example output, but may look incorrect with more or less characters in the values.
+    cout << "\n";
+    cout << "Simulation Statistics\n";
+    cout << "\n";
+    cout << "dtlb hits: " << dtlbHitCount << "\n";
+    cout << "dtlb misses: " << dtlbMissCount << "\n";
+    cout << "dtlb hit ratio: " << dtlbHitCount/(dtlbHitCount+dtlbMissCount) << "\n"; // btw, idk if you can even do math like this in the output line, i'm just assuming you can
+    cout << "\n";
+    cout << "pt hits: " << ptHitCount << "\n";
+    cout << "pt faults: " << ptFaultCount << "\n";
+    cout << "pt hit ratio: " << ptHitCount/(ptHitCount+ptFaultCount) << "\n";
+    cout << "\n";
+    cout << "dc hits: " << dcHitCount << "\n";
+    cout << "dc misses: " << dcMissCount << "\n";
+    cout << "dc hit ratio: " << dcHitCount/(dcHitCount+dcMissCount) << "\n";
+    cout << "\n";
+    cout << "L2 hits: " << l2HitCount << "\n";
+    cout << "L2 misses: " << l2MissCount << "\n";
+    cout << "L2 hit ratio: " << l2HitCount/(l2HitCount+l2MissCount) << "\n";
+    cout << "\n";
+    cout << "Total Reads: " << readsCount << "\n";
+    cout << "Total Writes: " << writesCount << "\n";
+    cout << "Ratio of Reads: " << readsCount/(readsCount+writesCount) << "\n";
+    cout << "\n";
+    cout << "main memory refs: " << mainMemRefsCount << "\n";
+    cout << "page table refs: " << pageTableRefsCount << "\n";
+    cout << "disk refs: " << diskRefsCount << "\n";
     
 }//end outputConfigValues()
 
