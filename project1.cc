@@ -43,7 +43,7 @@ int main()
     config.outputRawConfigValues();
 
 
-    //Memory hierarchy code should go here or in another class object file (.hpp and/or .cpp/.cc)
+    //Memory hierarchy code should go here or in another class object file (.cc object file and .hpp header file)
 
 
     return 0;
@@ -87,12 +87,3 @@ void testVectorOutput(vector<MemRef> memRefVector)
     }
 
 }//end testVectorOutput()
-
-//Method for checking if number is a power of two
-//Stolen from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2
-//Returns if the input number (x) is a power of 2
-bool IsPowerOfTwo(int x)
-{
-    return (x != 0) && ((x & (x - 1)) == 0);
-
-}//end IsPowerOfTwo()
