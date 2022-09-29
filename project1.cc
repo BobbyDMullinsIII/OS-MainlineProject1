@@ -18,6 +18,13 @@
 #include "TraceConfig.hpp"
 using namespace std;
 
+//Access states for memory
+#define NOOP 0 //no action 
+#define RDH 1 //hit for read
+#define RDM 2 //miss for read
+#define WTH 3 //hit for write
+#define WTM 4 //miss for write
+
 //Struct for storing Memory References in an easier to use format
 struct MemRef 
 {
@@ -29,7 +36,9 @@ struct MemRef
 //Initial Method Declarations
 vector<MemRef> insertTrace(vector<MemRef> testVector);
 void testVectorOutput(vector<MemRef> testVector);
-
+vector<vector<long>> generateCache(long &sets, long &setSize)
+<vector<vector<long>> getL1();
+<vector<vector<long>> getL2();
 
 int main()
 {
@@ -87,3 +96,32 @@ void testVectorOutput(vector<MemRef> memRefVector)
     }
 
 }//end testVectorOutput()
+
+//*should*
+//generate a cache and resize to the number of sets in config and set each set size from config
+vector<vector<long>> generateCache(long &sets, long &setSize)
+{
+    vector<vector<long>> cache;
+
+    cache.resize((long)sets);
+
+    for(int i = 0; i < sets; i++)
+    {
+        cache[i].resize(setSize);
+    }
+}
+
+/*
+//return L1
+vector<vector<long>> getL1()
+{
+    return this->L1;
+}
+
+//return L2
+vector<vector<long>> getL2()
+{
+    return this->L2;
+}
+*/
+
