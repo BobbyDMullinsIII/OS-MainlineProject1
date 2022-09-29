@@ -36,6 +36,8 @@ public:
     bool L2Active;                  //Switch for L2 Cache to be active or not (y/n = true/false)
 
     void outputRawConfigValues();
+    bool IsPowerOfTwo(int x);
+    void insertConfig();
 
 private:
 
