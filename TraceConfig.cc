@@ -339,11 +339,20 @@ void TraceConfig::insertConfig()
     }
     else
     {   
-        //Insert config value into appropriate parameter
-        if(tempString == "y")
-        { TLBActive = true; }
-        if(tempString == "n")
-        { TLBActive = false; }
+        //Will set TLBActive to false if virtual addresses are disabled, regardless of its config setting
+        //There is no point to the TLB if virtual addresses are not used
+        if(VirtAddressActive == false)
+        {
+            TLBActive = false;
+        }
+        else
+        {
+            //Insert config value into appropriate parameter
+            if(tempString == "y")
+            { TLBActive = true; }
+            if(tempString == "n")
+            { TLBActive = false; }
+        }
     }
 
     //L2Active
