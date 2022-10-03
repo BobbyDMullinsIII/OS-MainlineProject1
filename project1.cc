@@ -36,9 +36,9 @@ struct MemRef
 //Initial Method Declarations
 vector<MemRef> insertTrace(vector<MemRef> testVector);
 void testVectorOutput(vector<MemRef> testVector);
-vector<vector<long>> generateCache(long &sets, long &setSize)
-<vector<vector<long>> getL1();
-<vector<vector<long>> getL2();
+vector<vector<long>> generateCache(long &sets, long &setSize);
+vector<vector<long>> getL1();
+vector<vector<long>> getL2();
 
 int main()
 {
