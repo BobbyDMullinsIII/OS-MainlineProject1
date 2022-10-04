@@ -39,6 +39,7 @@ void testVectorOutput(vector<MemRef> testVector);
 vector<vector<long>> generateCache(long &sets, long &setSize);
 vector<vector<long>> getL1();
 vector<vector<long>> getL2();
+vector<vector<long>> getL3();
 
 int main()
 {
@@ -96,7 +97,7 @@ void testVectorOutput(vector<MemRef> memRefVector)
     }
 
 }//end testVectorOutput()
-
+/*
 //*should*
 //generate a cache and resize to the number of sets in config and set each set size from config
 vector<vector<long>> generateCache(long &sets, long &setSize)
@@ -110,7 +111,7 @@ vector<vector<long>> generateCache(long &sets, long &setSize)
         cache[i].resize(setSize);
     }
 }
-
+*/
 /*
 //return L1
 vector<vector<long>> getL1()
@@ -122,5 +123,11 @@ vector<vector<long>> getL1()
 vector<vector<long>> getL2()
 {
     return this->L2;
+}
+
+//return L3
+vector<vector<long>> getL2()
+{
+    return this->L3;
 }
 */

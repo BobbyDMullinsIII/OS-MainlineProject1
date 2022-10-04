@@ -31,9 +31,17 @@ TraceConfig::TraceConfig()
     L2IndexBits = 0;
     L2OffestBits = 0;
 
+    L3NumSets = 0;
+    L3SetSize = 0;
+    L3LineSize = 0;
+    L3WriteThrough = false;
+    L3IndexBits = 0;
+    L3OffestBits = 0;
+
     VirtAddressActive = false;
     TLBActive = false;
     L2Active = false;
+    L3Active = false;
 
     dtlbHitCount = 0;
     dtlbMissCount = 0;
@@ -43,6 +51,8 @@ TraceConfig::TraceConfig()
     dcMissCount = 0;
     l2HitCount = 0;
     l2MissCount = 0;
+    l3HitCount = 0;
+    l3MissCount = 0;
     readsCount = 0;
     writesCount = 0;
     mainMemRefsCount = 0;
@@ -70,19 +80,27 @@ void TraceConfig::outputRawConfigValues()
     cout << "L1SetSize: " << L1SetSize << "\n";
     cout << "L1LineSize: " << L1LineSize << "\n";
     cout << "L1WriteThrough: " << boolalpha << L1WriteThrough << "\n";
-    cout << "Number of bits used for L1 index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L1 offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L1 index is " << L1IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L1 offset is " << L1OffestBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "L2NumSets: " << L2NumSets << "\n";
     cout << "L2SetSize: " << L2SetSize << "\n";
     cout << "L2LineSize: " << L2LineSize << "\n";
     cout << "L2WriteThrough: " << boolalpha << L2WriteThrough << "\n";
-    cout << "Number of bits used for L2 index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L2 offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L2 index is " << L2IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L2 offset is " << L2OffestBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "\n";
+    cout << "L3NumSets: " << L3NumSets << "\n";
+    cout << "L3SetSize: " << L3SetSize << "\n";
+    cout << "L3LineSize: " << L3LineSize << "\n";
+    cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << "\n";
+    cout << "Number of bits used for L3 index is " << L3IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L3 offset is " << L3OffestBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
     cout << "L2Active: " << boolalpha << L2Active << "\n";
+    cout << "L3Active: " << boolalpha << L3Active << "\n";
     cout << "\n";
     cout << "\n";
     cout << "Virtual  Virt.\tPage\tTLB\tTLB\tTLB\tPT\tPhys\t\tDC\tDC\t\tL2\tL2\n";
@@ -97,7 +115,7 @@ void TraceConfig::outputRawConfigValues()
     cout << "\n";
     cout << "dtlb hits: " << dtlbHitCount << "\n";
     cout << "dtlb misses: " << dtlbMissCount << "\n";
-    cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";  //Needs "divide by zero" error checking
+    cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";  //Needs "divide by zero" error checking (Also not needed if either virtual addresses or TLB is disabled)
     cout << "\n";
     cout << "pt hits: " << ptHitCount << "\n";
     cout << "pt faults: " << ptFaultCount << "\n";
@@ -110,6 +128,10 @@ void TraceConfig::outputRawConfigValues()
     cout << "L2 hits: " << l2HitCount << "\n";
     cout << "L2 misses: " << l2MissCount << "\n";
     cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";  //Needs "divide by zero" error checking
+    cout << "\n";
+    cout << "L3 hits: " << l3HitCount << "\n";
+    cout << "L3 misses: " << l3MissCount << "\n";
+    cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";  //Needs "divide by zero" error checking
     cout << "\n";
     cout << "Total Reads: " << readsCount << "\n";
     cout << "Total Writes: " << writesCount << "\n";
@@ -245,7 +267,7 @@ void TraceConfig::insertConfig()
     getline(filein, currentLine);   //"Set size:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
     tempInt = stoi(tempString); //Convert string number at end of line into int
-    if(tempInt < 1 || tempInt > 128 || IsPowerOfTwo(tempInt) != true ) //(Max: 128 entries, Must be power of 2)
+    if(tempInt < 1 || tempInt > 128 || IsPowerOfTwo(tempInt) != true ) //(Min: 1 entry, Max: 128 entries, Must be power of 2)
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of entries within each L1 cache set should be at least 1, at most 128, and a power of 2.\n";
@@ -301,7 +323,7 @@ void TraceConfig::insertConfig()
     getline(filein, currentLine);   //"Number of sets:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
     tempInt = stoi(tempString); //Convert string number at end of line into int
-    if(tempInt < 1 || tempInt > 816 || IsPowerOfTwo(tempInt) != true ) //(Max: 16 sets, 1 set = direct mapped, Must be power of 2)
+    if(tempInt < 1 || tempInt > 16 || IsPowerOfTwo(tempInt) != true ) //(Max: 16 sets, 1 set = direct mapped, Must be power of 2)
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of sets within the L2 cache should be at least 1, at most 16, and a power of 2.\n";
@@ -318,10 +340,10 @@ void TraceConfig::insertConfig()
     getline(filein, currentLine);   //"Set size:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
     tempInt = stoi(tempString); //Convert string number at end of line into int
-    if(tempInt < 1 || tempInt > 512 || IsPowerOfTwo(tempInt) != true ) //(Max: 512 entries, Must be power of 2)
+    if(tempInt < 4 || tempInt > 512 || IsPowerOfTwo(tempInt) != true ) //(Min: 4 entries, Max: 512 entries, Must be power of 2)
     {
         //Output error message and exit program if any of the fail conditions met
-        cout << "The number of entries within each L2 cache set should be at least 1, at most 512, and a power of 2.\n";
+        cout << "The number of entries within each L2 cache set should be at least 4, at most 512, and a power of 2.\n";
         cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
@@ -368,6 +390,79 @@ void TraceConfig::insertConfig()
     }
 
     getline(filein, currentLine); //blank line
+    getline(filein, currentLine); //"L3 Cache configuration" info line
+
+    //L3NumSets
+    getline(filein, currentLine);   //"Number of sets:" config value line
+    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempInt = stoi(tempString); //Convert string number at end of line into int
+    if(tempInt < 1 || tempInt > 16 || IsPowerOfTwo(tempInt) != true ) //(Max: 16 sets, 1 set = direct mapped, Must be power of 2)
+    {
+        //Output error message and exit program if any of the fail conditions met
+        cout << "The number of sets within the L3 cache should be at least 1, at most 16, and a power of 2.\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        //Insert config value into appropriate parameter
+        L3NumSets = tempInt;
+    }
+
+    //L3SetSize
+    getline(filein, currentLine);   //"Set size:" config value line
+    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempInt = stoi(tempString); //Convert string number at end of line into int
+    if(tempInt < 32 || tempInt > 4096 || IsPowerOfTwo(tempInt) != true ) //(Min: 32 entries, Max: 4096 entries, Must be power of 2)
+    {
+        //Output error message and exit program if any of the fail conditions met
+        cout << "The number of entries within each L3 cache set should be at least 32, at most 4096, and a power of 2.\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        //Insert config value into appropriate parameter
+        L3SetSize = tempInt;
+    }
+
+    //L3LineSize
+    getline(filein, currentLine);   //"Set size:" config value line
+    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempInt = stoi(tempString); //Convert string number at end of line into int
+    if(tempInt < 8 || tempInt > 64 || IsPowerOfTwo(tempInt) != true ) //(Min: 8 bytes, Max: 64 bytes, Must be power of 2)
+    {
+        //Output error message and exit program if any of the fail conditions met
+        cout << "The line size within the L3 cache should be at least 8 bytes, at most 64 bytes, and a power of 2.\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        //Insert config value into appropriate parameter
+        L3LineSize = tempInt;
+    }
+
+    //L3WriteThrough
+    getline(filein, currentLine);   //"Write through/no write allocate:" config value line
+    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    if(tempString != "y" && tempString != "n") //(y/n = true/false)
+    {
+        //Output error message and exit program if any of the fail conditions met
+        cout << "The L3 write-through toggle must be 'y' or 'n'.\n";
+        cout << "Invalid value read: " << tempString <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {   
+        //Insert config value into appropriate parameter
+        if(tempString == "y")
+        { L3WriteThrough = true; }
+        if(tempString == "n")
+        { L3WriteThrough = false; }
+    }
+
+    getline(filein, currentLine); //blank line
 
     //VirtAddressActive
     getline(filein, currentLine);   //"Virtual addresses:" config value line
@@ -400,7 +495,7 @@ void TraceConfig::insertConfig()
     }
     else
     {   
-        //Will set TLBActive to false if virtual addresses are disabled, regardless of its config setting
+        //Will automatically set TLBActive to false if virtual addresses are disabled, regardless of its config setting
         //There is no point to the TLB if virtual addresses are not used
         if(VirtAddressActive == false)
         {
@@ -433,6 +528,34 @@ void TraceConfig::insertConfig()
         { L2Active = true; }
         if(tempString == "n")
         { L2Active = false; }
+    }
+
+    //L3Active
+    getline(filein, currentLine);   //"L2 cache:" config value line
+    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    if(tempString != "y" && tempString != "n") //(y/n = true/false)
+    {
+        //Output error message and exit program if any of the fail conditions met
+        cout << "The L3 cache active toggle must be 'y' or 'n'.\n";
+        cout << "Invalid value read: " << tempString <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {   
+        //Will automatically set L3Active to false if L2 cache is disabled, regardless of its config setting
+        //There is no point to the L3 cache if the L2 cache is disabled
+        if(L2Active == false)
+        {
+            L3Active = false;
+        }
+        else
+        {
+            //Insert config value into appropriate parameter
+            if(tempString == "y")
+            { L3Active = true; }
+            if(tempString == "n")
+            { L3Active = false; }
+        }
     }
 
 }//end insertConfig()
