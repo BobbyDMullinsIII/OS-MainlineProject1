@@ -97,23 +97,23 @@ void TraceConfig::outputRawConfigValues()
     cout << "\n";
     cout << "dtlb hits: " << dtlbHitCount << "\n";
     cout << "dtlb misses: " << dtlbMissCount << "\n";
-    cout << "dtlb hit ratio: " << dtlbHitCount/(dtlbHitCount+dtlbMissCount) << "\n"; // btw, idk if you can even do math like this in the output line, i'm just assuming you can
+    cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";  //Needs "divide by zero" error checking
     cout << "\n";
     cout << "pt hits: " << ptHitCount << "\n";
     cout << "pt faults: " << ptFaultCount << "\n";
-    cout << "pt hit ratio: " << ptHitCount/(ptHitCount+ptFaultCount) << "\n";
+    cout << "pt hit ratio: " << (double)(ptHitCount/(ptHitCount+ptFaultCount)) << "\n";  //Needs "divide by zero" error checking
     cout << "\n";
     cout << "dc hits: " << dcHitCount << "\n";
     cout << "dc misses: " << dcMissCount << "\n";
-    cout << "dc hit ratio: " << dcHitCount/(dcHitCount+dcMissCount) << "\n";
+    cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";  //Needs "divide by zero" error checking
     cout << "\n";
     cout << "L2 hits: " << l2HitCount << "\n";
     cout << "L2 misses: " << l2MissCount << "\n";
-    cout << "L2 hit ratio: " << l2HitCount/(l2HitCount+l2MissCount) << "\n";
+    cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";  //Needs "divide by zero" error checking
     cout << "\n";
     cout << "Total Reads: " << readsCount << "\n";
     cout << "Total Writes: " << writesCount << "\n";
-    cout << "Ratio of Reads: " << readsCount/(readsCount+writesCount) << "\n";
+    cout << "Ratio of Reads: " << (double)(readsCount/(readsCount+writesCount)) << "\n";  //Needs "divide by zero" error checking
     cout << "\n";
     cout << "main memory refs: " << mainMemRefsCount << "\n";
     cout << "page table refs: " << pageTableRefsCount << "\n";
