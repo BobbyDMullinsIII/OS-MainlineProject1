@@ -57,8 +57,8 @@ public:
     int diskRefsCount;//!! not implemented yet               //Number of disk refs count (to be systematically counted)
 
     void outputRawConfigValues();
-    bool IsPowerOfTwo(int x);
     void insertConfig();
+    bool IsPowerOfTwo(int x);
 
 private:
 

@@ -35,19 +35,19 @@ TraceConfig::TraceConfig()
     TLBActive = false;
     L2Active = false;
 
-    int dtlbHitCount = 0;
-    int dtlbMissCount = 0;
-    int ptHitCount = 0;
-    int ptFaultCount = 0;
-    int dcHitCount = 0;
-    int dcMissCount = 0;
-    int l2HitCount = 0;
-    int l2MissCount = 0;
-    int readsCount = 0;
-    int writesCount = 0;
-    int mainMemRefsCount = 0;
-    int pageTableRefsCount = 0;
-    int diskRefsCount = 0;
+    dtlbHitCount = 0;
+    dtlbMissCount = 0;
+    ptHitCount = 0;
+    ptFaultCount = 0;
+    dcHitCount = 0;
+    dcMissCount = 0;
+    l2HitCount = 0;
+    l2MissCount = 0;
+    readsCount = 0;
+    writesCount = 0;
+    mainMemRefsCount = 0;
+    pageTableRefsCount = 0;
+    diskRefsCount = 0;
 }
 
 //Deconstructor
