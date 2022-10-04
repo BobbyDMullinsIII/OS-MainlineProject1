@@ -124,4 +124,3 @@ vector<vector<long>> getL2()
     return this->L2;
 }
 */
-
