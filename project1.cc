@@ -40,6 +40,8 @@ vector<vector<long>> generateCache(long &sets, long &setSize);
 vector<vector<long>> getL1();
 vector<vector<long>> getL2();
 vector<vector<long>> getL3();
+void FindItem(vector<vector<long>> &cache, int pid);
+void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
 
 int main()
 {
@@ -126,8 +128,30 @@ vector<vector<long>> getL2()
 }
 
 //return L3
-vector<vector<long>> getL2()
+vector<vector<long>> getL3()
 {
     return this->L3;
+}
+
+//replaces a page in a page list
+//L1,L2 are cahces
+//p1 is new page
+//pgs is existing pages
+//i is location in pgs of page being replaced
+void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i)
+{
+   FindItem(L1, pgs[i]);//finds if there is existing pid of that page in L1 and replaces with null
+   FindItem(L2, pgs[i]);//finds if there is existing pid of that page in L2 and replaces with null
+   pgs[i] = p1;//replaces page
+}
+
+//finds pid of replaced page and places null where pid is found
+void FindItem(vector<vector<long>> &cache, int pid)
+{
+    //searches for a pid in the cache, and if exists replace with null
+    for (vector<int> &v : cache)
+    {
+        replace(v.begin(), v.end(), pid, NULL);
+    }
 }
 */
