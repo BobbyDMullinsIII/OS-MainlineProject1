@@ -42,6 +42,8 @@ vector<vector<long>> getL2();
 vector<vector<long>> getL3();
 void FindItem(vector<vector<long>> &cache, int pid);
 void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
+int RLU(int[][] pages);
+int[][] PageAlloc(int numpgs, int pgsize);
 
 int main()
 {
@@ -99,7 +101,7 @@ void testVectorOutput(vector<MemRef> memRefVector)
     }
 
 }//end testVectorOutput()
-/*
+
 //*should*
 //generate a cache and resize to the number of sets in config and set each set size from config
 vector<vector<long>> generateCache(long &sets, long &setSize)
@@ -112,9 +114,11 @@ vector<vector<long>> generateCache(long &sets, long &setSize)
     {
         cache[i].resize(setSize);
     }
+
+    return cache;
 }
-*/
-/*
+
+
 //return L1
 vector<vector<long>> getL1()
 {
@@ -154,4 +158,30 @@ void FindItem(vector<vector<long>> &cache, int pid)
         replace(v.begin(), v.end(), pid, NULL);
     }
 }
-*/
+
+//allocates a chuck in memory for physical pages
+//use as pages[pagenum][pageloc]
+int[][] PageAlloc(int numpgs, int pgsize)
+{
+    //int(*pages)[pgsize] = malloc(sizeof(int[numpgs][pgsize]));
+    int[numpgs][pgsize] pages; 
+    return pages;
+}
+
+//gets least recently used page
+//returns index of page
+//assuming least recently used is being tracked
+//by very last int on the page
+int RLU(int[][] pages)
+{
+    int RLU = 0;
+    for(int i = 0; i < pages.size; i++)
+    {
+        if(pages[i][pages[i].size-1] < pages[RLU][pages[i].size-1])
+        {
+            RLU = i;
+        }
+    }
+
+    return RLU;
+}
