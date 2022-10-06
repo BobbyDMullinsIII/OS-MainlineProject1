@@ -153,7 +153,7 @@ void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vect
 void FindItem(vector<vector<long>> &cache, int pid)
 {
     //searches for a pid in the cache, and if exists replace with null
-    for (vector<int> &v : cache)
+    for (vector<long> &v : cache)
     {
         replace(v.begin(), v.end(), pid, NULL);
     }
@@ -161,18 +161,29 @@ void FindItem(vector<vector<long>> &cache, int pid)
 
 //allocates a chuck in memory for physical pages
 //use as pages[pagenum][pageloc]
-int[][] PageAlloc(int numpgs, int pgsize)
+int** PageAlloc(int numpgs, int pgsize)
 {
-    //int(*pages)[pgsize] = malloc(sizeof(int[numpgs][pgsize]));
-    int[numpgs][pgsize] pages; 
-    return pages;
+    int** pgs = 0;
+    pages = new int*[numpgs];
+
+    for(int i = 0; i < numpgs; i++)
+    {
+        pgs[i] = new int[pgsize];
+        
+        for(int j = 0; j < pgsize; j++)
+        {
+            pgs[i][j] = 0;
+        }
+    }
+
+    return pgs;
 }
 
 //gets least recently used page
 //returns index of page
 //assuming least recently used is being tracked
 //by very last int on the page
-int RLU(int[][] pages)
+int RLU(int** pages)
 {
     int RLU = 0;
     for(int i = 0; i < pages.size; i++)
