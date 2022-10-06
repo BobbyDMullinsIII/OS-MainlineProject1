@@ -37,9 +37,6 @@ struct MemRef
 vector<MemRef> insertTrace(vector<MemRef> testVector);
 void testVectorOutput(vector<MemRef> testVector);
 vector<vector<long>> generateCache(long &sets, long &setSize);
-vector<vector<long>> getL1();
-vector<vector<long>> getL2();
-vector<vector<long>> getL3();
 void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
 void FindItem(vector<vector<long>> &cache, int pid);
 int** PageAlloc(int numpgs, int pgsize);
@@ -117,26 +114,6 @@ vector<vector<long>> generateCache(long &sets, long &setSize)
 
     return cache;
 }
-
-/*
-//return L1
-vector<vector<long>> getL1()
-{
-    return this->L1;
-}
-
-//return L2
-vector<vector<long>> getL2()
-{
-    return this->L2;
-}
-
-//return L3
-vector<vector<long>> getL3()
-{
-    return this->L3;
-}
-*/
 
 //replaces a page in a page list
 //L1,L2 are cahces
