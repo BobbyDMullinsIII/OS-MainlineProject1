@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "TraceConfig.hpp"
 using namespace std;
 
@@ -39,8 +40,8 @@ void testVectorOutput(vector<MemRef> testVector);
 vector<vector<long>> generateCache(long &sets, long &setSize);
 void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
 void FindItem(vector<vector<long>> &cache, int pid);
-int** PageAlloc(int numpgs, int pgsize);
-int LRU(int** pages);
+vector<vector<int>> PageAlloc(int numpgs, int pgsize);
+int LRU(vector<vector<int>> pages);
 
 int main()
 {
@@ -133,26 +134,21 @@ void FindItem(vector<vector<long>> &cache, int pid)
     //searches for a pid in the cache, and if exists replace with null
     for (vector<long> &v : cache)
     {
-        replace(v.begin(), v.end(), pid, NULL);
+        replace(v.begin(), v.end(), pid, -1);
     }
 }
 
 //allocates a chuck in memory for physical pages
 //use as pages[pagenum][pageloc]
-int** PageAlloc(int numpgs, int pgsize)
+vector<vector<int>> PageAlloc(int numpgs, int pgsize)
 {
-    int** pgs = 0;
-    pgs = new int*[numpgs];
+    //2D vector to return from page allocation
+    vector<vector<int>> pgs;
 
-    for(int i = 0; i < numpgs; i++)
-    {
-        pgs[i] = new int[pgsize];
-        
-        for(int j = 0; j < pgsize; j++)
-        {
-            pgs[i][j] = 0;
-        }
-    }
+    //Sets the rows to the number of pages
+    //Sets the columns to the page size
+    //Sets all values to the initial value of '-1'
+    pgs.resize(numpgs, vector<int>(pgsize, -1));
 
     return pgs;
 }
@@ -161,12 +157,12 @@ int** PageAlloc(int numpgs, int pgsize)
 //returns index of page
 //assuming least recently used is being tracked
 //by very last int on the page
-int LRU(int** pages)
+int LRU(vector<vector<int>> pages)
 {
     int LRU = 0;
-    for(int i = 0; i < pages.size; i++)
+    for(int i = 0; i < pages.size(); i++)
     {
-        if(pages[i][pages[i].size-1] < pages[LRU][pages[i].size-1])
+        if(pages[i][pages[i].size()-1] < pages[LRU][pages[i].size()-1])
         {
             LRU = i;
         }
