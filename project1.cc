@@ -40,10 +40,10 @@ vector<vector<long>> generateCache(long &sets, long &setSize);
 vector<vector<long>> getL1();
 vector<vector<long>> getL2();
 vector<vector<long>> getL3();
-void FindItem(vector<vector<long>> &cache, int pid);
 void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
-int RLU(int[][] pages);
-int[][] PageAlloc(int numpgs, int pgsize);
+void FindItem(vector<vector<long>> &cache, int pid);
+int** PageAlloc(int numpgs, int pgsize);
+int LRU(int** pages);
 
 int main()
 {
@@ -118,7 +118,7 @@ vector<vector<long>> generateCache(long &sets, long &setSize)
     return cache;
 }
 
-
+/*
 //return L1
 vector<vector<long>> getL1()
 {
@@ -136,6 +136,7 @@ vector<vector<long>> getL3()
 {
     return this->L3;
 }
+*/
 
 //replaces a page in a page list
 //L1,L2 are cahces
@@ -164,7 +165,7 @@ void FindItem(vector<vector<long>> &cache, int pid)
 int** PageAlloc(int numpgs, int pgsize)
 {
     int** pgs = 0;
-    pages = new int*[numpgs];
+    pgs = new int*[numpgs];
 
     for(int i = 0; i < numpgs; i++)
     {
@@ -183,16 +184,16 @@ int** PageAlloc(int numpgs, int pgsize)
 //returns index of page
 //assuming least recently used is being tracked
 //by very last int on the page
-int RLU(int** pages)
+int LRU(int** pages)
 {
-    int RLU = 0;
+    int LRU = 0;
     for(int i = 0; i < pages.size; i++)
     {
-        if(pages[i][pages[i].size-1] < pages[RLU][pages[i].size-1])
+        if(pages[i][pages[i].size-1] < pages[LRU][pages[i].size-1])
         {
-            RLU = i;
+            LRU = i;
         }
     }
 
-    return RLU;
+    return LRU;
 }

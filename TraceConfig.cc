@@ -22,21 +22,21 @@ TraceConfig::TraceConfig()
     L1LineSize = 0;
     L1WriteThrough = false;
     L1IndexBits = 0;
-    L1OffestBits = 0;
+    L1OffsetBits = 0;
 
     L2NumSets = 0;
     L2SetSize = 0;
     L2LineSize = 0;
     L2WriteThrough = false;
     L2IndexBits = 0;
-    L2OffestBits = 0;
+    L2OffsetBits = 0;
 
     L3NumSets = 0;
     L3SetSize = 0;
     L3LineSize = 0;
     L3WriteThrough = false;
     L3IndexBits = 0;
-    L3OffestBits = 0;
+    L3OffsetBits = 0;
 
     VirtAddressActive = false;
     TLBActive = false;
@@ -81,21 +81,21 @@ void TraceConfig::outputRawConfigValues()
     cout << "L1LineSize: " << L1LineSize << "\n";
     cout << "L1WriteThrough: " << boolalpha << L1WriteThrough << "\n";
     cout << "Number of bits used for L1 index is " << L1IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L1 offset is " << L1OffestBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L1 offset is " << L1OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "L2NumSets: " << L2NumSets << "\n";
     cout << "L2SetSize: " << L2SetSize << "\n";
     cout << "L2LineSize: " << L2LineSize << "\n";
     cout << "L2WriteThrough: " << boolalpha << L2WriteThrough << "\n";
     cout << "Number of bits used for L2 index is " << L2IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L2 offset is " << L2OffestBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L2 offset is " << L2OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "L3NumSets: " << L3NumSets << "\n";
     cout << "L3SetSize: " << L3SetSize << "\n";
     cout << "L3LineSize: " << L3LineSize << "\n";
     cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << "\n";
     cout << "Number of bits used for L3 index is " << L3IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L3 offset is " << L3OffestBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
     cout << "\n";
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";

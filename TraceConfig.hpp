@@ -26,7 +26,7 @@ public:
     int L1LineSize;                 //Size (in bytes) of each line in L1 (Min: 8 bytes, Max: 64 bytes, Must be power of 2)
     bool L1WriteThrough;            //Switch for L1 to be write-through or not (y/n = true/false)
     int L1IndexBits;//!! not implemented yet    //Number of bits used for the L1 index 
-    int L1OffestBits;//!! not implemented yet   //Number of bits used for the L1 Offset
+    int L1OffsetBits;//!! not implemented yet   //Number of bits used for the L1 Offset
 
     //L2 Cache Configuration
     int L2NumSets;                  //Number of sets in L2 (Max: 16 sets, 1 set = direct mapped, Must be power of 2)
@@ -34,7 +34,7 @@ public:
     int L2LineSize;                 //Size (in bytes) of each line in L2 (Min: 8 bytes, Max: 64 bytes, Must be power of 2)
     bool L2WriteThrough;            //Switch for L2 to be write-through or not (y/n = true/false)
     int L2IndexBits;//!! not implemented yet    //Number of bits used for the L2 index 
-    int L2OffestBits;//!! not implemented yet   //Number of bits used for the L2 Offset
+    int L2OffsetBits;//!! not implemented yet   //Number of bits used for the L2 Offset
 
     //L3 Cache Configuration
     int L3NumSets;                  //Number of sets in L3 (Max: 16 sets, 1 set = direct mapped, Must be power of 2)
@@ -42,7 +42,7 @@ public:
     int L3LineSize;                 //Size (in bytes) of each line in L3 (Min: 8 bytes, Max: 64 bytes, Must be power of 2)
     bool L3WriteThrough;            //Switch for L3 to be write-through or not (y/n = true/false)
     int L3IndexBits;//!! not implemented yet    //Number of bits used for the L3 index 
-    int L3OffestBits;//!! not implemented yet   //Number of bits used for the L3 Offset
+    int L3OffsetBits;//!! not implemented yet   //Number of bits used for the L3 Offset
 
     //Active Modules Configuration
     bool VirtAddressActive;         //Determines if addresses read in are virtual or physical (y/n = true/false)
