@@ -163,7 +163,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of TLB sets should be at least 1, at most 16, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -180,7 +180,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of entries within each TLB set should be at least 1, at most 64, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -200,7 +200,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of virtual pages within the page table should be at least 1, at most 8192, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -217,7 +217,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of physical pages within the page table should be at least 1, at most 2048, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -234,7 +234,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The page size of each page within the page table should be at least 1 byte, at most 4096 bytes (4kb), and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -254,7 +254,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of sets within the L1 cache should be at least 1, at most 8, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -271,7 +271,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of entries within each L1 cache set should be at least 1, at most 128, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -288,7 +288,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The line size within the L1 cache should be at least 8 bytes, at most 64 bytes, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -304,7 +304,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The L1 write-through toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -327,7 +327,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of sets within the L2 cache should be at least 1, at most 16, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -344,7 +344,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of entries within each L2 cache set should be at least 4, at most 512, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -361,7 +361,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The line size within the L2 cache should be at least 8 bytes, at most 64 bytes, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -377,7 +377,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The L2 write-through toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -400,7 +400,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of sets within the L3 cache should be at least 1, at most 16, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -417,7 +417,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The number of entries within each L3 cache set should be at least 32, at most 4096, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -434,7 +434,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The line size within the L3 cache should be at least 8 bytes, at most 64 bytes, and a power of 2.\n";
-        cout << "Invalid value read: [" << tempInt <<"]\n";
+        cout << "Invalid value read: " << tempInt <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -450,7 +450,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The L3 write-through toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -471,7 +471,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The virtual addresses active toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -490,7 +490,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The TLB active toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -518,7 +518,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The L2 cache active toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -537,7 +537,7 @@ void TraceConfig::insertConfig()
     {
         //Output error message and exit program if any of the fail conditions met
         cout << "The L3 cache active toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: [" << tempString <<"]\n";
+        cout << "Invalid value read: " << tempString <<"\n";
         exit(EXIT_FAILURE);
     }
     else
