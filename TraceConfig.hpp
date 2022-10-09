@@ -69,6 +69,7 @@ public:
 
     void outputRawConfigValues();
     void insertConfig();
+    void prepareCounters();
     bool IsPowerOfTwo(int x);
 
 private:

@@ -28,7 +28,7 @@ using namespace std;
 #define WTM 4 //miss for write
 
 //Struct for storing Memory References in string hex format
-struct MemRefHex 
+struct MemRefHex
 {
     string type;    //Memory Access Type (Can be 'R' or 'W')
     string address; //Hex Address (Ranges from 000 (8-bit) to FFFFFFFF (32-bit unsigned))
@@ -42,11 +42,14 @@ struct MemRefDec
 };
 
 
-//Initial Method Declarations
+//Input/Output Method Declarations
 vector<MemRefHex> insertTrace(vector<MemRefHex> memRefHexVector);
 vector<MemRefDec> convertToMemRefDec(vector<MemRefHex> memRefHexVector);
 void outputHexVector(vector<MemRefHex> memRefHexVector);
 void outputDecVector(vector<MemRefDec> memRefDecVector);
+void outputDecAndHex(vector<MemRefDec> memRefDecVector);
+
+//Cache & Page Table Method Declarations
 vector<vector<long>> generateCache(long &sets, long &setSize);
 void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
 void FindItem(vector<vector<long>> &cache, int pid);
@@ -57,22 +60,24 @@ int main()
 {
     vector<MemRefHex> MemReferencesHex; //Vector of MemRefHex's to work from with addresses in hex (string) form
     vector<MemRefDec> MemReferencesDec; //Vector of MemRefDec's to work from with addresses in decimal (long) form
-    TraceConfig config;                 //Class of config values taken from trace.config file
+    TraceConfig config;                 //Class of config values and counters taken from trace.config file
 
     MemReferencesHex = insertTrace(MemReferencesHex);       //Insert memory references from stdin into MemRefHex vector
     MemReferencesDec = convertToMemRefDec(MemReferencesHex);//Make a copy of MemReferencesHex, but with addresses in easier-to-use long decimal form
-    config.insertConfig();                                  //Insert trace.config file values into TraceConfig variable
+    //config.insertConfig(); //ISSUE: Will not let program continue because of weird issue where it will not read 'y' or 'n' correctly in the trace.config file
+    config.prepareCounters();
 
-    outputHexVector(MemReferencesHex);
-    outputDecVector(MemReferencesDec);
-
-    //Output config final config values
-    config.outputRawConfigValues();
-
-
+    //=========================================================================================================//
     //Memory hierarchy code should go here or in another class object file (.cc object file and .hpp header file)
+    //=========================================================================================================//
 
+    //Output final config values and simulation statistics
+    //config.outputRawConfigValues();   //ISSUE: Will cause crash because of divide by zero error on ratio calculation lines
 
+    //Output memory traces in both decimal and hex form if user wants to
+    outputDecAndHex(MemReferencesDec);
+
+    //Exit program
     return 0;
 }
 
@@ -145,6 +150,19 @@ void outputDecVector(vector<MemRefDec> memRefDecVector)
     }
 
 }//end outputDecVector()
+
+//Method for outputing memory addresses in both Hex and Decimal form
+void outputDecAndHex(vector<MemRefDec> memRefDecVector)
+{
+        //Show every memory trace in both Decimal and Hex form and exit loop
+    cout << "\n\nMemory References (Hex | Decimal):\n";
+    for (int i = 0; i != memRefDecVector.size(); i++)
+    {
+        cout << memRefDecVector[i].type << ":" << memRefDecVector[i].address << "   |   ";
+        cout << memRefDecVector[i].type << ":" << std::hex << memRefDecVector[i].address <<"\n" << std::dec;
+    }
+
+}//end outputDecAndHex()
 
 //*should*
 //generate a cache and resize to the number of sets in config and set each set size from config

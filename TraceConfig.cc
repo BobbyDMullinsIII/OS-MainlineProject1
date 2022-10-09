@@ -7,57 +7,57 @@ using namespace std;
 //Constructor
 TraceConfig::TraceConfig()
 {
-    //Sets all values to 0 and false intially before Trace.Config insertion
-    numTLBSets = 0;
-    TLBSetSize = 0;
+    //Sets all values to -1 and false initially before Trace.Config insertion
+    numTLBSets = -1;
+    TLBSetSize = -1;
 
-    numVirtPages = 0;
-    numPhysPages = 0;
-    pageSize = 0;
-    pageTableIndexBits = 0;
-    pageOffsetBits = 0;
+    numVirtPages = -1;
+    numPhysPages = -1;
+    pageSize = -1;
+    pageTableIndexBits = -1;
+    pageOffsetBits = -1;
 
-    L1NumSets = 0;
-    L1SetSize = 0;
-    L1LineSize = 0;
+    L1NumSets = -1;
+    L1SetSize = -1;
+    L1LineSize = -1;
     L1WriteThrough = false;
-    L1IndexBits = 0;
-    L1OffsetBits = 0;
+    L1IndexBits = -1;
+    L1OffsetBits = -1;
 
-    L2NumSets = 0;
-    L2SetSize = 0;
-    L2LineSize = 0;
+    L2NumSets = -1;
+    L2SetSize = -1;
+    L2LineSize = -1;
     L2WriteThrough = false;
-    L2IndexBits = 0;
-    L2OffsetBits = 0;
+    L2IndexBits = -1;
+    L2OffsetBits = -1;
 
-    L3NumSets = 0;
-    L3SetSize = 0;
-    L3LineSize = 0;
+    L3NumSets = -1;
+    L3SetSize = -1;
+    L3LineSize = -1;
     L3WriteThrough = false;
-    L3IndexBits = 0;
-    L3OffsetBits = 0;
+    L3IndexBits = -1;
+    L3OffsetBits = -1;
 
     VirtAddressActive = false;
     TLBActive = false;
     L2Active = false;
     L3Active = false;
 
-    dtlbHitCount = 0;
-    dtlbMissCount = 0;
-    ptHitCount = 0;
-    ptFaultCount = 0;
-    dcHitCount = 0;
-    dcMissCount = 0;
-    l2HitCount = 0;
-    l2MissCount = 0;
-    l3HitCount = 0;
-    l3MissCount = 0;
-    readsCount = 0;
-    writesCount = 0;
-    mainMemRefsCount = 0;
-    pageTableRefsCount = 0;
-    diskRefsCount = 0;
+    dtlbHitCount = -1;
+    dtlbMissCount = -1;
+    ptHitCount = -1;
+    ptFaultCount = -1;
+    dcHitCount = -1;
+    dcMissCount = -1;
+    l2HitCount = -1;
+    l2MissCount = -1;
+    l3HitCount = -1;
+    l3MissCount = -1;
+    readsCount = -1;
+    writesCount = -1;
+    mainMemRefsCount = -1;
+    pageTableRefsCount = -1;
+    diskRefsCount = -1;
 }
 
 //Deconstructor
@@ -559,6 +559,27 @@ void TraceConfig::insertConfig()
     }
 
 }//end insertConfig()
+
+//Method for setting all counters to 0 to prepare for hit/miss/read/write/reference counting
+void TraceConfig::prepareCounters()
+{
+    //Sets all counters to 0 to prepare for hit/miss/read/write/reference counting
+    dtlbHitCount = 0;
+    dtlbMissCount = 0;
+    ptHitCount = 0;
+    ptFaultCount = 0;
+    dcHitCount = 0;
+    dcMissCount = 0;
+    l2HitCount = 0;
+    l2MissCount = 0;
+    l3HitCount = 0;
+    l3MissCount = 0;
+    readsCount = 0;
+    writesCount = 0;
+    mainMemRefsCount = 0;
+    pageTableRefsCount = 0;
+    diskRefsCount = 0;
+}
 
 //Method for checking if number is a power of two
 //Stolen from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2
