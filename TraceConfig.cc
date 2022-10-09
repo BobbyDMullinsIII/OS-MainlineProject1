@@ -109,33 +109,75 @@ void TraceConfig::outputRawConfigValues()
     // here we should be able to plug in values for each item here as we find them. 
     // I believe format should follow something very close to: (number of spaces between each being important)
     //cout << "00000c84      c\t  84\t     6\t  0\tmiss\tmiss\t   0\t     2\t  0\tmiss\t     0\t  8\tmiss\n";
-    //this should put values at back of comumn like in spec example output, but may look incorrect with more or less characters in the values.
+    //this should put values at back of column like in spec example output, but may look incorrect with more or less characters in the values.
     cout << "\n";
     cout << "Simulation Statistics\n";
     cout << "\n";
     cout << "dtlb hits: " << dtlbHitCount << "\n";
     cout << "dtlb misses: " << dtlbMissCount << "\n";
-    cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";  //Needs "divide by zero" error checking (Also not needed if either virtual addresses or TLB is disabled)
+    if((dtlbHitCount+dtlbMissCount) == 0) //Catches divide by zero error
+    {
+        cout << "dtlb hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";
+    }
     cout << "\n";
     cout << "pt hits: " << ptHitCount << "\n";
     cout << "pt faults: " << ptFaultCount << "\n";
-    cout << "pt hit ratio: " << (double)(ptHitCount/(ptHitCount+ptFaultCount)) << "\n";  //Needs "divide by zero" error checking
+    if((ptHitCount+ptFaultCount) == 0) //Catches divide by zero error
+    {
+        cout << "pt hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "pt hit ratio: " << (double)(ptHitCount/(ptHitCount+ptFaultCount)) << "\n";
+    }
     cout << "\n";
     cout << "dc hits: " << dcHitCount << "\n";
     cout << "dc misses: " << dcMissCount << "\n";
-    cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";  //Needs "divide by zero" error checking
+    if((dcHitCount+dcMissCount) == 0) //Catches divide by zero error
+    {
+        cout << "dc hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";
+    }
     cout << "\n";
     cout << "L2 hits: " << l2HitCount << "\n";
     cout << "L2 misses: " << l2MissCount << "\n";
-    cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";  //Needs "divide by zero" error checking
+    if((l2HitCount+l2MissCount) == 0) //Catches divide by zero error
+    {
+        cout << "L2 hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";
+    }
     cout << "\n";
     cout << "L3 hits: " << l3HitCount << "\n";
     cout << "L3 misses: " << l3MissCount << "\n";
-    cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";  //Needs "divide by zero" error checking
+    if((l3HitCount+l3MissCount) == 0) //Catches divide by zero error
+    {
+        cout << "L3 hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";
+    }
     cout << "\n";
     cout << "Total Reads: " << readsCount << "\n";
     cout << "Total Writes: " << writesCount << "\n";
-    cout << "Ratio of Reads: " << (double)(readsCount/(readsCount+writesCount)) << "\n";  //Needs "divide by zero" error checking
+    if((readsCount+writesCount) == 0) //Catches divide by zero error
+    {
+        cout << "Ratio of Reads: 0" << "\n";
+    }
+    else
+    {
+        cout << "Ratio of Reads: " << (double)(readsCount/(readsCount+writesCount)) << "\n";
+    }
     cout << "\n";
     cout << "main memory refs: " << mainMemRefsCount << "\n";
     cout << "page table refs: " << pageTableRefsCount << "\n";

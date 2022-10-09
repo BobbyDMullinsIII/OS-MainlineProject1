@@ -72,7 +72,7 @@ int main()
     //=========================================================================================================//
 
     //Output final config values and simulation statistics
-    //config.outputRawConfigValues();   //ISSUE: Will cause crash because of divide by zero error on ratio calculation lines
+    config.outputRawConfigValues();
 
     //Output memory traces in both decimal and hex form if user wants to
     outputDecAndHex(MemReferencesDec);
@@ -155,7 +155,7 @@ void outputDecVector(vector<MemRefDec> memRefDecVector)
 void outputDecAndHex(vector<MemRefDec> memRefDecVector)
 {
         //Show every memory trace in both Decimal and Hex form and exit loop
-    cout << "\n\nMemory References (Hex | Decimal):\n";
+    cout << "\n\nMemory References (Hex|Decimal):\n";
     for (int i = 0; i != memRefDecVector.size(); i++)
     {
         cout << memRefDecVector[i].type << ":" << memRefDecVector[i].address << "   |   ";
