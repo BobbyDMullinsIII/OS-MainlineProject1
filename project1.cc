@@ -231,3 +231,61 @@ int LRU(vector<vector<int>> pages)
 
     return LRU;
 }
+
+//takes a virtual address and return the physical address of the accessed area in memory
+//virtAddress = virtual address to convert to physical address
+//baseAddress = base address of the process
+//bounds = size of address space allocated  
+string VirtualToPhysical(string virtAddress, string baseAddress, string bounds)
+{
+    map<char, int> hexMap{ { '0', 0 }, { '1', 1 },
+                      { '2', 2 }, { '3', 3 },
+                      { '4', 4 }, { '5', 5 },
+                      { '6', 6 }, { '7', 7 },
+                      { '8', 8 }, { '9', 9 },
+                      { 'A', 10 }, { 'B', 11 },
+                      { 'C', 12 }, { 'D', 13 },
+                      { 'E', 14 }, { 'F', 15 } };
+
+    int virtInt = 0;
+    int baseInt = 0;
+    int boundInt = 0;
+
+    ostringstream stream;
+
+    for(int i = 0; i < virtAddress.length(); i++)
+    {
+        virtInt = virtInt + m[virtAddress[i]];
+    }
+
+    for(int i = 0; i < baseAddress.length(); i++)
+    {
+        baseInt = baseInt + m[baseAddress[i]];
+    }
+
+    for(int i = 0; i < bounds.length(); i++)
+    {
+        boundInt = boundInt + m[bounds[i]];
+    }
+
+    int physicalAddress = baseInt + virtInt;
+    string physicalHex;
+
+    if(baseInt <= physicalAddress)
+    {
+        if((baseInt+boundInt) > physicalAddress)
+        {
+            stream << std::hex << physicalAddress;
+            physicalHex = stream.str();
+            return physicalHex;
+        }
+        else
+        {
+            return "Out of Bounds: past max bounds of process";
+        }
+    }
+    else
+    {
+        return "Out of Bounds: Less than base address of process";
+    }
+}
