@@ -71,6 +71,7 @@ public:
     void insertConfig();
     void prepareCounters();
     bool IsPowerOfTwo(int x);
+    std::string removeNonLetters(std::string s);
 
 private:
 

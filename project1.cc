@@ -56,6 +56,7 @@ void FindItem(vector<vector<long>> &cache, int pid);
 vector<vector<int>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<int>> pages);
 
+
 int main()
 {
     vector<MemRefHex> MemReferencesHex; //Vector of MemRefHex's to work from with addresses in hex (string) form
@@ -64,21 +65,17 @@ int main()
 
     MemReferencesHex = insertTrace(MemReferencesHex);       //Insert memory references from stdin into MemRefHex vector
     MemReferencesDec = convertToMemRefDec(MemReferencesHex);//Make a copy of MemReferencesHex, but with addresses in easier-to-use long decimal form
-    //config.insertConfig(); //ISSUE: Will not let program continue because of weird issue where it will not read 'y' or 'n' correctly in the trace.config file
-    config.prepareCounters();
+    config.insertConfig();    //Insert config values from trace.config into config class object
+    config.prepareCounters(); //Set all hit/miss/read/write/reference counters to 0 for counting
 
     //=========================================================================================================//
     //Memory hierarchy code should go here or in another class object file (.cc object file and .hpp header file)
     //=========================================================================================================//
 
-    //Output final config values and simulation statistics
-    config.outputRawConfigValues();
+    config.outputRawConfigValues();    //Output final config values and simulation statistics
+    outputDecAndHex(MemReferencesDec); //Output memory traces in both hex and decimal form
 
-    //Output memory traces in both decimal and hex form if user wants to
-    outputDecAndHex(MemReferencesDec);
-
-    //Exit program
-    return 0;
+    return 0; //Exit program
 }
 
 
@@ -158,8 +155,8 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector)
     cout << "\n\nMemory References (Hex|Decimal):\n";
     for (int i = 0; i != memRefDecVector.size(); i++)
     {
-        cout << memRefDecVector[i].type << ":" << memRefDecVector[i].address << "   |   ";
-        cout << memRefDecVector[i].type << ":" << std::hex << memRefDecVector[i].address <<"\n" << std::dec;
+        cout << memRefDecVector[i].type << ":" << std::hex << memRefDecVector[i].address << "   |   ";
+        cout << memRefDecVector[i].type << ":" << std::dec << memRefDecVector[i].address << "\n";
     }
 
 }//end outputDecAndHex()

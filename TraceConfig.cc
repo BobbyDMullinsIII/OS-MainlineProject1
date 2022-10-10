@@ -66,7 +66,6 @@ TraceConfig::~TraceConfig(){}
 //Method for outputting all the raw variable values within the TraceConfig object
 void TraceConfig::outputRawConfigValues()
 {
-    cout << "Current Config Values:\n";
     cout << "Data TLB contains " << numTLBSets << " sets.\n";
     cout << "Each set contains " << TLBSetSize << " entries.\n";
     cout << "\n";
@@ -342,6 +341,7 @@ void TraceConfig::insertConfig()
     //L1WriteThrough
     getline(filein, currentLine);   //"Write through/no write allocate:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -415,6 +415,7 @@ void TraceConfig::insertConfig()
     //L2WriteThrough
     getline(filein, currentLine);   //"Write through/no write allocate:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -488,6 +489,7 @@ void TraceConfig::insertConfig()
     //L3WriteThrough
     getline(filein, currentLine);   //"Write through/no write allocate:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -509,6 +511,7 @@ void TraceConfig::insertConfig()
     //VirtAddressActive
     getline(filein, currentLine);   //"Virtual addresses:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -528,6 +531,7 @@ void TraceConfig::insertConfig()
     //TLBActive
     getline(filein, currentLine);   //"TLB:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -556,6 +560,7 @@ void TraceConfig::insertConfig()
     //L2Active
     getline(filein, currentLine);   //"L2 cache:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -575,6 +580,7 @@ void TraceConfig::insertConfig()
     //L3Active
     getline(filein, currentLine);   //"L2 cache:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -621,7 +627,8 @@ void TraceConfig::prepareCounters()
     mainMemRefsCount = 0;
     pageTableRefsCount = 0;
     diskRefsCount = 0;
-}
+
+}//end prepareCounters()
 
 //Method for checking if number is a power of two
 //Stolen from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2
@@ -631,3 +638,21 @@ bool TraceConfig::IsPowerOfTwo(int x)
     return (x != 0) && ((x & (x - 1)) == 0);
 
 }//end IsPowerOfTwo()
+
+//Method for removing all characters that are not letters from string
+//Stolen from https://www.geeksforgeeks.org/remove-characters-alphabets-string/
+//Returns string with only letter (A-Z,a-z) characters 
+string TraceConfig::removeNonLetters(string s)
+{
+    //For every character in string, delete all non-letter (A-Z,a-z) characters
+    for (int i = 0; i < s.size(); i++) 
+    {    
+        if (s[i] < 'A' || s[i] > 'Z' && s[i] < 'a' || s[i] > 'z')
+        {  
+            s.erase(i, 1);
+            i--;
+        }
+    }
+
+    return s;
+}
