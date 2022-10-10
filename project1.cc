@@ -283,4 +283,6 @@ int toInt(string i)
     int x;
     stream << hex << i;
     stream >> x;
+
+    return x;
 }
