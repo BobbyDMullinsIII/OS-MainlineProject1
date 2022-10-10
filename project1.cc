@@ -17,6 +17,7 @@
 #include <vector>
 #include <algorithm>
 #include <bitset>
+#include <map>
 #include "TraceConfig.hpp"
 using namespace std;
 
@@ -56,6 +57,10 @@ void FindItem(vector<vector<long>> &cache, int pid);
 vector<vector<int>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<int>> pages);
 
+//Address Manipulation Method Declarations
+string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
+string toHex(int i);
+int toInt(string i);
 
 int main()
 {
@@ -238,35 +243,9 @@ int LRU(vector<vector<int>> pages)
 //bounds = size of address space allocated  
 string VirtualToPhysical(string virtAddress, string baseAddress, string bounds)
 {
-    map<char, int> hexMap{ { '0', 0 }, { '1', 1 },
-                      { '2', 2 }, { '3', 3 },
-                      { '4', 4 }, { '5', 5 },
-                      { '6', 6 }, { '7', 7 },
-                      { '8', 8 }, { '9', 9 },
-                      { 'A', 10 }, { 'B', 11 },
-                      { 'C', 12 }, { 'D', 13 },
-                      { 'E', 14 }, { 'F', 15 } };
-
-    int virtInt = 0;
-    int baseInt = 0;
-    int boundInt = 0;
-
-    ostringstream stream;
-
-    for(int i = 0; i < virtAddress.length(); i++)
-    {
-        virtInt = virtInt + m[virtAddress[i]];
-    }
-
-    for(int i = 0; i < baseAddress.length(); i++)
-    {
-        baseInt = baseInt + m[baseAddress[i]];
-    }
-
-    for(int i = 0; i < bounds.length(); i++)
-    {
-        boundInt = boundInt + m[bounds[i]];
-    }
+    int virtInt = toInt(virtAddress);
+    int baseInt = toInt(baseAddress);
+    int boundInt = toInt(bounds);
 
     int physicalAddress = baseInt + virtInt;
     string physicalHex;
@@ -275,8 +254,7 @@ string VirtualToPhysical(string virtAddress, string baseAddress, string bounds)
     {
         if((baseInt+boundInt) > physicalAddress)
         {
-            stream << std::hex << physicalAddress;
-            physicalHex = stream.str();
+            physicalHex = toHex(physicalAddress);
             return physicalHex;
         }
         else
@@ -288,4 +266,21 @@ string VirtualToPhysical(string virtAddress, string baseAddress, string bounds)
     {
         return "Out of Bounds: Less than base address of process";
     }
+}
+
+//converts an int to a hex string
+string toHex(int i)
+{
+    ostringstream stream;
+    stream << std::hex << i;
+    return stream.str();
+}
+
+//converts a string to an int
+int toInt(string i)
+{
+    stringstream stream;
+    int x;
+    stream << hex << i;
+    stream >> x;
 }
