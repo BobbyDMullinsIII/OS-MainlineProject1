@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <bitset>
 #include "TraceConfig.hpp"
 using namespace std;
 
@@ -26,48 +27,64 @@ using namespace std;
 #define WTH 3 //hit for write
 #define WTM 4 //miss for write
 
-//Struct for storing Memory References in an easier to use format
-struct MemRef 
+//Struct for storing Memory References in string hex format
+struct MemRefHex
 {
     string type;    //Memory Access Type (Can be 'R' or 'W')
-    string address; //Hex Address (Ranges from 000 (8-bit) to FFFFFFFF (32-bit))
+    string address; //Hex Address (Ranges from 000 (8-bit) to FFFFFFFF (32-bit unsigned))
+};
+
+//Struct for storing Memory References in integer decimal format
+struct MemRefDec
+{
+    string type;    //Memory Access Type (Can be 'R' or 'W')
+    long address;   //Long Decimal Address (Ranges from 0 (8-bit) to 4294967295 (32-bit unsigned))
 };
 
 
-//Initial Method Declarations
-vector<MemRef> insertTrace(vector<MemRef> testVector);
-void testVectorOutput(vector<MemRef> testVector);
+//Input/Output Method Declarations
+vector<MemRefHex> insertTrace(vector<MemRefHex> memRefHexVector);
+vector<MemRefDec> convertToMemRefDec(vector<MemRefHex> memRefHexVector);
+void outputHexVector(vector<MemRefHex> memRefHexVector);
+void outputDecVector(vector<MemRefDec> memRefDecVector);
+void outputDecAndHex(vector<MemRefDec> memRefDecVector);
+
+//Cache & Page Table Method Declarations
 vector<vector<long>> generateCache(long &sets, long &setSize);
 void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
 void FindItem(vector<vector<long>> &cache, int pid);
 vector<vector<int>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<int>> pages);
 
+
 int main()
 {
-    vector<MemRef> MemReferences; //Vector of MemRef's to work from
-    TraceConfig config;           //Class of config values taken from trace.config file
+    vector<MemRefHex> MemReferencesHex; //Vector of MemRefHex's to work from with addresses in hex (string) form
+    vector<MemRefDec> MemReferencesDec; //Vector of MemRefDec's to work from with addresses in decimal (long) form
+    TraceConfig config;                 //Class of config values and counters taken from trace.config file
 
-    MemReferences = insertTrace(MemReferences); //Insert memory references from stdin into MemRef vector
-    config.insertConfig();                      //Insert trace.config file values into TraceConfig variable
+    MemReferencesHex = insertTrace(MemReferencesHex);       //Insert memory references from stdin into MemRefHex vector
+    MemReferencesDec = convertToMemRefDec(MemReferencesHex);//Make a copy of MemReferencesHex, but with addresses in easier-to-use long decimal form
+    config.insertConfig();    //Insert config values from trace.config into config class object
+    config.prepareCounters(); //Set all hit/miss/read/write/reference counters to 0 for counting
 
-    //Test if it worked
-    config.outputRawConfigValues();
-
-
+    //=========================================================================================================//
     //Memory hierarchy code should go here or in another class object file (.cc object file and .hpp header file)
+    //=========================================================================================================//
 
+    config.outputRawConfigValues();    //Output final config values and simulation statistics
+    outputDecAndHex(MemReferencesDec); //Output memory traces in both hex and decimal form
 
-    return 0;
+    return 0; //Exit program
 }
 
 
-//Method for inserting Memory References from stdin into the given MemRef vector
-//Returns a vector containing MemRef variables
-vector<MemRef> insertTrace(vector<MemRef> memRefVector)
+//Method for inserting Memory References from stdin into the given MemRefHex vector
+//Returns a vector containing MemRefHex variables
+vector<MemRefHex> insertTrace(vector<MemRefHex> memRefHexVector)
 {
     string RawMemRef;   //Raw memory reference in '<accesstype>:<hexaddress>' format
-    MemRef tempRef;     //Temporary MemRef for inserting each line of memory references into vector
+    MemRefHex tempRef;  //Temporary MemRefHex for inserting each line of memory references into vector
     int stringIndex;    //Variable for keeping track of index of colon in string
 
     //Goes through each line in standard input and returns a single Raw Memory Reference string
@@ -80,25 +97,69 @@ vector<MemRef> insertTrace(vector<MemRef> memRefVector)
         tempRef.type = RawMemRef.substr(0, stringIndex);
         tempRef.address = RawMemRef.substr(stringIndex + 1);
 
-        //Insert tempRef variable into memRefVector
-        memRefVector.push_back(tempRef);
+        //Insert tempRef variable into memRefHexVector
+        memRefHexVector.push_back(tempRef);
     }
 
-    return memRefVector;
+    return memRefHexVector;
 
 }//end insertTrace()
 
-//Method for testing if inserting the stdin into the vector with MemRef's was successful
-void testVectorOutput(vector<MemRef> memRefVector)
+//Method for converting a vector of MemRefHex's to a vector of MemRefDec's
+//Returns a vector converted to MemRefDec's
+vector<MemRefDec> convertToMemRefDec(vector<MemRefHex> memRefHexVector)
 {
-    //Test to see if input to vector code worked correctly
-    cout << "Memory References from inserted trace file:\n";
-    for (int i = 0; i != memRefVector.size(); i++)
+    vector<MemRefDec> memRefDecVector; //Vector to return
+    MemRefDec tempRef;                 //Temporary MemRefDec for inserting each index of memory references into vector
+
+    //Converts each MemRefHex into a MemRefDec for insertion into the return vector
+    for (int i = 0; i != memRefHexVector.size(); i++)
     {
-        cout << memRefVector[i].type << ":" << memRefVector[i].address <<"\n";
+        tempRef.type = memRefHexVector[i].type;
+        tempRef.address = (long)strtoll(memRefHexVector[i].address.c_str(), NULL, 16);
+        memRefDecVector.push_back(tempRef);
     }
 
-}//end testVectorOutput()
+    return memRefDecVector;
+
+}//end insertTrace()
+
+//Method for outputing memory addresses in Hex (MemRefHex) form
+void outputHexVector(vector<MemRefHex> memRefHexVector)
+{
+    //Test to see if input to vector code worked correctly
+    cout << "Memory References from inserted trace file (Hex Form):\n";
+    for (int i = 0; i != memRefHexVector.size(); i++)
+    {
+        cout << memRefHexVector[i].type << ":" << memRefHexVector[i].address <<"\n";
+    }
+
+}//end outputHexVector()
+
+//Method for outputing memory addresses in Decimal (MemRefDec) form
+void outputDecVector(vector<MemRefDec> memRefDecVector)
+{
+    //Test to see if input to vector code worked correctly
+    cout << "Memory References from inserted trace file (Decimal Form):\n";
+    for (int i = 0; i != memRefDecVector.size(); i++)
+    {
+        cout << memRefDecVector[i].type << ":" << memRefDecVector[i].address <<"\n";
+    }
+
+}//end outputDecVector()
+
+//Method for outputing memory addresses in both Hex and Decimal form
+void outputDecAndHex(vector<MemRefDec> memRefDecVector)
+{
+        //Show every memory trace in both Decimal and Hex form and exit loop
+    cout << "\n\nMemory References (Hex|Decimal):\n";
+    for (int i = 0; i != memRefDecVector.size(); i++)
+    {
+        cout << memRefDecVector[i].type << ":" << std::hex << memRefDecVector[i].address << "   |   ";
+        cout << memRefDecVector[i].type << ":" << std::dec << memRefDecVector[i].address << "\n";
+    }
+
+}//end outputDecAndHex()
 
 //*should*
 //generate a cache and resize to the number of sets in config and set each set size from config
