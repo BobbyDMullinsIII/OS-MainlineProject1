@@ -17,6 +17,7 @@
 #include <vector>
 #include <algorithm>
 #include <bitset>
+#include <map>
 #include "TraceConfig.hpp"
 using namespace std;
 
@@ -56,6 +57,10 @@ void FindItem(vector<vector<long>> &cache, int pid);
 vector<vector<int>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<int>> pages);
 
+//Address Manipulation Method Declarations
+string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
+string toHex(int i);
+int toInt(string i);
 
 int main()
 {
@@ -230,4 +235,52 @@ int LRU(vector<vector<int>> pages)
     }
 
     return LRU;
+}
+
+//takes a virtual address and return the physical address of the accessed area in memory
+//virtAddress = virtual address to convert to physical address
+//baseAddress = base address of the process
+//bounds = size of address space allocated  
+string VirtualToPhysical(string virtAddress, string baseAddress, string bounds)
+{
+    int virtInt = toInt(virtAddress);
+    int baseInt = toInt(baseAddress);
+    int boundInt = toInt(bounds);
+
+    int physicalAddress = baseInt + virtInt;
+    string physicalHex;
+
+    if(baseInt <= physicalAddress)
+    {
+        if((baseInt+boundInt) > physicalAddress)
+        {
+            physicalHex = toHex(physicalAddress);
+            return physicalHex;
+        }
+        else
+        {
+            return "Out of Bounds: past max bounds of process";
+        }
+    }
+    else
+    {
+        return "Out of Bounds: Less than base address of process";
+    }
+}
+
+//converts an int to a hex string
+string toHex(int i)
+{
+    ostringstream stream;
+    stream << std::hex << i;
+    return stream.str();
+}
+
+//converts a string to an int
+int toInt(string i)
+{
+    stringstream stream;
+    int x;
+    stream << hex << i;
+    stream >> x;
 }
