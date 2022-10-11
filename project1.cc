@@ -62,6 +62,9 @@ string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
 string toHex(int i);
 int toInt(string i);
 
+//Other Methods
+TraceConfig runSimulation(TraceConfig insertedConfig);
+
 int main()
 {
     vector<MemRefHex> MemReferencesHex; //Vector of MemRefHex's to work from with addresses in hex (string) form
@@ -73,9 +76,8 @@ int main()
     config.insertConfig();    //Insert config values from trace.config into config class object
     config.prepareCounters(); //Set all hit/miss/read/write/reference counters to 0 for counting
 
-    //=========================================================================================================//
-    //Memory hierarchy code should go here or in another class object file (.cc object file and .hpp header file)
-    //=========================================================================================================//
+    //====NEEDS ACTUAL CODE - NOT FINISHED AT ALL====//
+    config = runSimulation(config); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 
     config.outputRawConfigValues();    //Output final config values and simulation statistics
     outputDecAndHex(MemReferencesDec); //Output memory traces in both hex and decimal form
@@ -285,4 +287,141 @@ int toInt(string i)
     stream >> x;
 
     return x;
+}
+
+//Method for branching to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
+//Returns final config values for final output
+TraceConfig runSimulation(TraceConfig insertedConfig)
+{
+    if(insertedConfig.VirtAddressActive == true)
+    {
+        if(insertedConfig.TLBActive == true)
+        {
+            if(insertedConfig.L2Active == true)
+            {
+                if(insertedConfig.L3Active == true)
+                {
+                    //Virtual Addresses == true
+                    //TLB == true
+                    //L2 == true
+                    //L3 == true
+
+                    //=============================//
+                    //(Code and/or methods go here)//
+                    //=============================//
+                }
+                else if (insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == true
+                    //L2 == true
+                    //L3 == false
+
+                    //=============================//
+                    //(Code and/or methods go here)//
+                    //=============================//
+                }
+            }
+            else 
+            {   
+                if (insertedConfig.L2Active == false && insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == true
+                    //L2 == false
+                    //L3 == false
+
+                    //=============================//
+                    //(Code and/or methods go here)//
+                    //=============================//
+                }
+            }
+        }
+        else if (insertedConfig.TLBActive == false)
+        {
+            if(insertedConfig.L2Active == true)
+            {
+                if(insertedConfig.L3Active == true)
+                {
+                    //Virtual Addresses == true
+                    //TLB == false
+                    //L2 == true
+                    //L3 == true
+
+                    //=============================//
+                    //(Code and/or methods go here)//
+                    //=============================//
+                }
+                else if (insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == false
+                    //L2 == true
+                    //L3 == false
+
+                    //=============================//
+                    //(Code and/or methods go here)//
+                    //=============================//
+                }
+            }
+            else 
+            {   
+                if (insertedConfig.L2Active == false && insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == false
+                    //L2 == false
+                    //L3 == false
+
+                    //=============================//
+                    //(Code and/or methods go here)//
+                    //=============================//
+                }
+            }
+        }
+    }
+    else if (insertedConfig.VirtAddressActive == false && insertedConfig.TLBActive == false)
+    {
+        if(insertedConfig.L2Active == true)
+        {
+            if(insertedConfig.L3Active == true)
+            {
+                //Virtual Addresses == false
+                //TLB == false
+                //L2 == true
+                //L3 == true
+
+                //=============================//
+                //(Code and/or methods go here)//
+                //=============================//
+            }
+            else if (insertedConfig.L3Active == false)
+            {
+                //Virtual Addresses == false
+                //TLB == false
+                //L2 == true
+                //L3 == false
+
+                //=============================//
+                //(Code and/or methods go here)//
+                //=============================//
+            }
+        }
+        else 
+        {   
+            if (insertedConfig.L2Active == false && insertedConfig.L3Active == false)
+            {
+                //Virtual Addresses == false
+                //TLB == false
+                //L2 == false
+                //L3 == false
+
+                //=============================//
+                //(Code and/or methods go here)//
+                //=============================//
+            }
+        }
+    }
+
+    return insertedConfig;
 }
