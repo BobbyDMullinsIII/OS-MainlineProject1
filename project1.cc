@@ -51,9 +51,9 @@ void outputDecVector(vector<MemRefDec> memRefDecVector);
 void outputDecAndHex(vector<MemRefDec> memRefDecVector);
 
 //Cache & Page Table Method Declarations
-vector<vector<long>> generateCache(long &sets, long &setSize);
-void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i);
-void FindItem(vector<vector<long>> &cache, int pid);
+vector<vector<int>> generateCache(int &sets, int &setSize);
+void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2 , int p1, vector<int> pgs, int i);
+void FindItem(vector<vector<int>> &cache, int pid);
 vector<vector<int>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<int>> pages);
 
@@ -170,11 +170,11 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector)
 
 //*should*
 //generate a cache and resize to the number of sets in config and set each set size from config
-vector<vector<long>> generateCache(long &sets, long &setSize)
+vector<vector<int>> generateCache(int &sets, int &setSize)
 {
-    vector<vector<long>> cache;
+    vector<vector<int>> cache;
 
-    cache.resize((long)sets);
+    cache.resize((int)sets);
 
     for(int i = 0; i < sets; i++)
     {
@@ -189,7 +189,7 @@ vector<vector<long>> generateCache(long &sets, long &setSize)
 //p1 is new page
 //pgs is existing pages
 //i is location in pgs of page being replaced
-void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vector<int> pgs, int i)
+void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2 , int p1, vector<int> pgs, int i)
 {
    FindItem(L1, pgs[i]);//finds if there is existing pid of that page in L1 and replaces with null
    FindItem(L2, pgs[i]);//finds if there is existing pid of that page in L2 and replaces with null
@@ -197,10 +197,10 @@ void ReplacePage(vector<vector<long>> L1, vector<vector<long>> L2 , int p1, vect
 }
 
 //finds pid of replaced page and places null where pid is found
-void FindItem(vector<vector<long>> &cache, int pid)
+void FindItem(vector<vector<int>> &cache, int pid)
 {
     //searches for a pid in the cache, and if exists replace with null
-    for (vector<long> &v : cache)
+    for (vector<int> &v : cache)
     {
         replace(v.begin(), v.end(), pid, -1);
     }
@@ -425,3 +425,46 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
 
     return insertedConfig;
 }
+
+//searches the cahce for the process, if there return -1
+//otherwise add the process to the page table and return false
+int HitMiss(string virtAddress, vector<vector<int>> cache, vector<vector<int>> pageTable, string baseAddress, string bounds)
+{
+    string s = virtAddress.substr(0,4);
+    string physicalAddress, frameNumber;
+
+    int search = toInt(s);
+
+    bool inCache = false;
+
+    for(int i = 0; i < cache.size(); i++)
+    {
+        if(search = cache[i][1])
+        {
+            inCache = true;
+        }
+    }
+
+    if(inCache)
+    {
+        return -1;
+    }
+
+    else
+    {
+        //put in page table
+
+        //return position in page table
+        return -100;
+    }
+}
+
+//gets the frame number from the frame number 
+int getFrameNumber(string physicalAddress)
+{
+    ostringstream stream;
+    string frameNumber = physicalAddress.substr(0,1);
+
+    return toInt(frameNumber);
+}
+
