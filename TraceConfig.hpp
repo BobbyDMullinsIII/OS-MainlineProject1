@@ -49,6 +49,7 @@ public:
     bool TLBActive;                 //Switch for TLB to be active or not (y/n = true/false, Will be immediately set to false if VirtAddressActive is already false)
     bool L2Active;                  //Switch for L2 Cache to be active or not (y/n = true/false)
     bool L3Active;                  //Switch for L3 Cache to be active or not (y/n = true/false, Will be immediately set to false if L2Active is already false)
+    bool showMemRefsAfterSim;       //Switch for printing out raw memory references (Hex|Decimal) after simulation is complete(y/n = true/false)
 
     //Sim stat counters
     int dtlbHitCount;//!! not implemented yet                //Number of dtlb hits (to be systematically counted)

@@ -42,6 +42,7 @@ TraceConfig::TraceConfig()
     TLBActive = false;
     L2Active = false;
     L3Active = false;
+    showMemRefsAfterSim = false;
 
     dtlbHitCount = -1;
     dtlbMissCount = -1;
@@ -578,7 +579,7 @@ void TraceConfig::insertConfig()
     }
 
     //L3Active
-    getline(filein, currentLine);   //"L2 cache:" config value line
+    getline(filein, currentLine);   //"L3 cache:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
     tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
@@ -604,6 +605,26 @@ void TraceConfig::insertConfig()
             if(tempString == "n")
             { L3Active = false; }
         }
+    }
+
+    //showMemRefsAfterSim
+    getline(filein, currentLine);   //"Print MemRef's after simulation:" config value line
+    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
+    if(tempString != "y" && tempString != "n") //(y/n = true/false)
+    {
+        //Output error message and exit program if any of the fail conditions met
+        cout << "The print memory references after simulation toggle must be 'y' or 'n'.\n";
+        cout << "Invalid value read: " << tempString <<"\n";
+        exit(EXIT_FAILURE);
+    }
+    else
+    {   
+        //Insert config value into appropriate parameter
+        if(tempString == "y")
+        { showMemRefsAfterSim = true; }
+        if(tempString == "n")
+        { showMemRefsAfterSim = false; }
     }
 
 }//end insertConfig()

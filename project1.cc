@@ -80,7 +80,10 @@ int main()
     config = runSimulation(config); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 
     config.outputRawConfigValues();    //Output final config values and simulation statistics
-    outputDecAndHex(MemReferencesDec); //Output memory traces in both hex and decimal form
+
+    //Output memory traces in both hex and decimal form if value is set to 'y' in config
+    if(config.showMemRefsAfterSim == true)
+    { outputDecAndHex(MemReferencesDec); }
 
     return 0; //Exit program
 }
