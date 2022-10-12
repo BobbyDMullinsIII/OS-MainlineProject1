@@ -7,30 +7,30 @@ using namespace std;
 //Constructor
 TraceConfig::TraceConfig()
 {
-    //Sets all values to -1 and false initially before Trace.Config insertion
+    //Sets all values to -1 and false (Except where hard-coded) initially before Trace.Config insertion
     numTLBSets = -1;
     TLBSetSize = -1;
-    TLBIndexBits = -1;
+    TLBIndexBits = 1;
 
     numVirtPages = -1;
     numPhysPages = -1;
     pageSize = -1;
-    pageTableIndexBits = -1;
-    pageOffsetBits = -1;
+    pageTableIndexBits = 6;
+    pageOffsetBits = 8;
 
     L1NumSets = -1;
     L1SetSize = -1;
     L1LineSize = -1;
     L1WriteThrough = false;
-    L1IndexBits = -1;
-    L1OffsetBits = -1;
+    L1IndexBits = 2;
+    L1OffsetBits = 4;
 
     L2NumSets = -1;
     L2SetSize = -1;
     L2LineSize = -1;
     L2WriteThrough = false;
-    L2IndexBits = -1;
-    L2OffsetBits = -1;
+    L2IndexBits = 4;
+    L2OffsetBits = 4;
 
     L3NumSets = -1;
     L3SetSize = -1;
