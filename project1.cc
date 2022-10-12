@@ -28,27 +28,39 @@ using namespace std;
 #define WTH 3 //hit for write
 #define WTM 4 //miss for write
 
-//Struct for storing Memory References in string hex format
-struct MemRefHex
-{
-    string type;    //Memory Access Type (Can be 'R' or 'W')
-    string address; //Hex Address (Ranges from 000 (8-bit) to FFFFFFFF (32-bit unsigned))
-};
-
 //Struct for storing Memory References in integer decimal format
 struct MemRefDec
 {
-    string type;    //Memory Access Type (Can be 'R' or 'W')
-    long address;   //Long Decimal Address (Ranges from 0 (8-bit) to 4294967295 (32-bit unsigned))
+    string type;          //Memory Access Type (Can be 'R' or 'W')
+    unsigned int address; //Unsigned int Decimal Address (Ranges from 0 (8-bit) to 4294967295 (32-bit unsigned))
+};
+
+//Struct for keeping info about every memory reference that traverses the hierarchy
+struct MemRefInfo 
+{
+    //Exactly matches project specifications
+    unsigned int virtAddress;
+    int virtPageNum;
+    int pageOffset;
+    int TLBTag;
+    int TLBIndex;
+    string TLBResult;
+    string PTResult;
+    int physPageNum;
+    int L1Tag;
+    int L1Index;
+    string L1Result;
+    int L2Tag;
+    int L2Index;
+    string L2Result;
 };
 
 
 //Input/Output Method Declarations
-vector<MemRefHex> insertTrace(vector<MemRefHex> memRefHexVector);
-vector<MemRefDec> convertToMemRefDec(vector<MemRefHex> memRefHexVector);
-void outputHexVector(vector<MemRefHex> memRefHexVector);
-void outputDecVector(vector<MemRefDec> memRefDecVector);
+vector<MemRefDec> insertTrace(vector<MemRefDec> memRefDecVector);
+vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector);
 void outputDecAndHex(vector<MemRefDec> memRefDecVector);
+void outputEachMemRefInfo(vector<MemRefInfo> memInfo);
 
 //Cache & Page Table Method Declarations
 vector<vector<int>> generateCache(int &sets, int &setSize);
@@ -56,6 +68,8 @@ void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2 , int p1, vector
 void FindItem(vector<vector<int>> &cache, int pid);
 vector<vector<int>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<int>> pages);
+int HitMiss(string virtAddress, vector<vector<int>> cache, vector<vector<int>> pageTable, string baseAddress, string bounds);
+int getFrameNumber(string physicalAddress);
 
 //Address Manipulation Method Declarations
 string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
@@ -65,36 +79,42 @@ int toInt(string i);
 //Other Methods
 TraceConfig runSimulation(TraceConfig insertedConfig);
 
+
 int main()
 {
-    vector<MemRefHex> MemReferencesHex; //Vector of MemRefHex's to work from with addresses in hex (string) form
-    vector<MemRefDec> MemReferencesDec; //Vector of MemRefDec's to work from with addresses in decimal (long) form
-    TraceConfig config;                 //Class of config values and counters taken from trace.config file
+    //==Declaration Section==//
+    vector<MemRefDec> MemRefsDec;   //Vector of MemRefDec's to work from with addresses in decimal (unsigned int) form
+    vector<MemRefInfo> MemRefsInfo; //Vector of information about each reference that traverses the hierarchy
+    TraceConfig config;             //Class of config values and counters taken from trace.config file
 
-    MemReferencesHex = insertTrace(MemReferencesHex);       //Insert memory references from stdin into MemRefHex vector
-    MemReferencesDec = convertToMemRefDec(MemReferencesHex);//Make a copy of MemReferencesHex, but with addresses in easier-to-use long decimal form
-    config.insertConfig();    //Insert config values from trace.config into config class object
-    config.prepareCounters(); //Set all hit/miss/read/write/reference counters to 0 for counting
 
+    //==Insertion/Initialization Section==//
+    MemRefsDec = insertTrace(MemRefsDec);     //Insert memory references from stdin into MemRefDec vector
+    MemRefsInfo = initMemRefInfo(MemRefsDec); //Initialize MemRefsInfo vector with each memory reference's address
+    config.insertConfig();                    //Insert config values from trace.config into config class object
+    config.prepareCounters();                 //Set all hit/miss/read/write/reference counters to 0 for counting
+
+
+    //==Run Simulation Section==//
     //====NEEDS ACTUAL CODE - NOT FINISHED AT ALL====//
     config = runSimulation(config); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 
-    config.outputRawConfigValues();    //Output final config values and simulation statistics
 
-    //Output memory traces in both hex and decimal form if value is set to 'y' in config
-    if(config.showMemRefsAfterSim == true)
-    { outputDecAndHex(MemReferencesDec); }
+    //==Final Output Section==//
+    config.outputConfigValues();         //Output config values
+    outputEachMemRefInfo(MemRefsInfo);   //Output information about each memory reference in the simulation
+    config.outputSimulationStatistics(); //Output final simulation statistics
 
-    return 0; //Exit program
+    return 0;
 }
 
 
-//Method for inserting Memory References from stdin into the given MemRefHex vector
-//Returns a vector containing MemRefHex variables
-vector<MemRefHex> insertTrace(vector<MemRefHex> memRefHexVector)
+//Method for inserting Memory References from stdin into the given MemRefDec vector
+//Returns a vector containing MemRefDec variables
+vector<MemRefDec> insertTrace(vector<MemRefDec> memRefDecVector)
 {
     string RawMemRef;   //Raw memory reference in '<accesstype>:<hexaddress>' format
-    MemRefHex tempRef;  //Temporary MemRefHex for inserting each line of memory references into vector
+    MemRefDec tempRef;  //Temporary MemRefDec for inserting each line of memory references into vector
     int stringIndex;    //Variable for keeping track of index of colon in string
 
     //Goes through each line in standard input and returns a single Raw Memory Reference string
@@ -105,28 +125,9 @@ vector<MemRefHex> insertTrace(vector<MemRefHex> memRefHexVector)
 
         //Split RawMemRef into two strings for tempRef variable
         tempRef.type = RawMemRef.substr(0, stringIndex);
-        tempRef.address = RawMemRef.substr(stringIndex + 1);
+        tempRef.address = (unsigned int)strtoll(RawMemRef.substr(stringIndex + 1).c_str(), NULL, 16);
 
-        //Insert tempRef variable into memRefHexVector
-        memRefHexVector.push_back(tempRef);
-    }
-
-    return memRefHexVector;
-
-}//end insertTrace()
-
-//Method for converting a vector of MemRefHex's to a vector of MemRefDec's
-//Returns a vector converted to MemRefDec's
-vector<MemRefDec> convertToMemRefDec(vector<MemRefHex> memRefHexVector)
-{
-    vector<MemRefDec> memRefDecVector; //Vector to return
-    MemRefDec tempRef;                 //Temporary MemRefDec for inserting each index of memory references into vector
-
-    //Converts each MemRefHex into a MemRefDec for insertion into the return vector
-    for (int i = 0; i != memRefHexVector.size(); i++)
-    {
-        tempRef.type = memRefHexVector[i].type;
-        tempRef.address = (long)strtoll(memRefHexVector[i].address.c_str(), NULL, 16);
+        //Insert tempRef variable into memRefDecVector
         memRefDecVector.push_back(tempRef);
     }
 
@@ -134,29 +135,37 @@ vector<MemRefDec> convertToMemRefDec(vector<MemRefHex> memRefHexVector)
 
 }//end insertTrace()
 
-//Method for outputing memory addresses in Hex (MemRefHex) form
-void outputHexVector(vector<MemRefHex> memRefHexVector)
+//Method for inserting every variable in memRefDecVector into a new MemRefInfo vector
+vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
 {
-    //Test to see if input to vector code worked correctly
-    cout << "Memory References from inserted trace file (Hex Form):\n";
-    for (int i = 0; i != memRefHexVector.size(); i++)
-    {
-        cout << memRefHexVector[i].type << ":" << memRefHexVector[i].address <<"\n";
-    }
-
-}//end outputHexVector()
-
-//Method for outputing memory addresses in Decimal (MemRefDec) form
-void outputDecVector(vector<MemRefDec> memRefDecVector)
-{
-    //Test to see if input to vector code worked correctly
-    cout << "Memory References from inserted trace file (Decimal Form):\n";
+    vector<MemRefInfo> memInfoVector; //MemRefInfo vector to return
+    MemRefInfo tempInfo;              //Temporary variable for insertion into each index
+    
+    //Copy each MemRefDec variable to a MemRefInfo and insert it into the new vector
     for (int i = 0; i != memRefDecVector.size(); i++)
     {
-        cout << memRefDecVector[i].type << ":" << memRefDecVector[i].address <<"\n";
+        tempInfo.virtAddress = memRefDecVector[i].address;
+        tempInfo.virtPageNum = 0;
+        tempInfo.pageOffset = 0;
+        tempInfo.TLBTag = 0;
+        tempInfo.TLBIndex = 0;
+        tempInfo.TLBResult = "null";
+        tempInfo.PTResult = "null";
+        tempInfo.physPageNum = 0;
+        tempInfo.L1Tag = 0;
+        tempInfo.L1Index = 0;
+        tempInfo.L1Result = "null";
+        tempInfo.L2Tag = 0;
+        tempInfo.L2Index = 0;
+        tempInfo.L2Result = "null";
+        
+        //Add tempInfo to memInfoVector
+        memInfoVector.push_back(tempInfo);
     }
 
-}//end outputDecVector()
+    return memInfoVector;
+
+}//end initializeMemRefInfo()
 
 //Method for outputing memory addresses in both Hex and Decimal form
 void outputDecAndHex(vector<MemRefDec> memRefDecVector)
@@ -170,6 +179,37 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector)
     }
 
 }//end outputDecAndHex()
+
+//Method for outputting information about each memory reference that has traversed the memory hierarchy
+void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
+{
+    cout << "\n";
+    cout << "\n";
+    cout << "Virtual  Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2\n";
+    cout << "Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res.\n";
+    cout << "-------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ----\n";
+    for (int i = 0; i != memInfoVector.size(); i++)
+    {
+        printf("%08x %6x %4x %6x %3x %4s %4s %4x %6x %3x %4s %6x %3x %4s\n", 
+        memInfoVector[i].virtAddress,
+        memInfoVector[i].virtPageNum,
+        memInfoVector[i].pageOffset,
+        memInfoVector[i].TLBTag,
+        memInfoVector[i].TLBIndex,
+        memInfoVector[i].TLBResult.c_str(),
+        memInfoVector[i].PTResult.c_str(),
+        memInfoVector[i].physPageNum,
+        memInfoVector[i].L1Tag,
+        memInfoVector[i].L1Index,
+        memInfoVector[i].L1Result.c_str(),
+        memInfoVector[i].L2Tag,
+        memInfoVector[i].L2Index,
+        memInfoVector[i].L2Result.c_str());
+    }
+    cout << "\n";
+    cout << "\n";
+
+}//end outputEachMemRefInfo()
 
 //*should*
 //generate a cache and resize to the number of sets in config and set each set size from config
@@ -240,6 +280,48 @@ int LRU(vector<vector<int>> pages)
     }
 
     return LRU;
+}
+
+//searches the cahce for the process, if there return -1
+//otherwise add the process to the page table and return false
+int HitMiss(string virtAddress, vector<vector<int>> cache, vector<vector<int>> pageTable, string baseAddress, string bounds)
+{
+    string s = virtAddress.substr(0,4);
+    string physicalAddress, frameNumber;
+
+    int search = toInt(s);
+
+    bool inCache = false;
+
+    for(int i = 0; i < cache.size(); i++)
+    {
+        if(search = cache[i][1])
+        {
+            inCache = true;
+        }
+    }
+
+    if(inCache)
+    {
+        return -1;
+    }
+
+    else
+    {
+        //put in page table
+
+        //return position in page table
+        return -100;
+    }
+}
+
+//gets the frame number from the frame number 
+int getFrameNumber(string physicalAddress)
+{
+    ostringstream stream;
+    string frameNumber = physicalAddress.substr(0,1);
+
+    return toInt(frameNumber);
 }
 
 //takes a virtual address and return the physical address of the accessed area in memory
@@ -428,46 +510,3 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
 
     return insertedConfig;
 }
-
-//searches the cahce for the process, if there return -1
-//otherwise add the process to the page table and return false
-int HitMiss(string virtAddress, vector<vector<int>> cache, vector<vector<int>> pageTable, string baseAddress, string bounds)
-{
-    string s = virtAddress.substr(0,4);
-    string physicalAddress, frameNumber;
-
-    int search = toInt(s);
-
-    bool inCache = false;
-
-    for(int i = 0; i < cache.size(); i++)
-    {
-        if(search = cache[i][1])
-        {
-            inCache = true;
-        }
-    }
-
-    if(inCache)
-    {
-        return -1;
-    }
-
-    else
-    {
-        //put in page table
-
-        //return position in page table
-        return -100;
-    }
-}
-
-//gets the frame number from the frame number 
-int getFrameNumber(string physicalAddress)
-{
-    ostringstream stream;
-    string frameNumber = physicalAddress.substr(0,1);
-
-    return toInt(frameNumber);
-}
-

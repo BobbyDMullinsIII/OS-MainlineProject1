@@ -43,7 +43,6 @@ TraceConfig::TraceConfig()
     TLBActive = false;
     L2Active = false;
     L3Active = false;
-    showMemRefsAfterSim = false;
 
     dtlbHitCount = -1;
     dtlbMissCount = -1;
@@ -65,8 +64,8 @@ TraceConfig::TraceConfig()
 //Deconstructor
 TraceConfig::~TraceConfig(){}
 
-//Method for outputting all the raw variable values within the TraceConfig object
-void TraceConfig::outputRawConfigValues()
+//Method for outputting all the initial config variable values within the TraceConfig object
+void TraceConfig::outputConfigValues()
 {
     cout << "Data TLB contains " << numTLBSets << " sets.\n";
     cout << "Each set contains " << TLBSetSize << " entries.\n";
@@ -103,17 +102,12 @@ void TraceConfig::outputRawConfigValues()
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
     cout << "L2Active: " << boolalpha << L2Active << "\n";
     cout << "L3Active: " << boolalpha << L3Active << "\n";
-    cout << "\n";
-    cout << "\n";
-    cout << "Virtual  Virt.\tPage\tTLB\tTLB\tTLB\tPT\tPhys\t\tDC\tDC\t\tL2\tL2\n";
-    cout << "Address  Page #\tOff\tTag\tInd\tRes.\tRes.\tPg #\tDC Tag\tInd\tRes.\tL2 Tag\tInd\tRes.\n";
-    cout << "-------- ------\t----\t------\t---\t----\t----\t----\t------\t---\t---\t------\t---\t----\n";
-    // here we should be able to plug in values for each item here as we find them. 
-    // I believe format should follow something very close to: (number of spaces between each being important)
-    //cout << "00000c84      c\t  84\t     6\t  0\tmiss\tmiss\t   0\t     2\t  0\tmiss\t     0\t  8\tmiss\n";
-    //this should put values at back of column like in spec example output, but may look incorrect with more or less characters in the values.
-    cout << "\n";
-    cout << "\n";
+
+}//end outputConfigValues()
+
+//Method for outputting the final simulation statistics
+void TraceConfig::outputSimulationStatistics()
+{
     cout << "Simulation Statistics\n";
     cout << "\n";
     cout << "dtlb hits: " << dtlbHitCount << "\n";
@@ -160,6 +154,11 @@ void TraceConfig::outputRawConfigValues()
         cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";
     }
     cout << "\n";
+    cout << "L3 hits: N/A\n";
+    cout << "L3 misses: N/A\n";
+    cout << "L3 hit ratio: N/A\n";
+    //Commented out because we may not implement L3 for project 1
+    /*
     cout << "L3 hits: " << l3HitCount << "\n";
     cout << "L3 misses: " << l3MissCount << "\n";
     if((l3HitCount+l3MissCount) == 0) //Catches divide by zero error
@@ -170,6 +169,7 @@ void TraceConfig::outputRawConfigValues()
     {
         cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";
     }
+    */
     cout << "\n";
     cout << "Total Reads: " << readsCount << "\n";
     cout << "Total Writes: " << writesCount << "\n";
@@ -186,7 +186,7 @@ void TraceConfig::outputRawConfigValues()
     cout << "page table refs: " << pageTableRefsCount << "\n";
     cout << "disk refs: " << diskRefsCount << "\n";
     
-}//end outputConfigValues()
+}//end outputSimulationStatistics()
 
 //Method for inserting all data within trace.config into a TraceConfig data structure
 //Also checks if any of the config values are not valid and stops program to state what was not valid
@@ -608,26 +608,6 @@ void TraceConfig::insertConfig()
             if(tempString == "n")
             { L3Active = false; }
         }
-    }
-
-    //showMemRefsAfterSim
-    getline(filein, currentLine);   //"Print MemRef's after simulation:" config value line
-    tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
-    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
-    if(tempString != "y" && tempString != "n") //(y/n = true/false)
-    {
-        //Output error message and exit program if any of the fail conditions met
-        cout << "The print memory references after simulation toggle must be 'y' or 'n'.\n";
-        cout << "Invalid value read: " << tempString <<"\n";
-        exit(EXIT_FAILURE);
-    }
-    else
-    {   
-        //Insert config value into appropriate parameter
-        if(tempString == "y")
-        { showMemRefsAfterSim = true; }
-        if(tempString == "n")
-        { showMemRefsAfterSim = false; }
     }
 
 }//end insertConfig()
