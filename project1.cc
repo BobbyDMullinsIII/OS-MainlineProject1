@@ -39,6 +39,7 @@ struct MemRefDec
 struct MemRefInfo 
 {
     //Exactly matches project specifications
+    string type;
     unsigned int virtAddress;
     int virtPageNum;
     int pageOffset;
@@ -53,6 +54,9 @@ struct MemRefInfo
     int L2Tag;
     int L2Index;
     string L2Result;
+    int L3Tag;
+    int L3Index;
+    string L3Result;
 };
 
 
@@ -144,6 +148,7 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
     //Copy each MemRefDec variable to a MemRefInfo and insert it into the new vector
     for (int i = 0; i != memRefDecVector.size(); i++)
     {
+        tempInfo.type = memRefDecVector[i].type;
         tempInfo.virtAddress = memRefDecVector[i].address;
         tempInfo.virtPageNum = 0;
         tempInfo.pageOffset = 0;
@@ -158,6 +163,9 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
         tempInfo.L2Tag = 0;
         tempInfo.L2Index = 0;
         tempInfo.L2Result = "null";
+        tempInfo.L3Tag = 0;
+        tempInfo.L3Index = 0;
+        tempInfo.L3Result = "null";
         
         //Add tempInfo to memInfoVector
         memInfoVector.push_back(tempInfo);
@@ -185,12 +193,13 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 {
     cout << "\n";
     cout << "\n";
-    cout << "Virtual  Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2\n";
-    cout << "Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res.\n";
-    cout << "-------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ----\n";
+    cout << "     Virtual  Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
+    cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
+    cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
     for (int i = 0; i != memInfoVector.size(); i++)
     {
-        printf("%08x %6x %4x %6x %3x %4s %4s %4x %6x %3x %4s %6x %3x %4s\n", 
+        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6x %3x %4s %6x %3x %4s %6x %3x %4s\n", 
+        memInfoVector[i].type.c_str(),
         memInfoVector[i].virtAddress,
         memInfoVector[i].virtPageNum,
         memInfoVector[i].pageOffset,
@@ -204,7 +213,10 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
         memInfoVector[i].L1Result.c_str(),
         memInfoVector[i].L2Tag,
         memInfoVector[i].L2Index,
-        memInfoVector[i].L2Result.c_str());
+        memInfoVector[i].L2Result.c_str(),
+        memInfoVector[i].L3Tag,
+        memInfoVector[i].L3Index,
+        memInfoVector[i].L3Result.c_str());
     }
     cout << "\n";
     cout << "\n";
@@ -400,7 +412,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
                     L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
 
-                    //PROBABLY NOT NEEDED DUE TO NOT IMPLEMENTING L3//
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
                 }
                 else if (insertedConfig.L3Active == false)
                 {
@@ -413,7 +427,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
-                    //Simulation execution code goes here
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
                 }
             }
             else 
@@ -428,7 +444,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //Generate Caches
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
-                    //Simulation execution code goes here
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
                 }
             }
         }
@@ -448,7 +466,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
                     L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
 
-                    //PROBABLY NOT NEEDED DUE TO NOT IMPLEMENTING L3//
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
                 }
                 else if (insertedConfig.L3Active == false)
                 {
@@ -461,7 +481,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
-                    //Simulation execution code goes here
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
                 }
             }
             else 
@@ -476,7 +498,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //Generate Caches
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
-                    //Simulation execution code goes here
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
                 }
             }
         }
@@ -497,7 +521,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
                 L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
 
-                //PROBABLY NOT NEEDED DUE TO NOT IMPLEMENTING L3//
+                //===================================//
+                //Simulation execution code goes here//
+                //===================================//
             }
             else if (insertedConfig.L3Active == false)
             {
@@ -510,7 +536,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
                 L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
-                //Simulation execution code goes here
+                //===================================//
+                //Simulation execution code goes here//
+                //===================================//
             }
         }
         else 
@@ -525,7 +553,9 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 //Generate Caches
                 L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
-                //Simulation execution code goes here
+                //===================================//
+                //Simulation execution code goes here//
+                //===================================//
             }
         }
     }

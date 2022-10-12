@@ -91,12 +91,12 @@ void TraceConfig::outputConfigValues()
     cout << "Number of bits used for L2 index is " << L2IndexBits << ".\n";
     cout << "Number of bits used for L2 offset is " << L2OffsetBits << ".\n";
     cout << "\n";
-    cout << "L3NumSets: " << L3NumSets << " NOT IMPLEMENTED\n";
-    cout << "L3SetSize: " << L3SetSize << " NOT IMPLEMENTED\n";
-    cout << "L3LineSize: " << L3LineSize << " NOT IMPLEMENTED\n";
-    cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << " NOT IMPLEMENTED\n";
-    cout << "Number of bits used for L3 index is " << L3IndexBits << ". NOT IMPLEMENTED\n";
-    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ". NOT IMPLEMENTED\n";
+    cout << "L3NumSets: " << L3NumSets << "\n";
+    cout << "L3SetSize: " << L3SetSize << "\n";
+    cout << "L3LineSize: " << L3LineSize << "\n";
+    cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << "\n";
+    cout << "Number of bits used for L3 index is " << L3IndexBits << ".\n";
+    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ".\n";
     cout << "\n";
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
