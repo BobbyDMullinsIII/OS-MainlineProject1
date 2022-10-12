@@ -378,6 +378,10 @@ int toInt(string i)
 //Returns final config values for final output
 TraceConfig runSimulation(TraceConfig insertedConfig)
 {
+    vector<vector<int>> L1;
+    vector<vector<int>> L2;
+    vector<vector<int>> L3; //Unused
+
     if(insertedConfig.VirtAddressActive == true)
     {
         if(insertedConfig.TLBActive == true)
@@ -391,9 +395,12 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //L2 == true
                     //L3 == true
 
-                    //=============================//
-                    //(Code and/or methods go here)//
-                    //=============================//
+                    //Generate Caches
+                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+                    L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
+
+                    //PROBABLY NOT NEEDED DUE TO NOT IMPLEMENTING L3//
                 }
                 else if (insertedConfig.L3Active == false)
                 {
@@ -402,9 +409,11 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //L2 == true
                     //L3 == false
 
-                    //=============================//
-                    //(Code and/or methods go here)//
-                    //=============================//
+                    //Generate Caches
+                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+
+                    //Simulation execution code goes here
                 }
             }
             else 
@@ -416,9 +425,10 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //L2 == false
                     //L3 == false
 
-                    //=============================//
-                    //(Code and/or methods go here)//
-                    //=============================//
+                    //Generate Caches
+                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+
+                    //Simulation execution code goes here
                 }
             }
         }
@@ -433,9 +443,12 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //L2 == true
                     //L3 == true
 
-                    //=============================//
-                    //(Code and/or methods go here)//
-                    //=============================//
+                    //Generate Caches
+                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+                    L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
+
+                    //PROBABLY NOT NEEDED DUE TO NOT IMPLEMENTING L3//
                 }
                 else if (insertedConfig.L3Active == false)
                 {
@@ -444,9 +457,11 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //L2 == true
                     //L3 == false
 
-                    //=============================//
-                    //(Code and/or methods go here)//
-                    //=============================//
+                    //Generate Caches
+                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+
+                    //Simulation execution code goes here
                 }
             }
             else 
@@ -458,9 +473,10 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //L2 == false
                     //L3 == false
 
-                    //=============================//
-                    //(Code and/or methods go here)//
-                    //=============================//
+                    //Generate Caches
+                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+
+                    //Simulation execution code goes here
                 }
             }
         }
@@ -476,9 +492,12 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 //L2 == true
                 //L3 == true
 
-                //=============================//
-                //(Code and/or methods go here)//
-                //=============================//
+                //Generate Caches
+                L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+                L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+                L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
+
+                //PROBABLY NOT NEEDED DUE TO NOT IMPLEMENTING L3//
             }
             else if (insertedConfig.L3Active == false)
             {
@@ -487,9 +506,11 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 //L2 == true
                 //L3 == false
 
-                //=============================//
-                //(Code and/or methods go here)//
-                //=============================//
+                //Generate Caches
+                L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+                L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+
+                //Simulation execution code goes here
             }
         }
         else 
@@ -501,9 +522,10 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 //L2 == false
                 //L3 == false
 
-                //=============================//
-                //(Code and/or methods go here)//
-                //=============================//
+                //Generate Caches
+                L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+
+                //Simulation execution code goes here
             }
         }
     }
