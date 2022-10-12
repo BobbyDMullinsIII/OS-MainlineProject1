@@ -110,15 +110,24 @@ void TraceConfig::outputSimulationStatistics()
 {
     cout << "Simulation Statistics\n";
     cout << "\n";
-    cout << "dtlb hits: " << dtlbHitCount << "\n";
-    cout << "dtlb misses: " << dtlbMissCount << "\n";
-    if((dtlbHitCount+dtlbMissCount) == 0) //Catches divide by zero error
+    if(TLBActive == true) //Only displays actual stats if TLB cache is active
     {
-        cout << "dtlb hit ratio: 0" << "\n";
+        cout << "dtlb hits: " << dtlbHitCount << "\n";
+        cout << "dtlb misses: " << dtlbMissCount << "\n";
+        if((dtlbHitCount+dtlbMissCount) == 0) //Catches divide by zero error
+        {
+            cout << "dtlb hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";
+        }
     }
     else
     {
-        cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";
+        cout << "dtlb hits: N/A\n";
+        cout << "dtlb misses: N/A\n";
+        cout << "dtlb hit ratio: N/A\n";
     }
     cout << "\n";
     cout << "pt hits: " << ptHitCount << "\n";
@@ -143,33 +152,45 @@ void TraceConfig::outputSimulationStatistics()
         cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";
     }
     cout << "\n";
-    cout << "L2 hits: " << l2HitCount << "\n";
-    cout << "L2 misses: " << l2MissCount << "\n";
-    if((l2HitCount+l2MissCount) == 0) //Catches divide by zero error
+    if(L2Active == true) //Only displays actual stats if L2 cache is active
     {
-        cout << "L2 hit ratio: 0" << "\n";
+        cout << "L2 hits: " << l2HitCount << "\n";
+        cout << "L2 misses: " << l2MissCount << "\n";
+        if((l2HitCount+l2MissCount) == 0) //Catches divide by zero error
+        {
+            cout << "L2 hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";
+        }
     }
     else
     {
-        cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";
+        cout << "L2 hits: N/A\n";
+        cout << "L2 misses: N/A\n";
+        cout << "L2 hit ratio: N/A\n";
     }
     cout << "\n";
-    cout << "L3 hits: N/A\n";
-    cout << "L3 misses: N/A\n";
-    cout << "L3 hit ratio: N/A\n";
-    //Commented out because we may not implement L3 for project 1
-    /*
-    cout << "L3 hits: " << l3HitCount << "\n";
-    cout << "L3 misses: " << l3MissCount << "\n";
-    if((l3HitCount+l3MissCount) == 0) //Catches divide by zero error
+    if(L3Active == true) //Only displays actual stats if L3 cache is active
     {
-        cout << "L3 hit ratio: 0" << "\n";
+        cout << "L3 hits: " << l3HitCount << "\n";
+        cout << "L3 misses: " << l3MissCount << "\n";
+        if((l3HitCount+l3MissCount) == 0) //Catches divide by zero error
+        {
+            cout << "L3 hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";
+        }
     }
     else
     {
-        cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";
+        cout << "L3 hits: N/A\n";
+        cout << "L3 misses: N/A\n";
+        cout << "L3 hit ratio: N/A\n";
     }
-    */
     cout << "\n";
     cout << "Total Reads: " << readsCount << "\n";
     cout << "Total Writes: " << writesCount << "\n";
@@ -185,6 +206,7 @@ void TraceConfig::outputSimulationStatistics()
     cout << "main memory refs: " << mainMemRefsCount << "\n";
     cout << "page table refs: " << pageTableRefsCount << "\n";
     cout << "disk refs: " << diskRefsCount << "\n";
+    cout << "\n";
     
 }//end outputSimulationStatistics()
 
