@@ -31,7 +31,7 @@ public:
 
     //L2 Cache Configuration
     int L2NumSets;                  //Number of sets in L2 (Max: 16 sets, 1 set = direct mapped, Must be power of 2)
-    int L2SetSize;                  //Number of entries in ezach set in L2 (Min: 4 entries, Max: 512 entries, Must be power of 2)
+    int L2SetSize;                  //Number of entries in each set in L2 (Min: 4 entries, Max: 512 entries, Must be power of 2)
     int L2LineSize;                 //Size (in bytes) of each line in L2 (Min: 8 bytes, Max: 64 bytes, Must be power of 2)
     bool L2WriteThrough;            //Switch for L2 to be write-through or not (y/n = true/false)
     int L2IndexBits;                //Number of bits used for the L2 index 
