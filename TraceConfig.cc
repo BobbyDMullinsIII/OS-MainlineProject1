@@ -10,6 +10,7 @@ TraceConfig::TraceConfig()
     //Sets all values to -1 and false initially before Trace.Config insertion
     numTLBSets = -1;
     TLBSetSize = -1;
+    TLBIndexBits = -1;
 
     numVirtPages = -1;
     numPhysPages = -1;
@@ -69,33 +70,34 @@ void TraceConfig::outputRawConfigValues()
 {
     cout << "Data TLB contains " << numTLBSets << " sets.\n";
     cout << "Each set contains " << TLBSetSize << " entries.\n";
+    cout << "Number of bits used for the index is " << TLBIndexBits << ".\n";
     cout << "\n";
     cout << "Number of virtual pages is " << numVirtPages << ".\n";
     cout << "Number of physical pages is " << numPhysPages << ".\n";
     cout << "Each page contains " << pageSize << " bytes.\n";
-    cout << "Number of bits used for page table index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for page offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for page table index is " << pageTableIndexBits << ".\n";
+    cout << "Number of bits used for page offset is " << pageOffsetBits << ".\n";
     cout << "\n";
     cout << "L1NumSets: " << L1NumSets << "\n";
     cout << "L1SetSize: " << L1SetSize << "\n";
     cout << "L1LineSize: " << L1LineSize << "\n";
     cout << "L1WriteThrough: " << boolalpha << L1WriteThrough << "\n";
-    cout << "Number of bits used for L1 index is " << L1IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L1 offset is " << L1OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L1 index is " << L1IndexBits << ".\n";
+    cout << "Number of bits used for L1 offset is " << L1OffsetBits << ".\n";
     cout << "\n";
     cout << "L2NumSets: " << L2NumSets << "\n";
     cout << "L2SetSize: " << L2SetSize << "\n";
     cout << "L2LineSize: " << L2LineSize << "\n";
     cout << "L2WriteThrough: " << boolalpha << L2WriteThrough << "\n";
-    cout << "Number of bits used for L2 index is " << L2IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L2 offset is " << L2OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L2 index is " << L2IndexBits << ".\n";
+    cout << "Number of bits used for L2 offset is " << L2OffsetBits << ".\n";
     cout << "\n";
-    cout << "L3NumSets: " << L3NumSets << "\n";
-    cout << "L3SetSize: " << L3SetSize << "\n";
-    cout << "L3LineSize: " << L3LineSize << "\n";
-    cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << "\n";
-    cout << "Number of bits used for L3 index is " << L3IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "L3NumSets: " << L3NumSets << " NOT IMPLEMENTED\n";
+    cout << "L3SetSize: " << L3SetSize << " NOT IMPLEMENTED\n";
+    cout << "L3LineSize: " << L3LineSize << " NOT IMPLEMENTED\n";
+    cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << " NOT IMPLEMENTED\n";
+    cout << "Number of bits used for L3 index is " << L3IndexBits << ". NOT IMPLEMENTED\n";
+    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ". NOT IMPLEMENTED\n";
     cout << "\n";
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
@@ -110,6 +112,7 @@ void TraceConfig::outputRawConfigValues()
     // I believe format should follow something very close to: (number of spaces between each being important)
     //cout << "00000c84      c\t  84\t     6\t  0\tmiss\tmiss\t   0\t     2\t  0\tmiss\t     0\t  8\tmiss\n";
     //this should put values at back of column like in spec example output, but may look incorrect with more or less characters in the values.
+    cout << "\n";
     cout << "\n";
     cout << "Simulation Statistics\n";
     cout << "\n";
