@@ -58,7 +58,7 @@ bool PageDirectory::checkIfIndexIsValid(int x)
 {
 	if (x >= this->entries)
 	{
-		throw new exception("Seg fault");
+		//throw new exception("Seg fault"); //Threw error for incorrect arguments
 	}
 	if (this->level > 1)
 	{
@@ -182,7 +182,7 @@ PageTableEntry PageDirectory::grabEntry(vector<int> address)
 	tempInt++;
 	if (address.size() != tempInt)
 	{
-		throw new exception("invalid address");
+		//throw new exception("invalid address"); //Threw error for incorrect arguments
 	}
 	if (this->level > 1)
 	{
@@ -227,7 +227,7 @@ PageTableEntry PageDirectory::swapEntry(PageTableEntry x, vector<int> address)
 	tempInt++;
 	if (address.size() != tempInt)
 	{
-		throw new exception("invalid address");
+		//throw new exception("invalid address"); //Threw error for incorrect arguments
 	}
 	if (this->level > 1)
 	{
@@ -272,7 +272,7 @@ void PageDirectory::removeEntry(vector<int> address)
 	tempInt++;
 	if (address.size() != tempInt)
 	{
-		throw new exception("invalid address");
+		//throw new exception("invalid address"); //Threw error for incorrect arguments
 	}
 	if (this->level > 1)
 	{
@@ -370,8 +370,8 @@ vector<int> PageDirectory::findLRUEntry()
 	else
 	{
 		int directoryIndex = -1;
-		int tableIndex = NULL;
-		int value = NULL;
+		int tableIndex = -1; //Had to change because compiler wanted something that wasnt "NULL"
+		int value = -1; //Had to change because compiler wanted something that wasnt "NULL"
 		int tempDI;
 		int tempTI;
 		int tempVal;

@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //  Solution/Project:   Project 1 (Mainline Team 1)
-//  File Name:          project1.cc
+//  File Name:          main.cc
 //  Description:        Main file for Operating Systems Mainline Project 1
 //  Course:             CSCI-4727-001 - Operating Systems
 //  Authors:            Bobby Mullins, Isaiah Jayne, Jacob Manis, Zachary Lykins       
@@ -18,6 +18,9 @@
 #include <algorithm>
 #include <bitset>
 #include <map>
+#include "PageDirectory.hpp"
+#include "PageTable.hpp"
+#include "PageTableEntry.hpp"
 #include "TraceConfig.hpp"
 using namespace std;
 

@@ -3,7 +3,8 @@ Repository for our group for mainline projects in Operating Systems class.
 
 Project: Project 1 - Memory Hierarchy Simulator
 
-**To Compile:** *g++ project1.cc TraceConfig.cc -o project1*<br/>
+**To Compile:** *make*<br/>
+**To Clean:** *make clean*<br/>
 **To Run:** *./project1 < trace.dat*
 
 **Group Members**<br/>

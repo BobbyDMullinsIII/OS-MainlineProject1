@@ -68,7 +68,7 @@ bool PageTable::checkForEntry(int x)
 {
 	if (x >= this->numEntries)
 	{
-		throw exception("Seg Fault");
+		//throw exception("Seg Fault"); //Threw error for incorrect arguments
 	}
 	if (this->table[x].getValid() == true)
 	{
