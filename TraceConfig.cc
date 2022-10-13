@@ -7,141 +7,208 @@ using namespace std;
 //Constructor
 TraceConfig::TraceConfig()
 {
-    //Sets all values to 0 and false intially before Trace.Config insertion
-    numTLBSets = 0;
-    TLBSetSize = 0;
+    //Sets all values to -1 and false (Except where hard-coded) initially before Trace.Config insertion
+    numTLBSets = -1;
+    TLBSetSize = -1;
+    TLBIndexBits = 1;
 
-    numVirtPages = 0;
-    numPhysPages = 0;
-    pageSize = 0;
-    pageTableIndexBits = 0;
-    pageOffsetBits = 0;
+    numVirtPages = -1;
+    numPhysPages = -1;
+    pageSize = -1;
+    pageTableIndexBits = 6;
+    pageOffsetBits = 8;
 
-    L1NumSets = 0;
-    L1SetSize = 0;
-    L1LineSize = 0;
+    L1NumSets = -1;
+    L1SetSize = -1;
+    L1LineSize = -1;
     L1WriteThrough = false;
-    L1IndexBits = 0;
-    L1OffsetBits = 0;
+    L1IndexBits = 2;
+    L1OffsetBits = 4;
 
-    L2NumSets = 0;
-    L2SetSize = 0;
-    L2LineSize = 0;
+    L2NumSets = -1;
+    L2SetSize = -1;
+    L2LineSize = -1;
     L2WriteThrough = false;
-    L2IndexBits = 0;
-    L2OffsetBits = 0;
+    L2IndexBits = 4;
+    L2OffsetBits = 4;
 
-    L3NumSets = 0;
-    L3SetSize = 0;
-    L3LineSize = 0;
+    L3NumSets = -1;
+    L3SetSize = -1;
+    L3LineSize = -1;
     L3WriteThrough = false;
-    L3IndexBits = 0;
-    L3OffsetBits = 0;
+    L3IndexBits = -1;
+    L3OffsetBits = -1;
 
     VirtAddressActive = false;
     TLBActive = false;
     L2Active = false;
     L3Active = false;
 
-    dtlbHitCount = 0;
-    dtlbMissCount = 0;
-    ptHitCount = 0;
-    ptFaultCount = 0;
-    dcHitCount = 0;
-    dcMissCount = 0;
-    l2HitCount = 0;
-    l2MissCount = 0;
-    l3HitCount = 0;
-    l3MissCount = 0;
-    readsCount = 0;
-    writesCount = 0;
-    mainMemRefsCount = 0;
-    pageTableRefsCount = 0;
-    diskRefsCount = 0;
+    dtlbHitCount = -1;
+    dtlbMissCount = -1;
+    ptHitCount = -1;
+    ptFaultCount = -1;
+    dcHitCount = -1;
+    dcMissCount = -1;
+    l2HitCount = -1;
+    l2MissCount = -1;
+    l3HitCount = -1;
+    l3MissCount = -1;
+    readsCount = -1;
+    writesCount = -1;
+    mainMemRefsCount = -1;
+    pageTableRefsCount = -1;
+    diskRefsCount = -1;
 }
 
 //Deconstructor
 TraceConfig::~TraceConfig(){}
 
-//Method for outputting all the raw variable values within the TraceConfig object
-void TraceConfig::outputRawConfigValues()
+//Method for outputting all the initial config variable values within the TraceConfig object
+void TraceConfig::outputConfigValues()
 {
-    cout << "Current Config Values:\n";
     cout << "Data TLB contains " << numTLBSets << " sets.\n";
     cout << "Each set contains " << TLBSetSize << " entries.\n";
+    cout << "Number of bits used for the index is " << TLBIndexBits << ".\n";
     cout << "\n";
     cout << "Number of virtual pages is " << numVirtPages << ".\n";
     cout << "Number of physical pages is " << numPhysPages << ".\n";
     cout << "Each page contains " << pageSize << " bytes.\n";
-    cout << "Number of bits used for page table index is " << pageTableIndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for page offset is " << pageOffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for page table index is " << pageTableIndexBits << ".\n";
+    cout << "Number of bits used for page offset is " << pageOffsetBits << ".\n";
     cout << "\n";
     cout << "L1NumSets: " << L1NumSets << "\n";
     cout << "L1SetSize: " << L1SetSize << "\n";
     cout << "L1LineSize: " << L1LineSize << "\n";
     cout << "L1WriteThrough: " << boolalpha << L1WriteThrough << "\n";
-    cout << "Number of bits used for L1 index is " << L1IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L1 offset is " << L1OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L1 index is " << L1IndexBits << ".\n";
+    cout << "Number of bits used for L1 offset is " << L1OffsetBits << ".\n";
     cout << "\n";
     cout << "L2NumSets: " << L2NumSets << "\n";
     cout << "L2SetSize: " << L2SetSize << "\n";
     cout << "L2LineSize: " << L2LineSize << "\n";
     cout << "L2WriteThrough: " << boolalpha << L2WriteThrough << "\n";
-    cout << "Number of bits used for L2 index is " << L2IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L2 offset is " << L2OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L2 index is " << L2IndexBits << ".\n";
+    cout << "Number of bits used for L2 offset is " << L2OffsetBits << ".\n";
     cout << "\n";
     cout << "L3NumSets: " << L3NumSets << "\n";
     cout << "L3SetSize: " << L3SetSize << "\n";
     cout << "L3LineSize: " << L3LineSize << "\n";
     cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << "\n";
-    cout << "Number of bits used for L3 index is " << L3IndexBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
-    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ". THIS IS NOT CORRECT, NOT IMPLEMENTED YET\n";
+    cout << "Number of bits used for L3 index is " << L3IndexBits << ".\n";
+    cout << "Number of bits used for L3 offset is " << L3OffsetBits << ".\n";
     cout << "\n";
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
     cout << "L2Active: " << boolalpha << L2Active << "\n";
     cout << "L3Active: " << boolalpha << L3Active << "\n";
-    cout << "\n";
-    cout << "\n";
-    cout << "Virtual  Virt.\tPage\tTLB\tTLB\tTLB\tPT\tPhys\t\tDC\tDC\t\tL2\tL2\n";
-    cout << "Address  Page #\tOff\tTag\tInd\tRes.\tRes.\tPg #\tDC Tag\tInd\tRes.\tL2 Tag\tInd\tRes.\n";
-    cout << "-------- ------\t----\t------\t---\t----\t----\t----\t------\t---\t---\t------\t---\t----\n";
-    // here we should be able to plug in values for each item here as we find them. 
-    // I believe format should follow something very close to: (number of spaces between each being important)
-    //cout << "00000c84      c\t  84\t     6\t  0\tmiss\tmiss\t   0\t     2\t  0\tmiss\t     0\t  8\tmiss\n";
-    //this should put values at back of comumn like in spec example output, but may look incorrect with more or less characters in the values.
-    cout << "\n";
+
+}//end outputConfigValues()
+
+//Method for outputting the final simulation statistics
+void TraceConfig::outputSimulationStatistics()
+{
     cout << "Simulation Statistics\n";
     cout << "\n";
-    cout << "dtlb hits: " << dtlbHitCount << "\n";
-    cout << "dtlb misses: " << dtlbMissCount << "\n";
-    cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";  //Needs "divide by zero" error checking (Also not needed if either virtual addresses or TLB is disabled)
+    if(TLBActive == true) //Only displays actual stats if TLB cache is active
+    {
+        cout << "dtlb hits: " << dtlbHitCount << "\n";
+        cout << "dtlb misses: " << dtlbMissCount << "\n";
+        if((dtlbHitCount+dtlbMissCount) == 0) //Catches divide by zero error
+        {
+            cout << "dtlb hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";
+        }
+    }
+    else
+    {
+        cout << "dtlb hits: N/A\n";
+        cout << "dtlb misses: N/A\n";
+        cout << "dtlb hit ratio: N/A\n";
+    }
     cout << "\n";
     cout << "pt hits: " << ptHitCount << "\n";
     cout << "pt faults: " << ptFaultCount << "\n";
-    cout << "pt hit ratio: " << (double)(ptHitCount/(ptHitCount+ptFaultCount)) << "\n";  //Needs "divide by zero" error checking
+    if((ptHitCount+ptFaultCount) == 0) //Catches divide by zero error
+    {
+        cout << "pt hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "pt hit ratio: " << (double)(ptHitCount/(ptHitCount+ptFaultCount)) << "\n";
+    }
     cout << "\n";
     cout << "dc hits: " << dcHitCount << "\n";
     cout << "dc misses: " << dcMissCount << "\n";
-    cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";  //Needs "divide by zero" error checking
+    if((dcHitCount+dcMissCount) == 0) //Catches divide by zero error
+    {
+        cout << "dc hit ratio: 0" << "\n";
+    }
+    else
+    {
+        cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";
+    }
     cout << "\n";
-    cout << "L2 hits: " << l2HitCount << "\n";
-    cout << "L2 misses: " << l2MissCount << "\n";
-    cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";  //Needs "divide by zero" error checking
+    if(L2Active == true) //Only displays actual stats if L2 cache is active
+    {
+        cout << "L2 hits: " << l2HitCount << "\n";
+        cout << "L2 misses: " << l2MissCount << "\n";
+        if((l2HitCount+l2MissCount) == 0) //Catches divide by zero error
+        {
+            cout << "L2 hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";
+        }
+    }
+    else
+    {
+        cout << "L2 hits: N/A\n";
+        cout << "L2 misses: N/A\n";
+        cout << "L2 hit ratio: N/A\n";
+    }
     cout << "\n";
-    cout << "L3 hits: " << l3HitCount << "\n";
-    cout << "L3 misses: " << l3MissCount << "\n";
-    cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";  //Needs "divide by zero" error checking
+    if(L3Active == true) //Only displays actual stats if L3 cache is active
+    {
+        cout << "L3 hits: " << l3HitCount << "\n";
+        cout << "L3 misses: " << l3MissCount << "\n";
+        if((l3HitCount+l3MissCount) == 0) //Catches divide by zero error
+        {
+            cout << "L3 hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";
+        }
+    }
+    else
+    {
+        cout << "L3 hits: N/A\n";
+        cout << "L3 misses: N/A\n";
+        cout << "L3 hit ratio: N/A\n";
+    }
     cout << "\n";
     cout << "Total Reads: " << readsCount << "\n";
     cout << "Total Writes: " << writesCount << "\n";
-    cout << "Ratio of Reads: " << (double)(readsCount/(readsCount+writesCount)) << "\n";  //Needs "divide by zero" error checking
+    if((readsCount+writesCount) == 0) //Catches divide by zero error
+    {
+        cout << "Ratio of Reads: 0" << "\n";
+    }
+    else
+    {
+        cout << "Ratio of Reads: " << (double)(readsCount/(readsCount+writesCount)) << "\n";
+    }
     cout << "\n";
     cout << "main memory refs: " << mainMemRefsCount << "\n";
     cout << "page table refs: " << pageTableRefsCount << "\n";
     cout << "disk refs: " << diskRefsCount << "\n";
+    cout << "\n";
     
-}//end outputConfigValues()
+}//end outputSimulationStatistics()
 
 //Method for inserting all data within trace.config into a TraceConfig data structure
 //Also checks if any of the config values are not valid and stops program to state what was not valid
@@ -300,6 +367,7 @@ void TraceConfig::insertConfig()
     //L1WriteThrough
     getline(filein, currentLine);   //"Write through/no write allocate:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -373,6 +441,7 @@ void TraceConfig::insertConfig()
     //L2WriteThrough
     getline(filein, currentLine);   //"Write through/no write allocate:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -446,6 +515,7 @@ void TraceConfig::insertConfig()
     //L3WriteThrough
     getline(filein, currentLine);   //"Write through/no write allocate:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -467,6 +537,7 @@ void TraceConfig::insertConfig()
     //VirtAddressActive
     getline(filein, currentLine);   //"Virtual addresses:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -486,6 +557,7 @@ void TraceConfig::insertConfig()
     //TLBActive
     getline(filein, currentLine);   //"TLB:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -514,6 +586,7 @@ void TraceConfig::insertConfig()
     //L2Active
     getline(filein, currentLine);   //"L2 cache:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -531,8 +604,9 @@ void TraceConfig::insertConfig()
     }
 
     //L3Active
-    getline(filein, currentLine);   //"L2 cache:" config value line
+    getline(filein, currentLine);   //"L3 cache:" config value line
     tempString = currentLine.substr(currentLine.find_first_of(':') + 2); //Store value at end of config line in string
+    tempString = removeNonLetters(tempString); //Remove all non-letter characters from string
     if(tempString != "y" && tempString != "n") //(y/n = true/false)
     {
         //Output error message and exit program if any of the fail conditions met
@@ -560,6 +634,28 @@ void TraceConfig::insertConfig()
 
 }//end insertConfig()
 
+//Method for setting all counters to 0 to prepare for hit/miss/read/write/reference counting
+void TraceConfig::prepareCounters()
+{
+    //Sets all counters to 0 to prepare for hit/miss/read/write/reference counting
+    dtlbHitCount = 0;
+    dtlbMissCount = 0;
+    ptHitCount = 0;
+    ptFaultCount = 0;
+    dcHitCount = 0;
+    dcMissCount = 0;
+    l2HitCount = 0;
+    l2MissCount = 0;
+    l3HitCount = 0;
+    l3MissCount = 0;
+    readsCount = 0;
+    writesCount = 0;
+    mainMemRefsCount = 0;
+    pageTableRefsCount = 0;
+    diskRefsCount = 0;
+
+}//end prepareCounters()
+
 //Method for checking if number is a power of two
 //Stolen from https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2
 //Returns if the input number (x) is a power of 2
@@ -568,3 +664,21 @@ bool TraceConfig::IsPowerOfTwo(int x)
     return (x != 0) && ((x & (x - 1)) == 0);
 
 }//end IsPowerOfTwo()
+
+//Method for removing all characters that are not letters from string
+//Stolen from https://www.geeksforgeeks.org/remove-characters-alphabets-string/
+//Returns string with only letter (A-Z,a-z) characters 
+string TraceConfig::removeNonLetters(string s)
+{
+    //For every character in string, delete all non-letter (A-Z,a-z) characters
+    for (int i = 0; i < s.size(); i++) 
+    {    
+        if (s[i] < 'A' || s[i] > 'Z' && s[i] < 'a' || s[i] > 'z')
+        {  
+            s.erase(i, 1);
+            i--;
+        }
+    }
+
+    return s;
+}
