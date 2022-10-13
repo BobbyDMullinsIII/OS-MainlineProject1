@@ -195,7 +195,7 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 {
     cout << "\n";
     cout << "\n";
-    cout << "     Virtual  Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
+    cout << "Addr Virtual  Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
     cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
     cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
     for (int i = 0; i != memInfoVector.size(); i++)
@@ -225,7 +225,6 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 
 }//end outputEachMemRefInfo()
 
-//*should*
 //generate a cache and resize to the number of sets in config and set each set size from config
 vector<vector<int>> generateCache(int &sets, int &setSize)
 {
@@ -242,22 +241,24 @@ vector<vector<int>> generateCache(int &sets, int &setSize)
 }
 
 //replaces a page in a page list
-//L1,L2 are cahces
+//L1, L2, L3 are caches
 //p1 is new page
 //pgs is existing pages
 //i is location in pgs of page being replaced
 void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2, vector<vector<int>> L3, int p1, vector<int> pgs, int i)
 {
-    FindItem(L1, pgs[i]);//finds if there is existing pid of that page in L1 and replaces with null
-    FindItem(L2, pgs[i]);//finds if there is existing pid of that page in L2 and replaces with null
-    FindItem(L3, pgs[i]);//finds if there is existing pid of that page in L3 and replaces with null
+    //finds if there is existing pid of that page in each cache, and replaces with null (-1)
+    FindItem(L1, pgs[i]);
+    FindItem(L2, pgs[i]);
+    FindItem(L3, pgs[i]);
+
     pgs[i] = p1;//replaces page
 }
 
 //finds pid of replaced page and places null where pid is found
 void FindItem(vector<vector<int>> &cache, int pid)
 {
-    //searches for a pid in the cache, and if exists replace with null
+    //searches for a pid in the cache, and if exists replace with null (-1)
     for (vector<int> &v : cache)
     {
         replace(v.begin(), v.end(), pid, -1);
