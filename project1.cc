@@ -81,7 +81,7 @@ string toHex(int i);
 int toInt(string i);
 
 //Other Methods
-TraceConfig runSimulation(TraceConfig insertedConfig);
+TraceConfig runSimulation(TraceConfig insertedConfig, vector<MemRefInfo> memRefs);
 
 
 int main()
@@ -100,8 +100,7 @@ int main()
 
 
     //==Run Simulation Section==//
-    //====NEEDS ACTUAL CODE - NOT FINISHED AT ALL====//
-    config = runSimulation(config); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
+    config = runSimulation(config, MemRefsInfo); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 
 
     //==Final Output Section==//
@@ -244,11 +243,12 @@ vector<vector<int>> generateCache(int &sets, int &setSize)
 //p1 is new page
 //pgs is existing pages
 //i is location in pgs of page being replaced
-void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2 , int p1, vector<int> pgs, int i)
+void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2, vector<vector<int>> L3, int p1, vector<int> pgs, int i)
 {
-   FindItem(L1, pgs[i]);//finds if there is existing pid of that page in L1 and replaces with null
-   FindItem(L2, pgs[i]);//finds if there is existing pid of that page in L2 and replaces with null
-   pgs[i] = p1;//replaces page
+    FindItem(L1, pgs[i]);//finds if there is existing pid of that page in L1 and replaces with null
+    FindItem(L2, pgs[i]);//finds if there is existing pid of that page in L2 and replaces with null
+    FindItem(L3, pgs[i]);//finds if there is existing pid of that page in L3 and replaces with null
+    pgs[i] = p1;//replaces page
 }
 
 //finds pid of replaced page and places null where pid is found
@@ -388,11 +388,11 @@ int toInt(string i)
 
 //Method for branching to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 //Returns final config values for final output
-TraceConfig runSimulation(TraceConfig insertedConfig)
+TraceConfig runSimulation(TraceConfig insertedConfig, vector<MemRefInfo> memRefs)
 {
     vector<vector<int>> L1;
     vector<vector<int>> L2;
-    vector<vector<int>> L3; //Unused
+    vector<vector<int>> L3;
 
     if(insertedConfig.VirtAddressActive == true)
     {
@@ -412,9 +412,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
                     L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
 
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //Sequentially conducts simulation on each memory reference line
+                    for(int i = 0; i < memRefs.size(); i++)
+                    {
+                        //===================================//
+                        //Simulation execution code goes here//
+                        //===================================//
+                    }
                 }
                 else if (insertedConfig.L3Active == false)
                 {
@@ -427,9 +431,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //Sequentially conducts simulation on each memory reference line
+                    for(int i = 0; i < memRefs.size(); i++)
+                    {
+                        //===================================//
+                        //Simulation execution code goes here//
+                        //===================================//
+                    }
                 }
             }
             else 
@@ -444,9 +452,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //Generate Caches
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //Sequentially conducts simulation on each memory reference line
+                    for(int i = 0; i < memRefs.size(); i++)
+                    {
+                        //===================================//
+                        //Simulation execution code goes here//
+                        //===================================//
+                    }
                 }
             }
         }
@@ -466,9 +478,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
                     L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
 
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //Sequentially conducts simulation on each memory reference line
+                    for(int i = 0; i < memRefs.size(); i++)
+                    {
+                        //===================================//
+                        //Simulation execution code goes here//
+                        //===================================//
+                    }
                 }
                 else if (insertedConfig.L3Active == false)
                 {
@@ -481,9 +497,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
                     L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //Sequentially conducts simulation on each memory reference line
+                    for(int i = 0; i < memRefs.size(); i++)
+                    {
+                        //===================================//
+                        //Simulation execution code goes here//
+                        //===================================//
+                    }
                 }
             }
             else 
@@ -498,9 +518,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                     //Generate Caches
                     L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //Sequentially conducts simulation on each memory reference line
+                    for(int i = 0; i < memRefs.size(); i++)
+                    {
+                        //===================================//
+                        //Simulation execution code goes here//
+                        //===================================//
+                    }
                 }
             }
         }
@@ -521,9 +545,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
                 L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
 
-                //===================================//
-                //Simulation execution code goes here//
-                //===================================//
+                //Sequentially conducts simulation on each memory reference line
+                for(int i = 0; i < memRefs.size(); i++)
+                {
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
+                }
             }
             else if (insertedConfig.L3Active == false)
             {
@@ -536,9 +564,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
                 L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
-                //===================================//
-                //Simulation execution code goes here//
-                //===================================//
+                //Sequentially conducts simulation on each memory reference line
+                for(int i = 0; i < memRefs.size(); i++)
+                {
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
+                }
             }
         }
         else 
@@ -553,9 +585,13 @@ TraceConfig runSimulation(TraceConfig insertedConfig)
                 //Generate Caches
                 L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
-                //===================================//
-                //Simulation execution code goes here//
-                //===================================//
+                //Sequentially conducts simulation on each memory reference line
+                for(int i = 0; i < memRefs.size(); i++)
+                {
+                    //===================================//
+                    //Simulation execution code goes here//
+                    //===================================//
+                }
             }
         }
     }
