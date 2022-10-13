@@ -20,5 +20,5 @@ PageTableEntry.o: PageTableEntry.cpp
 
 
 clean:
-	rm -rf *.o
-	rm -rf project1
+	rm -f *.o
+	rm -f project1
