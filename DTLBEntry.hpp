@@ -8,6 +8,8 @@ class DTLBEntry
 public:
     DTLBEntry();
     ~DTLBEntry();
+    
+    
 
     private:
 

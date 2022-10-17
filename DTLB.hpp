@@ -9,6 +9,9 @@ public:
     DTLB();
     ~DTLB();
 
+    void insertRecentAddress();
+    void checkForAddress();
+
     private:
 
 };

@@ -10,11 +10,13 @@ DTLBEntry::DTLBEntry()
 
 }
 
+/*
 //Paramaterized Constructor
 DTLBEntry::DTLBEntry()
 {
 
 }
+*/
 
 //Deconstructor
 DTLBEntry::~DTLBEntry(){}
