@@ -8,21 +8,21 @@ using namespace std;
 SimStats::SimStats()
 {
     //Sets all values to -1 initially before counter preparation
-    dtlbHitCount = -1;
-    dtlbMissCount = -1;
-    ptHitCount = -1;
-    ptFaultCount = -1;
-    dcHitCount = -1;
-    dcMissCount = -1;
-    l2HitCount = -1;
-    l2MissCount = -1;
-    l3HitCount = -1;
-    l3MissCount = -1;
-    readsCount = -1;
-    writesCount = -1;
-    mainMemRefsCount = -1;
-    pageTableRefsCount = -1;
-    diskRefsCount = -1;
+    this->dtlbHitCount = -1;
+    this->dtlbMissCount = -1;
+    this->ptHitCount = -1;
+    this->ptFaultCount = -1;
+    this->dcHitCount = -1;
+    this->dcMissCount = -1;
+    this->l2HitCount = -1;
+    this->l2MissCount = -1;
+    this->l3HitCount = -1;
+    this->l3MissCount = -1;
+    this->readsCount = -1;
+    this->writesCount = -1;
+    this->mainMemRefsCount = -1;
+    this->pageTableRefsCount = -1;
+    this->diskRefsCount = -1;
 }
 
 //Deconstructor
@@ -32,21 +32,21 @@ SimStats::~SimStats(){}
 void SimStats::prepareCounters()
 {
     //Sets all counters to 0 to prepare for hit/miss/read/write/reference counting
-    dtlbHitCount = 0;
-    dtlbMissCount = 0;
-    ptHitCount = 0;
-    ptFaultCount = 0;
-    dcHitCount = 0;
-    dcMissCount = 0;
-    l2HitCount = 0;
-    l2MissCount = 0;
-    l3HitCount = 0;
-    l3MissCount = 0;
-    readsCount = 0;
-    writesCount = 0;
-    mainMemRefsCount = 0;
-    pageTableRefsCount = 0;
-    diskRefsCount = 0;
+    this->dtlbHitCount = 0;
+    this->dtlbMissCount = 0;
+    this->ptHitCount = 0;
+    this->ptFaultCount = 0;
+    this->dcHitCount = 0;
+    this->dcMissCount = 0;
+    this->l2HitCount = 0;
+    this->l2MissCount = 0;
+    this->l3HitCount = 0;
+    this->l3MissCount = 0;
+    this->readsCount = 0;
+    this->writesCount = 0;
+    this->mainMemRefsCount = 0;
+    this->pageTableRefsCount = 0;
+    this->diskRefsCount = 0;
 
 }//end prepareCounters()
 

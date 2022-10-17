@@ -8,41 +8,41 @@ using namespace std;
 TraceConfig::TraceConfig()
 {
     //Sets all values to -1 and false (Except where hard-coded) initially before Trace.Config insertion
-    numTLBSets = -1;
-    TLBSetSize = -1;
-    TLBIndexBits = 1;
+    this->numTLBSets = -1;
+    this->TLBSetSize = -1;
+    this->TLBIndexBits = 1;
 
-    numVirtPages = -1;
-    numPhysPages = -1;
-    pageSize = -1;
-    pageTableIndexBits = 6;
-    pageOffsetBits = 8;
+    this->numVirtPages = -1;
+    this->numPhysPages = -1;
+    this->pageSize = -1;
+    this->pageTableIndexBits = 6;
+    this->pageOffsetBits = 8;
 
-    L1NumSets = -1;
-    L1SetSize = -1;
-    L1LineSize = -1;
-    L1WriteThrough = false;
-    L1IndexBits = 2;
-    L1OffsetBits = 4;
+    this->L1NumSets = -1;
+    this->L1SetSize = -1;
+    this->L1LineSize = -1;
+    this->L1WriteThrough = false;
+    this->L1IndexBits = 2;
+    this->L1OffsetBits = 4;
 
-    L2NumSets = -1;
-    L2SetSize = -1;
-    L2LineSize = -1;
-    L2WriteThrough = false;
-    L2IndexBits = 4;
-    L2OffsetBits = 4;
+    this->L2NumSets = -1;
+    this->L2SetSize = -1;
+    this->L2LineSize = -1;
+    this->L2WriteThrough = false;
+    this->L2IndexBits = 4;
+    this->L2OffsetBits = 4;
 
-    L3NumSets = -1;
-    L3SetSize = -1;
-    L3LineSize = -1;
-    L3WriteThrough = false;
-    L3IndexBits = -1;
-    L3OffsetBits = -1;
+    this->L3NumSets = -1;
+    this->L3SetSize = -1;
+    this->L3LineSize = -1;
+    this->L3WriteThrough = false;
+    this->L3IndexBits = -1;
+    this->L3OffsetBits = -1;
 
-    VirtAddressActive = false;
-    TLBActive = false;
-    L2Active = false;
-    L3Active = false;
+    this->VirtAddressActive = false;
+    this->TLBActive = false;
+    this->L2Active = false;
+    this->L3Active = false;
 }
 
 //Deconstructor

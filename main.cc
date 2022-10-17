@@ -24,6 +24,8 @@ using namespace std;
 #include "PageDirectory.hpp"
 #include "PageTable.hpp"
 #include "PageTableEntry.hpp"
+#include "DTLB.hpp"
+#include "DTLBEntry.hpp"
 #include "TraceConfig.hpp"
 #include "SimStats.hpp"
 
@@ -87,7 +89,7 @@ string toHex(int i);
 int toInt(string i);
 
 //Other Methods
-TraceConfig runSimulation(TraceConfig insertedConfig, vector<MemRefInfo> memRefs);
+SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> memRefs);
 
 
 int main()
@@ -107,7 +109,7 @@ int main()
 
     
     //==Run Simulation Section==//
-    config = runSimulation(config, MemRefsInfo); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
+    stats = runSimulation(config, stats, MemRefsInfo); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 
 
     //==Final Output Section==//
@@ -396,11 +398,16 @@ int toInt(string i)
 
 //Method for branching to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 //Returns final config values for final output
-TraceConfig runSimulation(TraceConfig insertedConfig, vector<MemRefInfo> memRefs)
+SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> memRefs)
 {
+    //Caches (NOT DONE)
     vector<vector<int>> L1;
     vector<vector<int>> L2;
     vector<vector<int>> L3;
+
+    //Page Table (Needs to be integrated)
+
+    //TLB (NOT DONE)
 
     if(insertedConfig.VirtAddressActive == true)
     {
@@ -604,5 +611,5 @@ TraceConfig runSimulation(TraceConfig insertedConfig, vector<MemRefInfo> memRefs
         }
     }
 
-    return insertedConfig;
+    return simStats;
 }
