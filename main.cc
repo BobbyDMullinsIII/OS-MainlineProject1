@@ -18,18 +18,21 @@
 #include <algorithm>
 #include <bitset>
 #include <map>
+using namespace std;
+
+//Included header files
 #include "PageDirectory.hpp"
 #include "PageTable.hpp"
 #include "PageTableEntry.hpp"
 #include "TraceConfig.hpp"
-using namespace std;
+#include "SimStats.hpp"
 
 //Access states for memory
 #define NOOP 0 //no action 
-#define RDH 1 //hit for read
-#define RDM 2 //miss for read
-#define WTH 3 //hit for write
-#define WTM 4 //miss for write
+#define RDH 1  //hit for read
+#define RDM 2  //miss for read
+#define WTH 3  //hit for write
+#define WTM 4  //miss for write
 
 //Struct for storing Memory References in integer decimal format
 struct MemRefDec
@@ -92,16 +95,17 @@ int main()
     //==Declaration Section==//
     vector<MemRefDec> MemRefsDec;   //Vector of MemRefDec's to work from with addresses in decimal (unsigned int) form
     vector<MemRefInfo> MemRefsInfo; //Vector of information about each reference that traverses the hierarchy
-    TraceConfig config;             //Class of config values and counters taken from trace.config file
+    TraceConfig config;             //Class of config values taken from trace.config file
+    SimStats stats;                 //Class of simulation counters
 
 
     //==Insertion/Initialization Section==//
     MemRefsDec = insertTrace(MemRefsDec);     //Insert memory references from stdin into MemRefDec vector
     MemRefsInfo = initMemRefInfo(MemRefsDec); //Initialize MemRefsInfo vector with each memory reference's address
     config.insertConfig();                    //Insert config values from trace.config into config class object
-    config.prepareCounters();                 //Set all hit/miss/read/write/reference counters to 0 for counting
+    stats.prepareCounters();                  //Set all hit/miss/read/write/reference counters to 0 for counting
 
-
+    
     //==Run Simulation Section==//
     config = runSimulation(config, MemRefsInfo); //Branches to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 
@@ -109,7 +113,7 @@ int main()
     //==Final Output Section==//
     config.outputConfigValues();         //Output config values
     outputEachMemRefInfo(MemRefsInfo);   //Output information about each memory reference in the simulation
-    config.outputSimulationStatistics(); //Output final simulation statistics
+    stats.outputSimulationStatistics(config.TLBActive, config.L2Active, config.L3Active);  //Output final simulation statistics
 
     return 0;
 }
