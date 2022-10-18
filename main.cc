@@ -405,7 +405,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
     vector<vector<int>> L2;
     vector<vector<int>> L3;
 
-    //Page Table (Needs to be integrated)
+    //Page Table (Done, but needs to be integrated)
 
     //TLB (NOT DONE)
 

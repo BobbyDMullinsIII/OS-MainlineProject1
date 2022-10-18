@@ -11,6 +11,7 @@ DTLBEntry::DTLBEntry()
 	this->validBit = false;
     this->pageNum = -1;
     this->frameNum = -1;
+    this->LRUNum = -1000;
 }
 
 

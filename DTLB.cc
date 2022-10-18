@@ -27,16 +27,14 @@ DTLB::~DTLB(){}
 //Will not insert if it is already within DTLB in order to avoid duplicate translations taking multiple slots
 void DTLB::insertRecentAddress(int address, int frame)
 {
-
+    //NOT DONE
 }
 
 
-/*
 //Method for checking if given virtual address is within DTLB
 //Goes through each of the sets if set-associative
 //Returns whether inserted address is within the DTLB
 bool DTLB::checkForAddress(int checkAddr)
 {
-    
+    return false; //NOT DONE
 }
-*/
