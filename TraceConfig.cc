@@ -135,7 +135,7 @@ void TraceConfig::insertConfig()
         TLBSetSize = tempInt;
     }
 
-    TLBIndexBits = numBitsNeeded(numTLBSets); //Sets number of TLB index bits according to numTLBSets
+    TLBIndexBits = numBitsNeeded(TLBSetSize); //Sets number of TLB index bits according to numTLBSets
 
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"Page Table configuration" info line

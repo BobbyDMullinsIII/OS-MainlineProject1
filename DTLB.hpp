@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "DTLBEntry.hpp"
+
 class DTLB
 {
 public:
@@ -11,9 +13,9 @@ public:
 
     int numSets;
     int setSize;
-    //std::vector<std::vector<DTLBEntry>> dtlbSets();
+    std::vector<std::vector<DTLBEntry>> dtlbSets;
 
-    void insertRecentAddress(int address);
+    void insertRecentAddress(int address, int frame);
     bool checkForAddress(int checkAddr);
 
     private:

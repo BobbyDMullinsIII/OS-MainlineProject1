@@ -15,11 +15,12 @@ DTLBEntry::DTLBEntry()
 
 
 //Paramaterized Constructor
-DTLBEntry::DTLBEntry(int newBit, int virtAddr, int physAddr)
+DTLBEntry::DTLBEntry(int newBit, int virtAddr, int physAddr, int lru)
 {
     this->validBit = newBit;
     this->pageNum = virtAddr;
     this->frameNum = physAddr;
+    this->LRUNum = lru;
 }
 
 

@@ -8,21 +8,28 @@ using namespace std;
 
 
 //Paramaterized Constructor
-DTLB::DTLB(int numSets, int setSize)
+DTLB::DTLB(int sets, int size)
 {
-    //dtlbSets.resize(numSets);
+    this->numSets = sets;
+    this->setSize = size;
+
+    //Sets 2d vector to have specified number of sets and set size
+    dtlbSets = vector<vector<DTLBEntry>>(sets, vector<DTLBEntry>(size));
 }
 
 
 //Deconstructor
 DTLB::~DTLB(){}
 
+
 //Method for inserting most recent virtual address translation into DTLB
+//Uses LRU replacement policy
 //Will not insert if it is already within DTLB in order to avoid duplicate translations taking multiple slots
-void DTLB::insertRecentAddress(int address)
+void DTLB::insertRecentAddress(int address, int frame)
 {
 
 }
+
 
 /*
 //Method for checking if given virtual address is within DTLB
@@ -31,6 +38,5 @@ void DTLB::insertRecentAddress(int address)
 bool DTLB::checkForAddress(int checkAddr)
 {
     
-
 }
 */
