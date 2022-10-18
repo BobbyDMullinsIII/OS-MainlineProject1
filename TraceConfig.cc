@@ -15,21 +15,21 @@ TraceConfig::TraceConfig()
     this->numVirtPages = -1;
     this->numPhysPages = -1;
     this->pageSize = -1;
-    this->pageTableIndexBits = 6;
+    this->pageTableIndexBits = -1;
     this->pageOffsetBits = 8;
 
     this->L1NumSets = -1;
     this->L1SetSize = -1;
     this->L1LineSize = -1;
     this->L1WriteThrough = false;
-    this->L1IndexBits = 2;
+    this->L1IndexBits = -1;
     this->L1OffsetBits = 4;
 
     this->L2NumSets = -1;
     this->L2SetSize = -1;
     this->L2LineSize = -1;
     this->L2WriteThrough = false;
-    this->L2IndexBits = 4;
+    this->L2IndexBits = -1;
     this->L2OffsetBits = 4;
 
     this->L3NumSets = -1;
@@ -37,7 +37,7 @@ TraceConfig::TraceConfig()
     this->L3LineSize = -1;
     this->L3WriteThrough = false;
     this->L3IndexBits = -1;
-    this->L3OffsetBits = -1;
+    this->L3OffsetBits = 4;
 
     this->VirtAddressActive = false;
     this->TLBActive = false;
@@ -135,6 +135,8 @@ void TraceConfig::insertConfig()
         TLBSetSize = tempInt;
     }
 
+    TLBIndexBits = numBitsNeeded(numTLBSets); //Sets number of TLB index bits according to numTLBSets
+
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"Page Table configuration" info line
 
@@ -188,6 +190,8 @@ void TraceConfig::insertConfig()
         //Insert config value into appropriate parameter
         pageSize = tempInt;
     }
+
+    pageTableIndexBits = numBitsNeeded(numVirtPages); //Sets number of L1 index bits according to numVirtPages
 
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"L1 Cache configuration" info line
@@ -263,6 +267,8 @@ void TraceConfig::insertConfig()
         { L1WriteThrough = false; }
     }
 
+    L1IndexBits = numBitsNeeded(L1NumSets); //Sets number of L1 index bits according to L1NumSets
+
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"L2 Cache configuration" info line
 
@@ -337,6 +343,8 @@ void TraceConfig::insertConfig()
         { L2WriteThrough = false; }
     }
 
+    L2IndexBits = numBitsNeeded(L2NumSets); //Sets number of L2 index bits according to L2NumSets
+
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"L3 Cache configuration" info line
 
@@ -410,6 +418,8 @@ void TraceConfig::insertConfig()
         if(tempString == "n")
         { L3WriteThrough = false; }
     }
+
+    L3IndexBits = numBitsNeeded(L3NumSets); //Sets number of L3 index bits according to L3NumSets
 
     getline(filein, currentLine); //blank line
 
@@ -538,4 +548,63 @@ string TraceConfig::removeNonLetters(string s)
     }
 
     return s;
+}
+
+//Method for returning the number of bits needed to count to given decimalNum in binary form
+//Examples:
+//64 (or 0-based 63) = 111111 = 6 bits needed
+//16 (or 0-based 15) = 1111 = 4 bits needed
+int TraceConfig::numBitsNeeded(int decimalNum)
+{
+    if(decimalNum > -1 && decimalNum <= 1)
+    { return 1; }
+
+    if(decimalNum > 1 && decimalNum <= 4)
+    { return 2; }
+
+    if(decimalNum > 4 && decimalNum <= 8)
+    { return 3; }
+
+    if(decimalNum > 8 && decimalNum <= 16)
+    { return 4; }
+
+    if(decimalNum > 16 && decimalNum <= 32)
+    { return 5; }
+
+    if(decimalNum > 32 && decimalNum <= 64)
+    { return 6; }
+
+    if(decimalNum > 64 && decimalNum <= 128)
+    { return 7; }
+
+    if(decimalNum > 128 && decimalNum <= 256)
+    { return 8; }
+
+    if(decimalNum > 256 && decimalNum <= 512)
+    { return 9; }
+
+    if(decimalNum > 512 && decimalNum <= 1024)
+    { return 10; }
+    
+    if(decimalNum > 1024 && decimalNum <= 2048)
+    { return 11; }
+
+    if(decimalNum > 2048 && decimalNum <= 4096)
+    { return 12; }
+
+    if(decimalNum > 4096 && decimalNum <= 8192)
+    { return 13; }
+
+    if(decimalNum > 8192 && decimalNum <= 16384)
+    { return 14; }
+
+    if(decimalNum > 16384 && decimalNum <= 32768)
+    { return 15; }
+
+    if(decimalNum > 32768 && decimalNum <= 65536)
+    { return 16; }
+
+    return -1; //Something went wrong if it gets here
+
+    
 }

@@ -6,11 +6,15 @@
 class DTLB
 {
 public:
-    DTLB();
+    DTLB(int numSets, int setSize);
     ~DTLB();
 
-    void insertRecentAddress();
-    void checkForAddress();
+    int numSets;
+    int setSize;
+    //std::vector<std::vector<DTLBEntry>> dtlbSets();
+
+    void insertRecentAddress(int address);
+    bool checkForAddress(int checkAddr);
 
     private:
 

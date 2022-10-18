@@ -57,6 +57,7 @@ public:
     void prepareCounters();
     bool IsPowerOfTwo(int x);
     std::string removeNonLetters(std::string s);
+    int numBitsNeeded(int decimalNum);
 
 private:
 
