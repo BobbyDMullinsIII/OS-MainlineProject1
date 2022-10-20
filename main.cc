@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <bitset>
 #include <map>
+#include <math.h>
 using namespace std;
 
 //Included header files
@@ -81,7 +82,8 @@ void FindItem(vector<vector<string>> &cache, int pid);
 vector<vector<string>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<string>> pages);
 int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds);
-int getFrameNumber(string physicalAddress);
+int getFrameNumber(string virtualAddress, int blocks);
+void DirectAssociative(vector<vector<string>>* L1, vector<vector<string>>* L2, string virtualAddress, string baseAddress, string bounds, int blocks);
 
 //Address Manipulation Method Declarations
 string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
@@ -355,13 +357,10 @@ int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<stri
     return retnum;
 }
 
-//gets the frame number from the frame number 
-int getFrameNumber(string physicalAddress)
+//gets the frame number from the virtual address and map type
+int getFrameNumber(string virtualAddress, int blocks)
 {
-    ostringstream stream;
-    string frameNumber = physicalAddress.substr(0,1);
-
-    return toInt(frameNumber);
+    return toInt(virtualAddress) % ((int)pow((double)2,(double)blocks));    
 }
 
 //takes a virtual address and return the physical address of the accessed area in memory
@@ -633,4 +632,15 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
     }
 
     return simStats;
+}
+
+
+void DirectAssociative(vector<vector<string>> L1, vector<vector<string>> L2, string virtualAddress, string baseAddress, string bounds, int blocks)
+{
+    //direct associative
+    string physical = VirtualToPhysical(virtualAddress, baseAddress, bounds);
+    int frameNum = getFrameNumber(physical, blocks);
+
+    L1[frameNum][1] = virtualAddress;
+    L2[frameNum][1] = virtualAddress;
 }
