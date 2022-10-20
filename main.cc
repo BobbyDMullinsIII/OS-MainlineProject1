@@ -75,12 +75,12 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector);
 void outputEachMemRefInfo(vector<MemRefInfo> memInfo);
 
 //Cache & Page Table Method Declarations
-vector<vector<int>> generateCache(int &sets, int &setSize);
-void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2 , int p1, vector<int> pgs, int i);
-void FindItem(vector<vector<int>> &cache, int pid);
-vector<vector<int>> PageAlloc(int numpgs, int pgsize);
-int LRU(vector<vector<int>> pages);
-int HitMiss(string virtAddress, vector<vector<int>> cache, vector<vector<int>> pageTable, string baseAddress, string bounds);
+vector<vector<string>> generateCache(int &sets, int &setSize);
+void ReplacePage(vector<vector<string>> L1, vector<vector<string>> L2 , int p1, vector<int> pgs, int i);
+void FindItem(vector<vector<string>> &cache, int pid);
+vector<vector<string>> PageAlloc(int numpgs, int pgsize);
+int LRU(vector<vector<string>> pages);
+int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds);
 int getFrameNumber(string physicalAddress);
 
 //Address Manipulation Method Declarations
@@ -232,9 +232,9 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 }//end outputEachMemRefInfo()
 
 //generate a cache and resize to the number of sets in config and set each set size from config
-vector<vector<int>> generateCache(int &sets, int &setSize)
+vector<vector<string>> generateCache(int &sets, int &setSize)
 {
-    vector<vector<int>> cache;
+    vector<vector<string>> cache;
 
     cache.resize((int)sets);
 
@@ -246,12 +246,12 @@ vector<vector<int>> generateCache(int &sets, int &setSize)
     return cache;
 }
 
-//replaces a page in a page list
+/*//replaces a page in a page list
 //L1, L2, L3 are caches
 //p1 is new page
 //pgs is existing pages
 //i is location in pgs of page being replaced
-void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2, vector<vector<int>> L3, int p1, vector<int> pgs, int i)
+void ReplacePage(vector<vector<string>> L1, vector<vector<string>> L2, vector<vector<string>> L3, int p1, vector<int> pgs, int i)
 {
     //finds if there is existing pid of that page in each cache, and replaces with null (-1)
     FindItem(L1, pgs[i]);
@@ -262,21 +262,21 @@ void ReplacePage(vector<vector<int>> L1, vector<vector<int>> L2, vector<vector<i
 }
 
 //finds pid of replaced page and places null where pid is found
-void FindItem(vector<vector<int>> &cache, int pid)
+void FindItem(vector<vector<string>> &cache, string pid)
 {
     //searches for a pid in the cache, and if exists replace with null (-1)
-    for (vector<int> &v : cache)
+    for (vector<string> &v : cache)
     {
         replace(v.begin(), v.end(), pid, -1);
     }
-}
+}*/
 
-//allocates a chuck in memory for physical pages
+/*//allocates a chuck in memory for physical pages
 //use as pages[pagenum][pageloc]
-vector<vector<int>> PageAlloc(int numpgs, int pgsize)
+vector<vector<string>> PageAlloc(int numpgs, int pgsize)
 {
     //2D vector to return from page allocation
-    vector<vector<int>> pgs;
+    vector<vector<string>> pgs;
 
     //Sets the rows to the number of pages
     //Sets the columns to the page size
@@ -284,13 +284,13 @@ vector<vector<int>> PageAlloc(int numpgs, int pgsize)
     pgs.resize(numpgs, vector<int>(pgsize, -1));
 
     return pgs;
-}
+}*/
 
 //gets least recently used page
 //returns index of page
 //assuming least recently used is being tracked
 //by very last int on the page
-int LRU(vector<vector<int>> pages)
+int LRU(vector<vector<string>> pages)
 {
     int LRU = 0;
     for(int i = 0; i < pages.size(); i++)
@@ -306,35 +306,53 @@ int LRU(vector<vector<int>> pages)
 
 //searches the cahce for the process, if there return -1
 //otherwise add the process to the page table and return false
-int HitMiss(string virtAddress, vector<vector<int>> cache, vector<vector<int>> pageTable, string baseAddress, string bounds)
+int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds)
 {
-    string s = virtAddress.substr(0,4);
+
     string physicalAddress, frameNumber;
 
-    int search = toInt(s);
+    string offset, index, tag;
 
-    bool inCache = false;
+    //return value
+    //1 = hit
+    //2 = conflict miss
+    //3 - compulsory miss
+    int retnum = 0;
+
+    offset = virtAddress.substr(1,10);
+    index = virtAddress.substr(2,8);
+    tag = virtAddress.substr(5,0);
+
+    bool hit = false;
 
     for(int i = 0; i < cache.size(); i++)
     {
-        if(search = cache[i][1])
+        if(retnum > 0)
         {
-            inCache = true;
+            break;
+        }
+
+        if(tag.compare(cache[i][1].substr(5,0)) == 0)
+        {
+            if(index.compare(cache[i][1].substr(2,8)))
+            {
+                if(offset.compare(cache[i][1].substr(1,10)) != 0)
+                {
+                    retnum = 1;
+                }
+            }
+        }
+        else if(index.compare(cache[i][1].substr(2,8)))
+        {
+            retnum = 2;
+        }
+        else
+        {
+            retnum = 3;
         }
     }
 
-    if(inCache)
-    {
-        return -1;
-    }
-
-    else
-    {
-        //put in page table
-
-        //return position in page table
-        return -100;
-    }
+    return retnum;
 }
 
 //gets the frame number from the frame number 
@@ -401,9 +419,9 @@ int toInt(string i)
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> memRefs)
 {
     //Caches (NOT DONE)
-    vector<vector<int>> L1;
-    vector<vector<int>> L2;
-    vector<vector<int>> L3;
+    vector<vector<string>> L1;
+    vector<vector<string>> L2;
+    vector<vector<string>> L3;
 
     //Page Table (Done, but needs to be integrated)
 
@@ -433,6 +451,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //===================================//
                         //Simulation execution code goes here//
                         //===================================//
+
+                        //Direct
+
                     }
                 }
                 else if (insertedConfig.L3Active == false)
