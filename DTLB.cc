@@ -12,6 +12,7 @@ DTLB::DTLB(int sets, int size)
 {
     this->numSets = sets;
     this->setSize = size;
+    this->LRUCounter = 0;
 
     //Sets 2d vector to have specified number of sets and set size
     dtlbSets = vector<vector<DTLBEntry>>(sets, vector<DTLBEntry>(size));
@@ -27,7 +28,40 @@ DTLB::~DTLB(){}
 //Will not insert if it is already within DTLB in order to avoid duplicate translations taking multiple slots
 void DTLB::insertRecentAddress(int address, int frame)
 {
-    //NOT DONE
+    int lowCol;    //Keeps track of column index with lowest LRU number seen so far
+    int lowRow;    //Keeps track of row index with lowest LRU number seen so far
+    int lowNum = 1000000000;    //Number for comparison of LRUNums (Starts at very high number for first comparison)
+
+    //Iterate through 2D DTLB vector to determine which one with the lowers LRUNum to insert the address and frame into
+    for(int i = 0; i < dtlbSets.size(); i++)
+    {
+        for(int j = 0; j < dtlbSets[i].size(); j++)
+        {
+            if(dtlbSets[i][j].LRUNum < lowNum)
+            {
+                //Sets lowNum to currently lowest found LRUNum in DTLB and saves location
+                lowNum = dtlbSets[i][j].LRUNum;
+
+                //Saves lowest found LRUNum location so far
+                lowCol = i;
+                lowRow = j;
+            }
+        }
+    }
+
+
+    //Create new DTLBEntry with inserted address, frame and proper valid bit and current LRUCounter value
+    DTLBEntry newEntry;
+    newEntry.validBit = true;
+    newEntry.pageNum = address;
+    newEntry.frameNum = frame;
+    newEntry.LRUNum = LRUCounter;
+
+    //Insert new DTLBEntry into DTLB
+    dtlbSets[lowCol][lowRow] = newEntry;
+
+    //Increment LRUCounter by one for proper LRU ordering
+    this->LRUCounter++;
 }
 
 

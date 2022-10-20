@@ -11,9 +11,11 @@ public:
     DTLB(int numSets, int setSize);
     ~DTLB();
 
-    int numSets;
-    int setSize;
-    std::vector<std::vector<DTLBEntry>> dtlbSets;
+    int numSets;    //Number of sets within DTLB
+    int setSize;    //Size of each set within DTLB
+    int LRUCounter; //Counter for the LRUNum within each DTLBEntry (Counts up every time addresses are modified in any way)
+
+    std::vector<std::vector<DTLBEntry>> dtlbSets;   //2D vector of address translations
 
     void insertRecentAddress(int address, int frame);
     bool checkForAddress(int checkAddr);
