@@ -41,6 +41,7 @@ struct MemRefDec
 {
     string type;          //Memory Access Type (Can be 'R' or 'W')
     unsigned int address; //Unsigned int Decimal Address (Ranges from 0 (8-bit) to 4294967295 (32-bit unsigned))
+    string stringAddress; //String version of address (in hex form)
 };
 
 //Struct for keeping info about every memory reference that traverses the hierarchy
@@ -65,6 +66,7 @@ struct MemRefInfo
     int L3Tag;
     int L3Index;
     string L3Result;
+    string stringAddress; //String version of address (in hex form)
 };
 
 
@@ -138,6 +140,7 @@ vector<MemRefDec> insertTrace(vector<MemRefDec> memRefDecVector)
         //Split RawMemRef into two strings for tempRef variable
         tempRef.type = RawMemRef.substr(0, stringIndex);
         tempRef.address = (unsigned int)strtoll(RawMemRef.substr(stringIndex + 1).c_str(), NULL, 16);
+        tempRef.stringAddress = RawMemRef.substr(stringIndex + 1);
 
         //Insert tempRef variable into memRefDecVector
         memRefDecVector.push_back(tempRef);
@@ -174,6 +177,7 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
         tempInfo.L3Tag = 0;
         tempInfo.L3Index = 0;
         tempInfo.L3Result = "null";
+        tempInfo.stringAddress = memRefDecVector[i].stringAddress;
         
         //Add tempInfo to memInfoVector
         memInfoVector.push_back(tempInfo);
@@ -183,7 +187,7 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
 
 }//end initializeMemRefInfo()
 
-//Method for outputing memory addresses in both Hex and Decimal form
+//Method for outputing memory addresses in both Hex and Decimal form (and a copy in string form)
 void outputDecAndHex(vector<MemRefDec> memRefDecVector)
 {
         //Show every memory trace in both Decimal and Hex form and exit loop
