@@ -36,5 +36,17 @@ void DTLB::insertRecentAddress(int address, int frame)
 //Returns whether inserted address is within the DTLB
 bool DTLB::checkForAddress(int checkAddr)
 {
-    return false; //NOT DONE
+    //Iterate through 2D DTLB vector to determine if virtual address translation is already within DTLB
+    for(int i = 0; i < dtlbSets.size(); i++)
+    {
+        for(int j = 0; j < dtlbSets[i].size(); j++)
+        {
+            if(checkAddr == dtlbSets[i][j].pageNum)
+            {
+                return true; //Returns true if any of the addresses match
+            }
+        }
+    }
+
+    return false; //Will only get here and return false if none of the virtual addresses match
 }
