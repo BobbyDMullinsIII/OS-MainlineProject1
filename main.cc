@@ -190,7 +190,7 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
 //Method for outputing memory addresses in both Hex and Decimal form (and a copy in string form)
 void outputDecAndHex(vector<MemRefDec> memRefDecVector)
 {
-        //Show every memory trace in both Decimal and Hex form and exit loop
+    //Show every memory trace in both Decimal and Hex form and exit loop
     cout << "\n\nMemory References (Hex|Decimal):\n";
     for (int i = 0; i != memRefDecVector.size(); i++)
     {
@@ -205,7 +205,7 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 {
     cout << "\n";
     cout << "\n";
-    cout << "Addr Virtual  Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
+    cout << "Addr          Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
     cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
     cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
     for (int i = 0; i != memInfoVector.size(); i++)
