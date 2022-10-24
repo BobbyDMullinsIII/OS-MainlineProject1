@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
 #include "TraceConfig.hpp"
 using namespace std;
 
@@ -16,28 +17,28 @@ TraceConfig::TraceConfig()
     this->numPhysPages = -1;
     this->pageSize = -1;
     this->pageTableIndexBits = -1;
-    this->pageOffsetBits = 8;
+    this->pageOffsetBits = -1;
 
     this->L1NumSets = -1;
     this->L1SetSize = -1;
     this->L1LineSize = -1;
     this->L1WriteThrough = false;
     this->L1IndexBits = -1;
-    this->L1OffsetBits = 4;
+    this->L1OffsetBits = -1;
 
     this->L2NumSets = -1;
     this->L2SetSize = -1;
     this->L2LineSize = -1;
     this->L2WriteThrough = false;
     this->L2IndexBits = -1;
-    this->L2OffsetBits = 4;
+    this->L2OffsetBits = -1;
 
     this->L3NumSets = -1;
     this->L3SetSize = -1;
     this->L3LineSize = -1;
     this->L3WriteThrough = false;
     this->L3IndexBits = -1;
-    this->L3OffsetBits = 4;
+    this->L3OffsetBits = -1;
 
     this->VirtAddressActive = false;
     this->TLBActive = false;
@@ -51,6 +52,7 @@ TraceConfig::~TraceConfig(){}
 //Method for outputting all the initial config variable values within the TraceConfig object
 void TraceConfig::outputConfigValues()
 {
+    cout << "\n";
     cout << "Data TLB contains " << numTLBSets << " sets.\n";
     cout << "Each set contains " << TLBSetSize << " entries.\n";
     cout << "Number of bits used for the index is " << TLBIndexBits << ".\n";
@@ -86,6 +88,7 @@ void TraceConfig::outputConfigValues()
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
     cout << "L2Active: " << boolalpha << L2Active << "\n";
     cout << "L3Active: " << boolalpha << L3Active << "\n";
+    cout << "\n";
 
 }//end outputConfigValues()
 
@@ -135,7 +138,7 @@ void TraceConfig::insertConfig()
         TLBSetSize = tempInt;
     }
 
-    TLBIndexBits = numBitsNeeded(TLBSetSize); //Sets number of TLB index bits according to numTLBSets
+    TLBIndexBits = log2(numTLBSets); //Sets number of TLB index bits according to numTLBSets
 
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"Page Table configuration" info line
@@ -191,7 +194,8 @@ void TraceConfig::insertConfig()
         pageSize = tempInt;
     }
 
-    pageTableIndexBits = numBitsNeeded(numVirtPages); //Sets number of L1 index bits according to numVirtPages
+    pageTableIndexBits = log2(numVirtPages); //Sets number of L1 index bits according to numVirtPages
+    pageOffsetBits = log2(pageSize);
 
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"L1 Cache configuration" info line
@@ -267,7 +271,8 @@ void TraceConfig::insertConfig()
         { L1WriteThrough = false; }
     }
 
-    L1IndexBits = numBitsNeeded(L1NumSets); //Sets number of L1 index bits according to L1NumSets
+    L1IndexBits = log2(L1NumSets); //Sets number of L1 index bits according to L1NumSets
+    L1OffsetBits = log2(L1LineSize); //Sets number of offset bits according to line size
 
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"L2 Cache configuration" info line
@@ -343,7 +348,8 @@ void TraceConfig::insertConfig()
         { L2WriteThrough = false; }
     }
 
-    L2IndexBits = numBitsNeeded(L2NumSets); //Sets number of L2 index bits according to L2NumSets
+    L2IndexBits = log2(L2NumSets); //Sets number of L2 index bits according to L2NumSets
+    L2OffsetBits = log2(L2LineSize); //Sets number of offset bits according to line size
 
     getline(filein, currentLine); //blank line
     getline(filein, currentLine); //"L3 Cache configuration" info line
@@ -419,7 +425,8 @@ void TraceConfig::insertConfig()
         { L3WriteThrough = false; }
     }
 
-    L3IndexBits = numBitsNeeded(L3NumSets); //Sets number of L3 index bits according to L3NumSets
+    L3IndexBits = log2(L3NumSets); //Sets number of L3 index bits according to L3NumSets
+    L3OffsetBits = log2(L3LineSize); //Sets number of offset bits according to line size
 
     getline(filein, currentLine); //blank line
 

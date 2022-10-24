@@ -206,7 +206,6 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector)
 void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 {
     cout << "\n";
-    cout << "\n";
     cout << "Addr          Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
     cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
     cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
@@ -232,7 +231,6 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
         memInfoVector[i].L3Index,
         memInfoVector[i].L3Result.c_str());
     }
-    cout << "\n";
     cout << "\n";
 
 }//end outputEachMemRefInfo()
@@ -421,15 +419,15 @@ int toInt(string i)
 //Returns final config values for final output
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> memRefs)
 {
-    //Caches (NOT DONE)
-    vector<vector<string>> L1;
-    vector<vector<string>> L2;
-    vector<vector<string>> L3;
+    //Caches, DTLB, Page Table (In Progress, Needs to be integrated)
+    vector<vector<string>> L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+    vector<vector<string>> L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+    vector<vector<string>> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
+    DTLB tlb = DTLB(insertedConfig.numTLBSets, insertedConfig.TLBSetSize);
+    //(Insert page table declaration & initialization here)
 
-    //Page Table (Done, but needs to be integrated)
 
-    //TLB (NOT DONE)
-
+    //Large if/else tree for Virtual Addresses, TLB, L2, L3
     if(insertedConfig.VirtAddressActive == true)
     {
         if(insertedConfig.TLBActive == true)
@@ -443,20 +441,12 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //L2 == true
                     //L3 == true
 
-                    //Generate Caches
-                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
-                    L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
-
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
-                        //===================================//
-                        //Simulation execution code goes here//
-                        //===================================//
-
-                        //Direct
-
+                        //============================================//
+                        //Do not code here, we are not implementing L3//
+                        //============================================//
                     }
                 }
                 else if (insertedConfig.L3Active == false)
@@ -465,10 +455,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //TLB == true
                     //L2 == true
                     //L3 == false
-
-                    //Generate Caches
-                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
@@ -487,9 +473,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //TLB == true
                     //L2 == false
                     //L3 == false
-
-                    //Generate Caches
-                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
@@ -512,17 +495,12 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //L2 == true
                     //L3 == true
 
-                    //Generate Caches
-                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
-                    L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
-
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
-                        //===================================//
-                        //Simulation execution code goes here//
-                        //===================================//
+                        //============================================//
+                        //Do not code here, we are not implementing L3//
+                        //============================================//
                     }
                 }
                 else if (insertedConfig.L3Active == false)
@@ -531,10 +509,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //TLB == false
                     //L2 == true
                     //L3 == false
-
-                    //Generate Caches
-                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-                    L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
@@ -553,9 +527,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //TLB == false
                     //L2 == false
                     //L3 == false
-
-                    //Generate Caches
-                    L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
@@ -579,17 +550,12 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //L2 == true
                 //L3 == true
 
-                //Generate Caches
-                L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-                L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
-                L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize);
-
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
                 {
-                    //===================================//
-                    //Simulation execution code goes here//
-                    //===================================//
+                    //============================================//
+                    //Do not code here, we are not implementing L3//
+                    //============================================//
                 }
             }
             else if (insertedConfig.L3Active == false)
@@ -598,10 +564,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //TLB == false
                 //L2 == true
                 //L3 == false
-
-                //Generate Caches
-                L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-                L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
 
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
@@ -620,9 +582,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //TLB == false
                 //L2 == false
                 //L3 == false
-
-                //Generate Caches
-                L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
 
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)

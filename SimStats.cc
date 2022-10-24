@@ -53,6 +53,7 @@ void SimStats::prepareCounters()
 //Method for outputting the final simulation statistics
 void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3Active)
 {
+    cout << "\n";
     cout << "Simulation Statistics\n";
     cout << "\n";
     if(TLBActive == true) //Only displays actual stats if TLB cache is active
