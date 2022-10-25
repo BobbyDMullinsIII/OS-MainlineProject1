@@ -418,6 +418,34 @@ int toInt(string i)
     return x;
 }
 
+bitset<32> HextoBinary(string x)
+{
+    stringstream stream;
+
+    stream << hex << x;
+    unsigned v;
+    stream >> v;
+
+    bitset<32> b(v);
+
+    return b;
+}
+
+string BinarytoHex(bitset<32> x)
+{
+    stringstream ss;
+    unsigned n = x.to_ulong();
+    ss << hex << n;
+    string ret = ss.str();
+
+    for_each(ret.begin(), ret.end(), [](char& c)
+    {
+        c = toupper((unsigned char) c);
+    });
+
+    return ret;
+}
+
 //Method for branching to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 //Returns final config values for final output
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> memRefs)
@@ -796,4 +824,27 @@ void Evict(string cache, string address, string addReplace, vector<vector<string
         }
     }
 
+}
+
+void writeAlloc(vector<vector<string>> L1, vector<vector<string>> L2, string address, int blocks)
+{
+    int frameNum = getFrameNumber(address, blocks);
+    for(int i = 0; i < L1.size(); i++)
+    {
+        if(L1[i][1].compare(address) == 0)
+        {
+            break;
+        }
+
+        else if(L2[i][1].compare(address) == 0)
+        {
+            break;
+        }
+
+        else
+        {
+            L1[frameNum][1] = address;
+            L2[frameNum][1] = address;
+        }
+    }
 }
