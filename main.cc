@@ -484,10 +484,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc L2 index
                         //Calc L2 result (hit/miss)
                         //===================================//
-
-                        //Counts number of main memory references, page table references, and disk references
-                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
+  
+                    //Counts number of main memory references, page table references, and disk references
+                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
             else 
@@ -518,10 +518,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc L1/DC index
                         //Calc L1/DC result (hit/miss)
                         //===================================//
-
-                        //Counts number of main memory references, page table references, and disk references
-                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
+
+                    //Counts number of main memory references, page table references, and disk references
+                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
         }
@@ -573,10 +573,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc L2 index
                         //Calc L2 result (hit/miss)
                         //===================================//
-
-                        //Counts number of main memory references, page table references, and disk references
-                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
+
+                    //Counts number of main memory references, page table references, and disk references
+                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
             else 
@@ -604,10 +604,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc L1/DC index
                         //Calc L1/DC result (hit/miss)
                         //===================================//
-
-                        //Counts number of main memory references, page table references, and disk references
-                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
+
+                    //Counts number of main memory references, page table references, and disk references
+                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
         }
@@ -657,10 +657,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Calc L2 index
                     //Calc L2 result (hit/miss)
                     //===================================//
-
-                    //Counts number of main memory references, page table references, and disk references
-                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
+
+                //Counts number of main memory references, page table references, and disk references
+                simStats = calcMemPageDiskRefs(simStats, memRefs);
             }
         }
         else 
@@ -685,10 +685,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Calc L1/DC index
                     //Calc L1/DC result (hit/miss)
                     //===================================//
-
-                    //Counts number of main memory references, page table references, and disk references
-                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
+
+                //Counts number of main memory references, page table references, and disk references
+                simStats = calcMemPageDiskRefs(simStats, memRefs);
             }
         }
     }
