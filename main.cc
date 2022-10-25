@@ -96,6 +96,7 @@ int toInt(string i);
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
+void Evict(string cache, string address, string addReplace, vector<vector<string>> L1, vector<vector<string>> L2);
 
 
 int main()
@@ -753,4 +754,46 @@ SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
     }
 
     return simStats;
+}
+
+//finds the address to evict and replaces with new address
+//cache = the cache being evicted from
+//address = the address being evicted
+//addReplace = the new address
+//L1 = reference to L1 cache
+//L2 = reference to L2 cache
+void Evict(string cache, string address, string addReplace, vector<vector<string>> L1, vector<vector<string>> L2)
+{
+    if(cache.compare("L1") == 0)
+    {
+        for(int i = 0; i < L1.size(); i++)
+        {
+            if(L1[i][1].compare(address) == 0)
+            {
+                L1[i][1] = addReplace;
+                break;
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0; i < L1.size(); i++)
+        {
+            if(L1[i][1].compare(address) == 0)
+            {
+                L1[i][1] = addReplace;
+                break;
+            }
+        }
+
+        for(int i = 0; i < L2.size(); i++)
+        {
+            if(L2[i][1].compare(address) == 0)
+            {
+                L2[i][1] = addReplace;
+                break;
+            }
+        }
+    }
+
 }
