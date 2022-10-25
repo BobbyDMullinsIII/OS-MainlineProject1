@@ -50,7 +50,7 @@ struct MemRefInfo
 {
     //Exactly matches project specifications
     string type;
-    unsigned int virtAddress;
+    unsigned int address;
     int virtPageNum;
     int pageOffset;
     int TLBTag;
@@ -93,7 +93,7 @@ string toHex(int i);
 int toInt(string i);
 
 //Other Methods
-SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> memRefs);
+SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> &memRefs);
 SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
 void Evict(string cache, string address, string addReplace, vector<vector<string>> L1, vector<vector<string>> L2);
@@ -165,7 +165,7 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
     for (int i = 0; i != memRefDecVector.size(); i++)
     {
         tempInfo.type = memRefDecVector[i].type;
-        tempInfo.virtAddress = memRefDecVector[i].address;
+        tempInfo.address = memRefDecVector[i].address;
         tempInfo.virtPageNum = 0;
         tempInfo.pageOffset = 0;
         tempInfo.TLBTag = 0;
@@ -216,7 +216,7 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
     {
         printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6x %3x %4s %6x %3x %4s %6x %3x %4s\n", 
         memInfoVector[i].type.c_str(),
-        memInfoVector[i].virtAddress,
+        memInfoVector[i].address,
         memInfoVector[i].virtPageNum,
         memInfoVector[i].pageOffset,
         memInfoVector[i].TLBTag,
@@ -446,9 +446,37 @@ string BinarytoHex(bitset<32> x)
     return ret;
 }
 
+int getVirtPageNum(int virtAddress, TraceConfig insertedConfig)
+{
+    //Converting address to binary number
+    bitset<32> num = HextoBinary(toHex(virtAddress));
+    string binary = num.to_string();
+
+    //Calculate virtual page number
+    string virtPageNum = binary.substr(0, binary.length()-(insertedConfig.pageOffsetBits));
+    bitset<32> binVirtNum(virtPageNum);
+    cout << BinarytoHex(binVirtNum) << "\n";
+
+    return toInt(BinarytoHex(binVirtNum));
+}
+
+int getOffset(int virtAddress, TraceConfig insertedConfig)
+{
+    //Converting address to binary number
+    bitset<32> num = HextoBinary(toHex(virtAddress));
+    string binary = num.to_string();
+
+    //Calculate offset
+    string offset = binary.substr((binary.length()-(insertedConfig.pageOffsetBits)), insertedConfig.pageOffsetBits);
+    bitset<32> binOffset(offset);
+    cout << BinarytoHex(binOffset) << "\n";
+                        
+    return toInt(BinarytoHex(binOffset));
+}
+
 //Method for branching to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 //Returns final config values for final output
-SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> memRefs)
+SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> &memRefs)
 {
     //Caches, DTLB, Page Table (In Progress, Needs to be integrated)
     vector<vector<string>> L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
@@ -496,10 +524,14 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Increases read or write counters
                         simStats = checkReadOrWrite(i, simStats, memRefs);
 
+                        //Get virtual page number and offset
+                        memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
+                        memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
+
                         //===================================//
                         //Simulation execution code goes here//
-                        //Calc virtual page number
-                        //Calc page offset
+                        //Calc virtual page number (DONE)
+                        //Calc page offset (DONE)
                         //Calc TLB tag
                         //Calc TLB index
                         //Calc TLB result (hit/miss)
