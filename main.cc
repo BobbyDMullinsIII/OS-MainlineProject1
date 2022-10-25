@@ -472,7 +472,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Simulation execution code goes here//
                         //Calc virtual page number
                         //Calc page offset
-                        //Calc TLB tab
+                        //Calc TLB tag
                         //Calc TLB index
                         //Calc TLB result (hit/miss)
                         //Calc Page Table result (hit/miss)
@@ -509,7 +509,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Simulation execution code goes here//
                         //Calc virtual page number
                         //Calc page offset
-                        //Calc TLB tab
+                        //Calc TLB tag
                         //Calc TLB index
                         //Calc TLB result (hit/miss)
                         //Calc Page Table result (hit/miss)
