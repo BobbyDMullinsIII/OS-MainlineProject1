@@ -94,6 +94,8 @@ int toInt(string i);
 
 //Other Methods
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> memRefs);
+SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
+SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
 
 
 int main()
@@ -444,6 +446,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Increases read or write counters
+                        simStats = checkReadOrWrite(i, simStats, memRefs);
+
                         //============================================//
                         //Do not code here, we are not implementing L3//
                         //============================================//
@@ -459,9 +464,28 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Increases read or write counters
+                        simStats = checkReadOrWrite(i, simStats, memRefs);
+
                         //===================================//
                         //Simulation execution code goes here//
+                        //Calc virtual page number
+                        //Calc page offset
+                        //Calc TLB tab
+                        //Calc TLB index
+                        //Calc TLB result (hit/miss)
+                        //Calc Page Table result (hit/miss)
+                        //Calc physical page number
+                        //Calc L1/DC tag
+                        //Calc L1/DC index
+                        //Calc L1/DC result (hit/miss)
+                        //Calc L2 tag
+                        //Calc L2 index
+                        //Calc L2 result (hit/miss)
                         //===================================//
+
+                        //Counts number of main memory references, page table references, and disk references
+                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
                 }
             }
@@ -477,9 +501,25 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Increases read or write counters
+                        simStats = checkReadOrWrite(i, simStats, memRefs);
+
                         //===================================//
                         //Simulation execution code goes here//
+                        //Calc virtual page number
+                        //Calc page offset
+                        //Calc TLB tab
+                        //Calc TLB index
+                        //Calc TLB result (hit/miss)
+                        //Calc Page Table result (hit/miss)
+                        //Calc physical page number
+                        //Calc L1/DC tag
+                        //Calc L1/DC index
+                        //Calc L1/DC result (hit/miss)
                         //===================================//
+
+                        //Counts number of main memory references, page table references, and disk references
+                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
                 }
             }
@@ -498,6 +538,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Increases read or write counters
+                        simStats = checkReadOrWrite(i, simStats, memRefs);
+
                         //============================================//
                         //Do not code here, we are not implementing L3//
                         //============================================//
@@ -513,9 +556,25 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Increases read or write counters
+                        simStats = checkReadOrWrite(i, simStats, memRefs);
+
                         //===================================//
                         //Simulation execution code goes here//
+                        //Calc virtual page number
+                        //Calc page offset
+                        //Calc Page Table result (hit/miss)
+                        //Calc physical page number
+                        //Calc L1/DC tag
+                        //Calc L1/DC index
+                        //Calc L1/DC result (hit/miss)
+                        //Calc L2 tag
+                        //Calc L2 index
+                        //Calc L2 result (hit/miss)
                         //===================================//
+
+                        //Counts number of main memory references, page table references, and disk references
+                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
                 }
             }
@@ -531,9 +590,22 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Increases read or write counters
+                        simStats = checkReadOrWrite(i, simStats, memRefs);
+
                         //===================================//
                         //Simulation execution code goes here//
+                        //Calc virtual page number
+                        //Calc page offset
+                        //Calc Page Table result (hit/miss)
+                        //Calc physical page number
+                        //Calc L1/DC tag
+                        //Calc L1/DC index
+                        //Calc L1/DC result (hit/miss)
                         //===================================//
+
+                        //Counts number of main memory references, page table references, and disk references
+                        simStats = calcMemPageDiskRefs(simStats, memRefs);
                     }
                 }
             }
@@ -553,6 +625,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
                 {
+                    //Increases read or write counters
+                    simStats = checkReadOrWrite(i, simStats, memRefs);
+
                     //============================================//
                     //Do not code here, we are not implementing L3//
                     //============================================//
@@ -568,9 +643,22 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
                 {
+                    //Increases read or write counters
+                    simStats = checkReadOrWrite(i, simStats, memRefs);
+
                     //===================================//
                     //Simulation execution code goes here//
+                    //Calc physical page number
+                    //Calc L1/DC tag
+                    //Calc L1/DC index
+                    //Calc L1/DC result (hit/miss)
+                    //Calc L2 tag
+                    //Calc L2 index
+                    //Calc L2 result (hit/miss)
                     //===================================//
+
+                    //Counts number of main memory references, page table references, and disk references
+                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
         }
@@ -586,9 +674,19 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
                 {
+                    //Increases read or write counters
+                    simStats = checkReadOrWrite(i, simStats, memRefs);
+
                     //===================================//
                     //Simulation execution code goes here//
+                    //Calc physical page number
+                    //Calc L1/DC tag
+                    //Calc L1/DC index
+                    //Calc L1/DC result (hit/miss)
                     //===================================//
+
+                    //Counts number of main memory references, page table references, and disk references
+                    simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
         }
@@ -606,4 +704,53 @@ void DirectAssociative(vector<vector<string>> L1, vector<vector<string>> L2, str
 
     L1[frameNum][1] = virtualAddress;
     L2[frameNum][1] = virtualAddress;
+}
+
+//Method for returning to a SimStats object whether or not the memory reference was a read or write
+//Returns modified SimStats object with updated Read/Write counters
+SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs)
+{
+    if(memRefs[i].type == "R")
+    {
+        simStats.readsCount++;
+    }
+    else if (memRefs[i].type == "W")
+    {
+        simStats.writesCount++;
+    }
+
+    return simStats;
+}
+
+//Method for calculating the number of main memory, page table, and disk references
+//Returns modified SimStats object with updated main memory, page table, and disk reference counters
+SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
+{
+    //Goes through every memory reference to counter main memory, page table, and disk references
+    for(int i = 0; i < memRefs.size(); i++)
+    {
+        //If both caches miss (or just DC if L2 cache is disabled), increase main memory reference counter
+        //(This might be correct???)
+        if(memRefs[i].L1Result == "miss" && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null"))
+        {
+            simStats.mainMemRefsCount++;
+        }
+
+        //If memory reference accesses the page table at all, increase page table reference counter
+        if(memRefs[i].PTResult == "hit" || memRefs[i].PTResult == "miss")
+        {
+            simStats.pageTableRefsCount++;
+        }
+
+        //If memory reference misses all of the components (including null due to toggleable TLB and L2 cache), increase disk reference counter
+        if((memRefs[i].TLBResult == "miss" || memRefs[i].TLBResult == "null")
+        && memRefs[i].PTResult == "miss" 
+        && memRefs[i].L1Result == "miss" 
+        && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null"))
+        {
+            simStats.diskRefsCount++;
+        }
+    }
+
+    return simStats;
 }

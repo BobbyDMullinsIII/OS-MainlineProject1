@@ -89,6 +89,16 @@ void TraceConfig::outputConfigValues()
     cout << "L2Active: " << boolalpha << L2Active << "\n";
     cout << "L3Active: " << boolalpha << L3Active << "\n";
     cout << "\n";
+    if(VirtAddressActive == true)
+    {
+        cout << "The addresses read in are virtual addresses.\n";
+        cout << "\n";
+    }
+    else
+    {
+        cout << "The addresses read in are physical addresses.\n";
+        cout << "\n";
+    }
 
 }//end outputConfigValues()
 

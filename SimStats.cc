@@ -66,7 +66,7 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
         }
         else
         {
-            cout << "dtlb hit ratio: " << (double)(dtlbHitCount/(dtlbHitCount+dtlbMissCount)) << "\n";
+            cout << "dtlb hit ratio: " << (double)((double)dtlbHitCount/((double)dtlbHitCount+(double)dtlbMissCount)) << "\n";
         }
     }
     else
@@ -84,7 +84,7 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
     }
     else
     {
-        cout << "pt hit ratio: " << (double)(ptHitCount/(ptHitCount+ptFaultCount)) << "\n";
+        cout << "pt hit ratio: " << (double)((double)ptHitCount/((double)ptHitCount+(double)ptFaultCount)) << "\n";
     }
     cout << "\n";
     cout << "dc hits: " << dcHitCount << "\n";
@@ -95,7 +95,7 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
     }
     else
     {
-        cout << "dc hit ratio: " << (double)(dcHitCount/(dcHitCount+dcMissCount)) << "\n";
+        cout << "dc hit ratio: " << (double)((double)dcHitCount/((double)dcHitCount+(double)dcMissCount)) << "\n";
     }
     cout << "\n";
     if(L2Active == true) //Only displays actual stats if L2 cache is active
@@ -108,7 +108,7 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
         }
         else
         {
-            cout << "L2 hit ratio: " << (double)(l2HitCount/(l2HitCount+l2MissCount)) << "\n";
+            cout << "L2 hit ratio: " << (double)((double)l2HitCount/((double)l2HitCount+(double)l2MissCount)) << "\n";
         }
     }
     else
@@ -128,7 +128,7 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
         }
         else
         {
-            cout << "L3 hit ratio: " << (double)(l3HitCount/(l3HitCount+l3MissCount)) << "\n";
+            cout << "L3 hit ratio: " << (double)((double)l3HitCount/((double)l3HitCount+(double)l3MissCount)) << "\n";
         }
     }
     else
@@ -146,7 +146,7 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
     }
     else
     {
-        cout << "Ratio of Reads: " << (double)(readsCount/(readsCount+writesCount)) << "\n";
+        cout << "Ratio of Reads: " << (double)((double)readsCount/((double)readsCount+(double)writesCount)) << "\n";
     }
     cout << "\n";
     cout << "main memory refs: " << mainMemRefsCount << "\n";
