@@ -528,7 +528,17 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
                         memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
                         
-                        
+                        string hex = toHex(memRefs[i].address);
+                        string binary =  HextoBinary(hex).to_string();
+
+
+                        string index = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+
+                        cout << "index " << i << " " << index << "\n";
+
+                        string tag = binary.substr(0, binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+
+                        cout << "tag " << i << " " << tag << "\n";
 
                         //===================================//
                         //Simulation execution code goes here//
