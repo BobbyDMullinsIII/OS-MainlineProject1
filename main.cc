@@ -83,7 +83,8 @@ void ReplacePage(vector<vector<string>> L1, vector<vector<string>> L2 , int p1, 
 void FindItem(vector<vector<string>> &cache, int pid);
 vector<vector<string>> PageAlloc(int numpgs, int pgsize);
 int LRU(vector<vector<string>> pages);
-int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds);
+//int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds);
+int HitMiss(string virtAddress, vector<vector<string>> cache);
 int getFrameNumber(string virtualAddress, int blocks);
 void DirectAssociative(vector<vector<string>>* L1, vector<vector<string>>* L2, string virtualAddress, string baseAddress, string bounds, int blocks);
 
@@ -313,7 +314,7 @@ int LRU(vector<vector<string>> pages)
 
 //searches the cahce for the process, if there return -1
 //otherwise add the process to the page table and return false
-int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds)
+int HitMiss(string virtAddress, vector<vector<string>> cache)
 {
 
     string physicalAddress, frameNumber;
@@ -329,8 +330,6 @@ int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<stri
     offset = virtAddress.substr(1,10);
     index = virtAddress.substr(2,8);
     tag = virtAddress.substr(5,0);
-
-    bool hit = false;
 
     for(int i = 0; i < cache.size(); i++)
     {
@@ -527,6 +526,46 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Get virtual page number and offset
                         memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
                         memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
+                        
+                        //L1 information
+                        string hex = toHex(memRefs[i].address);
+
+                        //for 2-way set associative
+                        //search L1
+                        for(int i = 0; i < L1.size(); i++)
+                        {
+                            if(L1[i][1].compare(hex) == 0)
+                            {
+                                memRefs[i].L1Index = toInt(hex.substr(2,8));
+                                memRefs[i].L1Tag = toInt(hex.substr(5,0));
+                                if (HitMiss(hex, L1) == 1)
+                                {
+                                    memRefs[i].L1Result = "Hit";
+                                }
+                                else
+                                {
+                                    memRefs[i].L1Result = "Miss";
+                                }
+                            }
+                        }
+
+                        //search L2
+                        for(int i = 0; i < L2.size(); i++)
+                        {
+                            if(L2[i][1].compare(hex) == 0)
+                            {
+                                memRefs[i].L1Index = toInt(hex.substr(2,8));
+                                memRefs[i].L1Tag = toInt(hex.substr(5,0));
+                                if (HitMiss(hex, L2) == 1)
+                                {
+                                    memRefs[i].L1Result = "Hit";
+                                }
+                                else
+                                {
+                                    memRefs[i].L1Result = "Miss";
+                                }
+                            }
+                        }
 
                         //===================================//
                         //Simulation execution code goes here//
@@ -537,12 +576,12 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc TLB result (hit/miss)
                         //Calc Page Table result (hit/miss)
                         //Calc physical page number
-                        //Calc L1/DC tag
-                        //Calc L1/DC index
-                        //Calc L1/DC result (hit/miss)
-                        //Calc L2 tag
-                        //Calc L2 index
-                        //Calc L2 result (hit/miss)
+                        //Calc L1/DC tag (DONE)
+                        //Calc L1/DC index (DONE)
+                        //Calc L1/DC result (hit/miss) (DONE)
+                        //Calc L2 tag (DONE)
+                        //Calc L2 index (DONE)
+                        //Calc L2 result (hit/miss) (DONE)
                         //===================================//
                     }
   
