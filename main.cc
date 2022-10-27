@@ -78,15 +78,15 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector);
 void outputEachMemRefInfo(vector<MemRefInfo> memInfo);
 
 //Cache & Page Table Method Declarations
-vector<vector<string>> generateCache(int &sets, int &setSize);
-void ReplacePage(vector<vector<string>> L1, vector<vector<string>> L2 , int p1, vector<int> pgs, int i);
-void FindItem(vector<vector<string>> &cache, int pid);
-vector<vector<string>> PageAlloc(int numpgs, int pgsize);
-int LRU(vector<vector<string>> pages);
-//int HitMiss(string virtAddress, vector<vector<string>> cache, vector<vector<string>> pageTable, string baseAddress, string bounds);
-int HitMiss(string virtAddress, vector<vector<string>> cache);
+vector<string> generateCache(int &sets, int &setSize);
+void ReplacePage(vector<string> L1, vector<string> L2 , int p1, vector<int> pgs, int i);
+void FindItem(vector<string> &cache, int pid);
+vector<string> PageAlloc(int numpgs, int pgsize);
+int LRU(vector<string> pages);
+//int HitMiss(string virtAddress, vector<string> cache, vector<string> pageTable, string baseAddress, string bounds);
+int HitMiss(string virtAddress, vector<string> cache);
 int getFrameNumber(string virtualAddress, int blocks);
-void DirectAssociative(vector<vector<string>>* L1, vector<vector<string>>* L2, string virtualAddress, string baseAddress, string bounds, int blocks);
+void DirectAssociative(vector<string>* L1, vector<string>* L2, string virtualAddress, string baseAddress, string bounds, int blocks);
 
 //Address Manipulation Method Declarations
 string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
@@ -97,7 +97,7 @@ int toInt(string i);
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> &memRefs);
 SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
-void Evict(string cache, string address, string addReplace, vector<vector<string>> L1, vector<vector<string>> L2);
+void Evict(string cache, string address, string addReplace, vector<string> L1, vector<string> L2);
 
 
 int main()
@@ -240,15 +240,16 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
 }//end outputEachMemRefInfo()
 
 //generate a cache and resize to the number of sets in config and set each set size from config
-vector<vector<string>> generateCache(int &sets, int &setSize)
+vector<string> generateCache(int &sets, int &setSize)
 {
-    vector<vector<string>> cache;
+    vector<string> cache;
 
     cache.resize((int)sets);
 
     for(int i = 0; i < sets; i++)
     {
         cache[i].resize(setSize);
+        cache[i] = "NULL";
     }
 
     return cache;
@@ -259,7 +260,7 @@ vector<vector<string>> generateCache(int &sets, int &setSize)
 //p1 is new page
 //pgs is existing pages
 //i is location in pgs of page being replaced
-void ReplacePage(vector<vector<string>> L1, vector<vector<string>> L2, vector<vector<string>> L3, int p1, vector<int> pgs, int i)
+void ReplacePage(vector<string> L1, vector<string> L2, vector<string> L3, int p1, vector<int> pgs, int i)
 {
     //finds if there is existing pid of that page in each cache, and replaces with null (-1)
     FindItem(L1, pgs[i]);
@@ -270,7 +271,7 @@ void ReplacePage(vector<vector<string>> L1, vector<vector<string>> L2, vector<ve
 }
 
 //finds pid of replaced page and places null where pid is found
-void FindItem(vector<vector<string>> &cache, string pid)
+void FindItem(vector<string> &cache, string pid)
 {
     //searches for a pid in the cache, and if exists replace with null (-1)
     for (vector<string> &v : cache)
@@ -281,10 +282,10 @@ void FindItem(vector<vector<string>> &cache, string pid)
 
 /*//allocates a chuck in memory for physical pages
 //use as pages[pagenum][pageloc]
-vector<vector<string>> PageAlloc(int numpgs, int pgsize)
+vector<string> PageAlloc(int numpgs, int pgsize)
 {
     //2D vector to return from page allocation
-    vector<vector<string>> pgs;
+    vector<string> pgs;
 
     //Sets the rows to the number of pages
     //Sets the columns to the page size
@@ -298,7 +299,7 @@ vector<vector<string>> PageAlloc(int numpgs, int pgsize)
 //returns index of page
 //assuming least recently used is being tracked
 //by very last int on the page
-int LRU(vector<vector<string>> pages)
+int LRU(vector<string> pages)
 {
     int LRU = 0;
     for(int i = 0; i < pages.size(); i++)
@@ -314,7 +315,7 @@ int LRU(vector<vector<string>> pages)
 
 //searches the cahce for the process, if there return -1
 //otherwise add the process to the page table and return false
-int HitMiss(string virtAddress, vector<vector<string>> cache)
+int HitMiss(string virtAddress, vector<string> cache)
 {
 
     string physicalAddress, frameNumber;
@@ -338,17 +339,17 @@ int HitMiss(string virtAddress, vector<vector<string>> cache)
             break;
         }
 
-        if(tag.compare(cache[i][1].substr(5,0)) == 0)
+        if(tag.compare(cache[i].substr(5,0)) == 0)
         {
-            if(index.compare(cache[i][1].substr(2,8)))
+            if(index.compare(cache[i].substr(2,8)))
             {
-                if(offset.compare(cache[i][1].substr(1,10)) != 0)
+                if(offset.compare(cache[i].substr(1,10)) != 0)
                 {
                     retnum = 1;
                 }
             }
         }
-        else if(index.compare(cache[i][1].substr(2,8)))
+        else if(index.compare(cache[i].substr(2,8)))
         {
             retnum = 2;
         }
@@ -454,7 +455,7 @@ int getVirtPageNum(int virtAddress, TraceConfig insertedConfig)
     //Calculate virtual page number
     string virtPageNum = binary.substr(0, binary.length()-(insertedConfig.pageOffsetBits));
     bitset<32> binVirtNum(virtPageNum);
-    cout << BinarytoHex(binVirtNum) << "\n";
+    //cout << BinarytoHex(binVirtNum) << "\n";
 
     return toInt(BinarytoHex(binVirtNum));
 }
@@ -468,7 +469,7 @@ int getOffset(int virtAddress, TraceConfig insertedConfig)
     //Calculate offset
     string offset = binary.substr((binary.length()-(insertedConfig.pageOffsetBits)), insertedConfig.pageOffsetBits);
     bitset<32> binOffset(offset);
-    cout << BinarytoHex(binOffset) << "\n";
+    //cout << BinarytoHex(binOffset) << "\n";
                         
     return toInt(BinarytoHex(binOffset));
 }
@@ -478,12 +479,12 @@ int getOffset(int virtAddress, TraceConfig insertedConfig)
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> &memRefs)
 {
     //Caches, DTLB, Page Table (In Progress, Needs to be integrated)
-    vector<vector<string>> L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-    vector<vector<string>> L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
-    vector<vector<string>> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
+    cout << "gen L1\n\n";
+    vector<string> L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
+    vector<string> L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
+    vector<string> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
     DTLB tlb = DTLB(insertedConfig.numTLBSets, insertedConfig.TLBSetSize);
     //(Insert page table declaration & initialization here)
-
 
     //Large if/else tree for Virtual Addresses, TLB, L2, L3
     if(insertedConfig.VirtAddressActive == true)
@@ -532,37 +533,43 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
 
                         //for 2-way set associative
                         //search L1
-                        for(int i = 0; i < L1.size(); i++)
+                        for(int j = 0; j < L1.size(); j++)
                         {
-                            if(L1[i][1].compare(hex) == 0)
+                            if(L1[j].compare("NULL") != 0)
                             {
-                                memRefs[i].L1Index = toInt(hex.substr(2,8));
-                                memRefs[i].L1Tag = toInt(hex.substr(5,0));
-                                if (HitMiss(hex, L1) == 1)
+                                if(L1[j].compare(hex) == 0)
                                 {
-                                    memRefs[i].L1Result = "Hit";
-                                }
-                                else
-                                {
-                                    memRefs[i].L1Result = "Miss";
+                                    memRefs[i].L1Index = toInt(hex.substr(2,8));
+                                    memRefs[i].L1Tag = toInt(hex.substr(5,0));
+                                    if (HitMiss(hex, L1) == 1)
+                                    {
+                                        memRefs[i].L1Result = "Hit";
+                                    }
+                                    else
+                                    {
+                                        memRefs[i].L1Result = "Miss";
+                                    }
                                 }
                             }
                         }
 
                         //search L2
-                        for(int i = 0; i < L2.size(); i++)
+                        for(int j = 0; j < L2.size(); j++)
                         {
-                            if(L2[i][1].compare(hex) == 0)
+                            if(L2[j].compare("NULL") != 0)
                             {
-                                memRefs[i].L1Index = toInt(hex.substr(2,8));
-                                memRefs[i].L1Tag = toInt(hex.substr(5,0));
-                                if (HitMiss(hex, L2) == 1)
+                                if(L2[j].compare(hex) == 0)
                                 {
-                                    memRefs[i].L1Result = "Hit";
-                                }
-                                else
-                                {
-                                    memRefs[i].L1Result = "Miss";
+                                    memRefs[i].L2Index = toInt(hex.substr(2,8));
+                                    memRefs[i].L2Tag = toInt(hex.substr(5,0));
+                                    if (HitMiss(hex, L2) == 1)
+                                    {
+                                        memRefs[i].L2Result = "Hit";
+                                    }
+                                    else
+                                    {
+                                        memRefs[i].L2Result = "Miss";
+                                    }
                                 }
                             }
                         }
@@ -796,14 +803,14 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
 }
 
 
-void DirectAssociative(vector<vector<string>> L1, vector<vector<string>> L2, string virtualAddress, string baseAddress, string bounds, int blocks)
+void DirectAssociative(vector<string> L1, vector<string> L2, string virtualAddress, string baseAddress, string bounds, int blocks)
 {
     //direct associative
     string physical = VirtualToPhysical(virtualAddress, baseAddress, bounds);
     int frameNum = getFrameNumber(physical, blocks);
 
-    L1[frameNum][1] = virtualAddress;
-    L2[frameNum][1] = virtualAddress;
+    L1[frameNum] = virtualAddress;
+    L2[frameNum] = virtualAddress;
 }
 
 //Method for returning to a SimStats object whether or not the memory reference was a read or write
@@ -861,15 +868,15 @@ SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
 //addReplace = the new address
 //L1 = reference to L1 cache
 //L2 = reference to L2 cache
-void Evict(string cache, string address, string addReplace, vector<vector<string>> L1, vector<vector<string>> L2)
+void Evict(string cache, string address, string addReplace, vector<string> L1, vector<string> L2)
 {
     if(cache.compare("L1") == 0)
     {
         for(int i = 0; i < L1.size(); i++)
         {
-            if(L1[i][1].compare(address) == 0)
+            if(L1[i].compare(address) == 0)
             {
-                L1[i][1] = addReplace;
+                L1[i] = addReplace;
                 break;
             }
         }
@@ -878,18 +885,18 @@ void Evict(string cache, string address, string addReplace, vector<vector<string
     {
         for(int i = 0; i < L1.size(); i++)
         {
-            if(L1[i][1].compare(address) == 0)
+            if(L1[i].compare(address) == 0)
             {
-                L1[i][1] = addReplace;
+                L1[i] = addReplace;
                 break;
             }
         }
 
         for(int i = 0; i < L2.size(); i++)
         {
-            if(L2[i][1].compare(address) == 0)
+            if(L2[i].compare(address) == 0)
             {
-                L2[i][1] = addReplace;
+                L2[i] = addReplace;
                 break;
             }
         }
@@ -897,25 +904,25 @@ void Evict(string cache, string address, string addReplace, vector<vector<string
 
 }
 
-void writeAlloc(vector<vector<string>> L1, vector<vector<string>> L2, string address, int blocks)
+void writeAlloc(vector<string> L1, vector<string> L2, string address, int blocks)
 {
     int frameNum = getFrameNumber(address, blocks);
     for(int i = 0; i < L1.size(); i++)
     {
-        if(L1[i][1].compare(address) == 0)
+        if(L1[i].compare(address) == 0)
         {
             break;
         }
 
-        else if(L2[i][1].compare(address) == 0)
+        else if(L2[i].compare(address) == 0)
         {
             break;
         }
 
         else
         {
-            L1[frameNum][1] = address;
-            L2[frameNum][1] = address;
+            L1[frameNum] = address;
+            L2[frameNum] = address;
         }
     }
 }
