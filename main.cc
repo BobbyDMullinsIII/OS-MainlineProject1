@@ -100,6 +100,7 @@ SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
 void Evict(string cache, string address, string addReplace, vector<string> L1, vector<string> L2);
 
 
+
 int main()
 {
     //==Declaration Section==//
@@ -479,7 +480,6 @@ int getOffset(int virtAddress, TraceConfig insertedConfig)
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> &memRefs)
 {
     //Caches, DTLB, Page Table (In Progress, Needs to be integrated)
-    cout << "gen L1\n\n";
     vector<string> L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
     vector<string> L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
     vector<string> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
@@ -528,51 +528,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
                         memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
                         
-                        //L1 information
-                        string hex = toHex(memRefs[i].address);
-
-                        //for 2-way set associative
-                        //search L1
-                        for(int j = 0; j < L1.size(); j++)
-                        {
-                            if(L1[j].compare("NULL") != 0)
-                            {
-                                if(L1[j].compare(hex) == 0)
-                                {
-                                    memRefs[i].L1Index = toInt(hex.substr(2,8));
-                                    memRefs[i].L1Tag = toInt(hex.substr(5,0));
-                                    if (HitMiss(hex, L1) == 1)
-                                    {
-                                        memRefs[i].L1Result = "Hit";
-                                    }
-                                    else
-                                    {
-                                        memRefs[i].L1Result = "Miss";
-                                    }
-                                }
-                            }
-                        }
-
-                        //search L2
-                        for(int j = 0; j < L2.size(); j++)
-                        {
-                            if(L2[j].compare("NULL") != 0)
-                            {
-                                if(L2[j].compare(hex) == 0)
-                                {
-                                    memRefs[i].L2Index = toInt(hex.substr(2,8));
-                                    memRefs[i].L2Tag = toInt(hex.substr(5,0));
-                                    if (HitMiss(hex, L2) == 1)
-                                    {
-                                        memRefs[i].L2Result = "Hit";
-                                    }
-                                    else
-                                    {
-                                        memRefs[i].L2Result = "Miss";
-                                    }
-                                }
-                            }
-                        }
+                        
 
                         //===================================//
                         //Simulation execution code goes here//
@@ -583,12 +539,12 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc TLB result (hit/miss)
                         //Calc Page Table result (hit/miss)
                         //Calc physical page number
-                        //Calc L1/DC tag (DONE)
-                        //Calc L1/DC index (DONE)
-                        //Calc L1/DC result (hit/miss) (DONE)
-                        //Calc L2 tag (DONE)
-                        //Calc L2 index (DONE)
-                        //Calc L2 result (hit/miss) (DONE)
+                        //Calc L1/DC tag 
+                        //Calc L1/DC index 
+                        //Calc L1/DC result (hit/miss) 
+                        //Calc L2 tag 
+                        //Calc L2 index 
+                        //Calc L2 result (hit/miss) 
                         //===================================//
                     }
   
