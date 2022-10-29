@@ -97,6 +97,7 @@ int toInt(string i);
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> &memRefs);
 SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
+SimStats calcHitMissCounters(SimStats simStats, vector<MemRefInfo> memRefs);
 void Evict(string cache, string address, string addReplace, vector<string> L1, vector<string> L2);
 
 
@@ -558,7 +559,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //===================================//
                     }
   
-                    //Counts number of main memory references, page table references, and disk references
+                    //Finalizes simulation statistic counters
+                    simStats = calcHitMissCounters(simStats, memRefs);
                     simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
@@ -592,7 +594,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //===================================//
                     }
 
-                    //Counts number of main memory references, page table references, and disk references
+                    //Finalizes simulation statistic counters
+                    simStats = calcHitMissCounters(simStats, memRefs);
                     simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
@@ -647,7 +650,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //===================================//
                     }
 
-                    //Counts number of main memory references, page table references, and disk references
+                    //Finalizes simulation statistic counters
+                    simStats = calcHitMissCounters(simStats, memRefs);
                     simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
@@ -678,7 +682,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //===================================//
                     }
 
-                    //Counts number of main memory references, page table references, and disk references
+                    //Finalizes simulation statistic counters
+                    simStats = calcHitMissCounters(simStats, memRefs);
                     simStats = calcMemPageDiskRefs(simStats, memRefs);
                 }
             }
@@ -731,7 +736,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //===================================//
                 }
 
-                //Counts number of main memory references, page table references, and disk references
+                //Finalizes simulation statistic counters
+                simStats = calcHitMissCounters(simStats, memRefs);
                 simStats = calcMemPageDiskRefs(simStats, memRefs);
             }
         }
@@ -759,7 +765,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //===================================//
                 }
 
-                //Counts number of main memory references, page table references, and disk references
+                //Finalizes simulation statistic counters
+                simStats = calcHitMissCounters(simStats, memRefs);
                 simStats = calcMemPageDiskRefs(simStats, memRefs);
             }
         }
@@ -799,7 +806,7 @@ SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs)
 //Returns modified SimStats object with updated main memory, page table, and disk reference counters
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
 {
-    //Goes through every memory reference to counter main memory, page table, and disk references
+    //Goes through every memory reference to count main memory, page table, and disk references
     for(int i = 0; i < memRefs.size(); i++)
     {
         //If both caches miss (or just DC if L2 cache is disabled), increase main memory reference counter
@@ -822,6 +829,67 @@ SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
         && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null"))
         {
             simStats.diskRefsCount++;
+        }
+    }
+
+    return simStats;
+}
+
+//Method for calculating the number of total hits and misses for all of the memory references
+//Returns modified SimStats object with updated hit and miss counters
+SimStats calcHitMissCounters(SimStats simStats, vector<MemRefInfo> memRefs)
+{
+    //Goes through every memory reference to count hits and misses
+    for(int i = 0; i < memRefs.size(); i++)
+    {
+        //Counts TLB hits and misses
+        if(memRefs[i].TLBResult == "hit")
+        {
+            simStats.dtlbHitCount++;
+        }
+        else if (memRefs[i].TLBResult == "miss")
+        {
+            simStats.dtlbMissCount++;
+        }
+
+        //Counts Page Table hits and misses
+        if(memRefs[i].PTResult == "hit")
+        {
+            simStats.ptHitCount++;
+        }
+        else if (memRefs[i].PTResult == "miss")
+        {
+            simStats.ptFaultCount++;
+        }
+
+        //Counts L1/DC Cache hits and misses
+        if(memRefs[i].L1Result == "hit")
+        {
+            simStats.dcHitCount++;
+        }
+        else if (memRefs[i].L1Result == "miss")
+        {
+            simStats.dcMissCount++;
+        }
+        
+        //Counts L2 Cache hits and misses
+        if(memRefs[i].L2Result == "hit")
+        {
+            simStats.l2HitCount++;
+        }
+        else if (memRefs[i].L2Result == "miss")
+        {
+            simStats.l2MissCount++;
+        }
+
+        //Counts L3 Cache hits and misses
+        if(memRefs[i].L3Result == "hit")
+        {
+            simStats.l3HitCount++;
+        }
+        else if (memRefs[i].L3Result == "miss")
+        {
+            simStats.l3MissCount++;
         }
     }
 
