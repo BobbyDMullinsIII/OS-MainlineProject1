@@ -532,14 +532,25 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         string hex = toHex(memRefs[i].address);
                         string binary =  HextoBinary(hex).to_string();
 
+                        //L1 index and tag
+                        //This is correct
+                        string L1index = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        cout << "L1 index " << i << " " << L1index << "\n";
 
-                        string index = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        //THIS IS NOT CORRECT
+                        string L1tag = binary.substr(0, binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        cout << "L1 tag " << i << " " << L1tag << "\n";
 
-                        cout << "index " << i << " " << index << "\n";
 
-                        string tag = binary.substr(0, binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        //L2 index and tag
+                        //This is correct
+                        string L2index = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
+                        cout << "L2 index " << i << " " << L2index << "\n";
 
-                        cout << "tag " << i << " " << tag << "\n";
+                        //THIS IS NOT CORRECT
+                        string L2tag = binary.substr(0, binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
+                        cout << "L2 tag " << i << " " << L2tag << "\n";
+
 
                         //===================================//
                         //Simulation execution code goes here//
@@ -551,10 +562,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc Page Table result (hit/miss)
                         //Calc physical page number
                         //Calc L1/DC tag 
-                        //Calc L1/DC index 
+                        //Calc L1/DC index (DONE)
                         //Calc L1/DC result (hit/miss) 
                         //Calc L2 tag 
-                        //Calc L2 index 
+                        //Calc L2 index (DONE)
                         //Calc L2 result (hit/miss) 
                         //===================================//
                     }
