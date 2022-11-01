@@ -66,21 +66,42 @@ void TraceConfig::outputConfigValues()
     cout << "L1NumSets: " << L1NumSets << "\n";
     cout << "L1SetSize: " << L1SetSize << "\n";
     cout << "L1LineSize: " << L1LineSize << "\n";
-    cout << "L1WriteThrough: " << boolalpha << L1WriteThrough << "\n";
+    if(L1WriteThrough == true)
+    {
+        cout << "L1 uses a no write-allocate and write-through policy.\n";
+    }
+    else if(L1WriteThrough == false)
+    {
+        cout << "L1 uses a write-allocate and write-back policy.\n";
+    }
     cout << "Number of bits used for L1 index is " << L1IndexBits << ".\n";
     cout << "Number of bits used for L1 offset is " << L1OffsetBits << ".\n";
     cout << "\n";
     cout << "L2NumSets: " << L2NumSets << "\n";
     cout << "L2SetSize: " << L2SetSize << "\n";
     cout << "L2LineSize: " << L2LineSize << "\n";
-    cout << "L2WriteThrough: " << boolalpha << L2WriteThrough << "\n";
+    if(L2WriteThrough == true)
+    {
+        cout << "L2 uses a no write-allocate and write-through policy.\n";
+    }
+    else if(L2WriteThrough == false)
+    {
+        cout << "L2 uses a write-allocate and write-back policy.\n";
+    }
     cout << "Number of bits used for L2 index is " << L2IndexBits << ".\n";
     cout << "Number of bits used for L2 offset is " << L2OffsetBits << ".\n";
     cout << "\n";
     cout << "L3NumSets: " << L3NumSets << "\n";
     cout << "L3SetSize: " << L3SetSize << "\n";
     cout << "L3LineSize: " << L3LineSize << "\n";
-    cout << "L3WriteThrough: " << boolalpha << L3WriteThrough << "\n";
+    if(L3WriteThrough == true)
+    {
+        cout << "L3 uses a no write-allocate and write-through policy.\n";
+    }
+    else if(L3WriteThrough == false)
+    {
+        cout << "L3 uses a write-allocate and write-back policy.\n";
+    }
     cout << "Number of bits used for L3 index is " << L3IndexBits << ".\n";
     cout << "Number of bits used for L3 offset is " << L3OffsetBits << ".\n";
     cout << "\n";
