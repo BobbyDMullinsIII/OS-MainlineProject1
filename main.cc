@@ -53,19 +53,19 @@ struct MemRefInfo
     unsigned int address;
     int virtPageNum;
     int pageOffset;
-    int TLBTag;
-    int TLBIndex;
+    string TLBTag;
+    string TLBIndex;
     string TLBResult;
     string PTResult;
     int physPageNum;
-    int L1Tag;
-    int L1Index;
+    string L1Tag;
+    string L1Index;
     string L1Result;
-    int L2Tag;
-    int L2Index;
+    string L2Tag;
+    string L2Index;
     string L2Result;
-    int L3Tag;
-    int L3Index;
+    string L3Tag;
+    string L3Index;
     string L3Result;
     string stringAddress; //String version of address (in hex form)
 };
@@ -89,7 +89,7 @@ int getFrameNumber(string virtualAddress, int blocks);
 void DirectAssociative(vector<string>* L1, vector<string>* L2, string virtualAddress, string baseAddress, string bounds, int blocks);
 
 //Address Manipulation Method Declarations
-string VirtualToPhysical(string virtAddress, string baseAddress, string bounds);
+string VirtualToPhysical(string virtAddress);
 string toHex(int i);
 int toInt(string i);
 
@@ -171,19 +171,19 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
         tempInfo.address = memRefDecVector[i].address;
         tempInfo.virtPageNum = 0;
         tempInfo.pageOffset = 0;
-        tempInfo.TLBTag = 0;
-        tempInfo.TLBIndex = 0;
+        tempInfo.TLBTag = "0";
+        tempInfo.TLBIndex = "0";
         tempInfo.TLBResult = "null";
         tempInfo.PTResult = "null";
         tempInfo.physPageNum = 0;
-        tempInfo.L1Tag = 0;
-        tempInfo.L1Index = 0;
+        tempInfo.L1Tag = "0";
+        tempInfo.L1Index = "0";
         tempInfo.L1Result = "null";
-        tempInfo.L2Tag = 0;
-        tempInfo.L2Index = 0;
+        tempInfo.L2Tag = "0";
+        tempInfo.L2Index = "0";
         tempInfo.L2Result = "null";
-        tempInfo.L3Tag = 0;
-        tempInfo.L3Index = 0;
+        tempInfo.L3Tag = "0";
+        tempInfo.L3Index = "0";
         tempInfo.L3Result = "null";
         tempInfo.stringAddress = memRefDecVector[i].stringAddress;
         
@@ -217,24 +217,24 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
     cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
     for (int i = 0; i != memInfoVector.size(); i++)
     {
-        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6x %3x %4s %6x %3x %4s %6x %3x %4s\n", 
+        printf("%4s %08x %6x %4x %6s %3s %4s %4s %4x %6s %3s %4s %6s %3s %4s %6s %3s %4s\n", 
         memInfoVector[i].type.c_str(),
         memInfoVector[i].address,
         memInfoVector[i].virtPageNum,
         memInfoVector[i].pageOffset,
-        memInfoVector[i].TLBTag,
-        memInfoVector[i].TLBIndex,
+        memInfoVector[i].TLBTag.c_str(),
+        memInfoVector[i].TLBIndex.c_str(),
         memInfoVector[i].TLBResult.c_str(),
         memInfoVector[i].PTResult.c_str(),
         memInfoVector[i].physPageNum,
-        memInfoVector[i].L1Tag,
-        memInfoVector[i].L1Index,
+        memInfoVector[i].L1Tag.c_str(),
+        memInfoVector[i].L1Index.c_str(),
         memInfoVector[i].L1Result.c_str(),
-        memInfoVector[i].L2Tag,
-        memInfoVector[i].L2Index,
+        memInfoVector[i].L2Tag.c_str(),
+        memInfoVector[i].L2Index.c_str(),
         memInfoVector[i].L2Result.c_str(),
-        memInfoVector[i].L3Tag,
-        memInfoVector[i].L3Index,
+        memInfoVector[i].L3Tag.c_str(),
+        memInfoVector[i].L3Index.c_str(),
         memInfoVector[i].L3Result.c_str());
     }
     cout << "\n";
@@ -374,31 +374,12 @@ int getFrameNumber(string virtualAddress, int blocks)
 //virtAddress = virtual address to convert to physical address
 //baseAddress = base address of the process
 //bounds = size of address space allocated  
-string VirtualToPhysical(string virtAddress, string baseAddress, string bounds)
+string VirtualToPhysical(string virtAddress)
 {
-    int virtInt = toInt(virtAddress);
-    int baseInt = toInt(baseAddress);
-    int boundInt = toInt(bounds);
+    string new_str = std::string((8 - virtAddress.length()), '0') + virtAddress;
+    string stringy = new_str.substr(new_str.length() - 2, 2);
 
-    int physicalAddress = baseInt + virtInt;
-    string physicalHex;
-
-    if(baseInt <= physicalAddress)
-    {
-        if((baseInt+boundInt) > physicalAddress)
-        {
-            physicalHex = toHex(physicalAddress);
-            return physicalHex;
-        }
-        else
-        {
-            return "Out of Bounds: past max bounds of process";
-        }
-    }
-    else
-    {
-        return "Out of Bounds: Less than base address of process";
-    }
+    return stringy;
 }
 
 //converts an int to a hex string
@@ -532,24 +513,15 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         string hex = toHex(memRefs[i].address);
                         string binary =  HextoBinary(hex).to_string();
 
+                        string physAddr = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+
                         //L1 index and tag
-                        //This is correct
-                        string L1index = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
-                        cout << "L1 index " << i << " " << L1index << "\n";
-
-                        //THIS IS NOT CORRECT
-                        string L1tag = binary.substr(0, binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
-                        cout << "L1 tag " << i << " " << L1tag << "\n";
-
+                        memRefs[i].L1Index = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        memRefs[i].L1Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
 
                         //L2 index and tag
-                        //This is correct
-                        string L2index = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
-                        cout << "L2 index " << i << " " << L2index << "\n";
-
-                        //THIS IS NOT CORRECT
-                        string L2tag = binary.substr(0, binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
-                        cout << "L2 tag " << i << " " << L2tag << "\n";
+                        memRefs[i].L2Index = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
+                        memRefs[i].L2Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
 
 
                         //===================================//
@@ -790,7 +762,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
 void DirectAssociative(vector<string> L1, vector<string> L2, string virtualAddress, string baseAddress, string bounds, int blocks)
 {
     //direct associative
-    string physical = VirtualToPhysical(virtualAddress, baseAddress, bounds);
+    string physical = VirtualToPhysical(virtualAddress);
     int frameNum = getFrameNumber(physical, blocks);
 
     L1[frameNum] = virtualAddress;
