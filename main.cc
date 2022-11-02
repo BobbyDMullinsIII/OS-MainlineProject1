@@ -53,19 +53,19 @@ struct MemRefInfo
     unsigned int address;
     int virtPageNum;
     int pageOffset;
-    string TLBTag;
-    string TLBIndex;
+    int TLBTag;
+    int TLBIndex;
     string TLBResult;
     string PTResult;
     int physPageNum;
     string L1Tag;
-    string L1Index;
+    int L1Index;
     string L1Result;
     string L2Tag;
-    string L2Index;
+    int L2Index;
     string L2Result;
     string L3Tag;
-    string L3Index;
+    int L3Index;
     string L3Result;
     string stringAddress; //String version of address (in hex form)
 };
@@ -92,6 +92,12 @@ void DirectAssociative(vector<string>* L1, vector<string>* L2, string virtualAdd
 string VirtualToPhysical(string virtAddress);
 string toHex(int i);
 int toInt(string i);
+bitset<32> HextoBinary(string x);
+string BinarytoHex(bitset<32> x);
+int getVirtPageNum(int virtAddress, TraceConfig insertedConfig);
+int getOffset(int virtAddress, TraceConfig insertedConfig);
+int getTLBTag(int virtAddress, TraceConfig insertedConfig);
+int getTLBIndex(int virtAddress, TraceConfig insertedConfig);
 
 //Other Methods
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats, vector<MemRefInfo> &memRefs);
@@ -171,19 +177,19 @@ vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector)
         tempInfo.address = memRefDecVector[i].address;
         tempInfo.virtPageNum = 0;
         tempInfo.pageOffset = 0;
-        tempInfo.TLBTag = "0";
-        tempInfo.TLBIndex = "0";
+        tempInfo.TLBTag = 0;
+        tempInfo.TLBIndex = 0;
         tempInfo.TLBResult = "null";
         tempInfo.PTResult = "null";
         tempInfo.physPageNum = 0;
         tempInfo.L1Tag = "0";
-        tempInfo.L1Index = "0";
+        tempInfo.L1Index = 0;
         tempInfo.L1Result = "null";
         tempInfo.L2Tag = "0";
-        tempInfo.L2Index = "0";
+        tempInfo.L2Index = 0;
         tempInfo.L2Result = "null";
         tempInfo.L3Tag = "0";
-        tempInfo.L3Index = "0";
+        tempInfo.L3Index = 0;
         tempInfo.L3Result = "null";
         tempInfo.stringAddress = memRefDecVector[i].stringAddress;
         
@@ -217,24 +223,24 @@ void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
     cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
     for (int i = 0; i != memInfoVector.size(); i++)
     {
-        printf("%4s %08x %6x %4x %6s %3s %4s %4s %4x %6s %3s %4s %6s %3s %4s %6s %3s %4s\n", 
+        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6s %3x %4s %6s %3x %4s %6s %3x %4s\n", 
         memInfoVector[i].type.c_str(),
         memInfoVector[i].address,
         memInfoVector[i].virtPageNum,
         memInfoVector[i].pageOffset,
-        memInfoVector[i].TLBTag.c_str(),
-        memInfoVector[i].TLBIndex.c_str(),
+        memInfoVector[i].TLBTag,
+        memInfoVector[i].TLBIndex,
         memInfoVector[i].TLBResult.c_str(),
         memInfoVector[i].PTResult.c_str(),
         memInfoVector[i].physPageNum,
         memInfoVector[i].L1Tag.c_str(),
-        memInfoVector[i].L1Index.c_str(),
+        memInfoVector[i].L1Index,
         memInfoVector[i].L1Result.c_str(),
         memInfoVector[i].L2Tag.c_str(),
-        memInfoVector[i].L2Index.c_str(),
+        memInfoVector[i].L2Index,
         memInfoVector[i].L2Result.c_str(),
         memInfoVector[i].L3Tag.c_str(),
-        memInfoVector[i].L3Index.c_str(),
+        memInfoVector[i].L3Index,
         memInfoVector[i].L3Result.c_str());
     }
     cout << "\n";
@@ -457,6 +463,32 @@ int getOffset(int virtAddress, TraceConfig insertedConfig)
     return toInt(BinarytoHex(binOffset));
 }
 
+int getTLBTag(int virtAddress, TraceConfig insertedConfig)
+{
+    //Converting address to binary number
+    bitset<32> num = HextoBinary(toHex(virtAddress));
+    string binary = num.to_string();
+
+    string TLBTag = binary.substr(0, (binary.length() - insertedConfig.pageTableIndexBits)-3);
+    cout << TLBTag << "\n";
+    bitset<32> binTLBTag(TLBTag);
+    //cout << BinarytoHex(binTLBTag) << "\n";
+
+    return toInt(BinarytoHex(binTLBTag));
+}
+
+int getTLBIndex(int virtAddress, TraceConfig insertedConfig)
+{
+    //Converting address to binary number
+    bitset<32> num = HextoBinary(toHex(virtAddress));
+    string binary = num.to_string();
+
+    string TLBIndex = binary.substr((binary.length() - insertedConfig.pageTableIndexBits)-1, 1);
+    bitset<32> binTLBIndex(TLBIndex);
+
+    return toInt(BinarytoHex(binTLBIndex));
+}
+
 //Method for branching to each possible combination of the 4 conditionals (Virtual Addresses, TLB, L2, L3)
 //Returns final config values for final output
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> &memRefs)
@@ -509,34 +541,48 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Get virtual page number and offset
                         memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
                         memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
-                        
-                        string hex = toHex(memRefs[i].address);
-                        string binary =  HextoBinary(hex).to_string();
 
+                        //Get TLB tag and index
+                        memRefs[i].TLBTag = getTLBTag(memRefs[i].address, insertedConfig);
+                        memRefs[i].TLBIndex = getTLBIndex(memRefs[i].address, insertedConfig);
+                        
+                        //Get both hex and binary representation of address in string form
+                        string hex = toHex(memRefs[i].address);
+                        string binary = HextoBinary(hex).to_string();
+
+                        //Get physical address from inserted virtual address
                         string physAddr = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
 
-                        //L1 index and tag
-                        memRefs[i].L1Index = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        //L1 tag (Not correct/done)
                         memRefs[i].L1Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
 
-                        //L2 index and tag
-                        memRefs[i].L2Index = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
+                        //L1 index
+                        string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        bitset<32> L1bitset(L1IndexStr);
+                        memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+
+                        //L2 tag (Not correct/done)
                         memRefs[i].L2Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
+
+                        //L2 index
+                        string L2IndexStr = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
+                        bitset<32> L2bitset(L2IndexStr);
+                        memRefs[i].L2Index = toInt(BinarytoHex(L2bitset));
 
 
                         //===================================//
                         //Simulation execution code goes here//
                         //Calc virtual page number (DONE)
                         //Calc page offset (DONE)
-                        //Calc TLB tag
-                        //Calc TLB index
+                        //Calc TLB tag (DONE)
+                        //Calc TLB index (DONE)
                         //Calc TLB result (hit/miss)
                         //Calc Page Table result (hit/miss)
                         //Calc physical page number
-                        //Calc L1/DC tag 
+                        //Calc L1/DC tag (In Progress)
                         //Calc L1/DC index (DONE)
                         //Calc L1/DC result (hit/miss) 
-                        //Calc L2 tag 
+                        //Calc L2 tag (In Progress)
                         //Calc L2 index (DONE)
                         //Calc L2 result (hit/miss) 
                         //===================================//
