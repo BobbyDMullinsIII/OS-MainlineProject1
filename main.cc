@@ -551,7 +551,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         string binary = HextoBinary(hex).to_string();
 
                         //Get physical address from inserted virtual address
-                        string physAddr = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+                        string str1 = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+                        bitset<32> bs3(str1.substr(0, str1.length() - (insertedConfig.L1IndexBits + insertedConfig.L1OffsetBits)));
+                        string physAddr = BinarytoHex(bs3);
 
                         //L1 tag (Not correct/done)
                         memRefs[i].L1Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
