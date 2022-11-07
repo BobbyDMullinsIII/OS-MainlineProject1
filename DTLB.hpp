@@ -17,8 +17,8 @@ public:
 
     std::vector<std::vector<DTLBEntry>> dtlbSets;   //2D vector of address translations
 
-    void insertRecentAddress(int address, int frame);
-    bool checkForAddress(int checkAddr);
+    void insertRecentAddress(int index, int tag, int address, int frame);
+    bool checkDTLB(int checkTag, int checkIndex);
 
     private:
 

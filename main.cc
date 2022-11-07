@@ -535,6 +535,16 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Get both hex and binary representation of address in string form
+                        string hex = toHex(memRefs[i].address);
+                        string binary = HextoBinary(hex).to_string();
+
+                        //Get physical address from inserted virtual address
+                        string str1 = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+                        bitset<32> bs3(str1.substr(0, str1.length() - (insertedConfig.L1IndexBits + insertedConfig.L1OffsetBits)));
+                        string physAddr = BinarytoHex(bs3); //String hex representation of physical address
+                        int physAddrInt = toInt(physAddr);  //Integer representation of physical address
+
                         //Increases read or write counters
                         simStats = checkReadOrWrite(i, simStats, memRefs);
 
@@ -545,16 +555,20 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Get TLB tag and index
                         memRefs[i].TLBTag = getTLBTag(memRefs[i].address, insertedConfig);
                         memRefs[i].TLBIndex = getTLBIndex(memRefs[i].address, insertedConfig);
+
+                        //Check for tag and index in TLB, insert if not already within TLB
+                        if(tlb.checkDTLB(memRefs[i].TLBTag, memRefs[i].TLBIndex) == false)
+                        {
+                            //Miss if TLB tag and index is not already within TLB
+                            memRefs[i].TLBResult = "miss";
+                            tlb.insertRecentAddress(memRefs[i].TLBIndex, memRefs[i].TLBTag, memRefs[i].address, physAddrInt);
+                        }
+                        else
+                        {
+                            //Hit if TLB tag and index is already within TLB
+                            memRefs[i].TLBResult = "hit";
+                        }
                         
-                        //Get both hex and binary representation of address in string form
-                        string hex = toHex(memRefs[i].address);
-                        string binary = HextoBinary(hex).to_string();
-
-                        //Get physical address from inserted virtual address
-                        string str1 = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
-                        bitset<32> bs3(str1.substr(0, str1.length() - (insertedConfig.L1IndexBits + insertedConfig.L1OffsetBits)));
-                        string physAddr = BinarytoHex(bs3);
-
                         //L1 tag (Not correct/done)
                         memRefs[i].L1Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
 
@@ -578,7 +592,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc page offset (DONE)
                         //Calc TLB tag (DONE)
                         //Calc TLB index (DONE)
-                        //Calc TLB result (hit/miss)
+                        //Calc TLB result (hit/miss) (DONE)
                         //Calc Page Table result (hit/miss)
                         //Calc physical page number
                         //Calc L1/DC tag (In Progress)

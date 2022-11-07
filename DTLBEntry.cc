@@ -9,17 +9,21 @@ DTLBEntry::DTLBEntry()
 {
     //Sets initial values to -1 or false
 	this->validBit = false;
-    this->pageNum = -1;
+    this->index = -1;
+    this->tag = -1;
+    this->virtAddr = -1;
     this->frameNum = -1;
     this->LRUNum = -1000;
 }
 
 
 //Paramaterized Constructor
-DTLBEntry::DTLBEntry(int newBit, int virtAddr, int physAddr, int lru)
+DTLBEntry::DTLBEntry(int newBit, int newIndex, int newTag, int virtAddr, int physAddr, int lru)
 {
     this->validBit = newBit;
-    this->pageNum = virtAddr;
+    this->index = newIndex;
+    this->tag = newTag;
+    this->virtAddr = virtAddr;
     this->frameNum = physAddr;
     this->LRUNum = lru;
 }
