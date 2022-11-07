@@ -27,7 +27,7 @@ public:
     int diskRefsCount;              //Number of disk refs count (to be systematically counted)
 
     void prepareCounters();
-    void outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3Active);
+    void outputSimulationStatistics(bool virtAddresses, bool TLBActive, bool L2Active, bool L3Active);
 
 private:
 

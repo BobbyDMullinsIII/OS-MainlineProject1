@@ -51,7 +51,7 @@ void SimStats::prepareCounters()
 }//end prepareCounters()
 
 //Method for outputting the final simulation statistics
-void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3Active)
+void SimStats::outputSimulationStatistics(bool virtAddresses, bool TLBActive, bool L2Active, bool L3Active)
 {
     cout << "\n";
     cout << "Simulation Statistics\n";
@@ -76,15 +76,24 @@ void SimStats::outputSimulationStatistics(bool TLBActive, bool L2Active, bool L3
         cout << "dtlb hit ratio: N/A\n";
     }
     cout << "\n";
-    cout << "pt hits: " << ptHitCount << "\n";
-    cout << "pt faults: " << ptFaultCount << "\n";
-    if((ptHitCount+ptFaultCount) == 0) //Catches divide by zero error
+    if(virtAddresses == true)
     {
-        cout << "pt hit ratio: 0" << "\n";
+        cout << "pt hits: " << ptHitCount << "\n";
+        cout << "pt faults: " << ptFaultCount << "\n";
+        if((ptHitCount+ptFaultCount) == 0) //Catches divide by zero error
+        {
+            cout << "pt hit ratio: 0" << "\n";
+        }
+        else
+        {
+            cout << "pt hit ratio: " << (double)((double)ptHitCount/((double)ptHitCount+(double)ptFaultCount)) << "\n";
+        }
     }
     else
     {
-        cout << "pt hit ratio: " << (double)((double)ptHitCount/((double)ptHitCount+(double)ptFaultCount)) << "\n";
+        cout << "pt hits: N/A\n";
+        cout << "pt faults: N/A\n";
+        cout << "pt hit ratio: N/A\n";
     }
     cout << "\n";
     cout << "dc hits: " << dcHitCount << "\n";

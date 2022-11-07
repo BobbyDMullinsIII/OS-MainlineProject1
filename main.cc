@@ -131,7 +131,7 @@ int main()
     //==Final Output Section==//
     config.outputConfigValues();         //Output config values
     outputEachMemRefInfo(MemRefsInfo);   //Output information about each memory reference in the simulation
-    stats.outputSimulationStatistics(config.TLBActive, config.L2Active, config.L3Active);  //Output final simulation statistics
+    stats.outputSimulationStatistics(config.VirtAddressActive ,config.TLBActive, config.L2Active, config.L3Active);  //Output final simulation statistics
 
     return 0;
 }
@@ -567,6 +567,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         {
                             //Hit if TLB tag and index is already within TLB
                             memRefs[i].TLBResult = "hit";
+                            memRefs[i].PTResult = "";
                         }
                         
                         //L1 tag (Not correct/done)
