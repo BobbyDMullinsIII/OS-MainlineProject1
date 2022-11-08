@@ -75,7 +75,7 @@ struct MemRefInfo
 vector<MemRefDec> insertTrace(vector<MemRefDec> memRefDecVector);
 vector<MemRefInfo> initMemRefInfo(vector<MemRefDec> memRefDecVector);
 void outputDecAndHex(vector<MemRefDec> memRefDecVector);
-void outputEachMemRefInfo(vector<MemRefInfo> memInfo);
+void outputEachMemRefInfo(TraceConfig insertedConfig, vector<MemRefInfo> memInfoVector);
 
 //Cache & Page Table Method Declarations
 vector<string> generateCache(int &sets, int &setSize);
@@ -129,8 +129,8 @@ int main()
 
 
     //==Final Output Section==//
-    config.outputConfigValues();         //Output config values
-    outputEachMemRefInfo(MemRefsInfo);   //Output information about each memory reference in the simulation
+    config.outputConfigValues(); //Output config values
+    outputEachMemRefInfo(config, MemRefsInfo); //Output information about each memory reference in the simulation
     stats.outputSimulationStatistics(config.VirtAddressActive ,config.TLBActive, config.L2Active, config.L3Active);  //Output final simulation statistics
 
     return 0;
@@ -215,36 +215,297 @@ void outputDecAndHex(vector<MemRefDec> memRefDecVector)
 }//end outputDecAndHex()
 
 //Method for outputting information about each memory reference that has traversed the memory hierarchy
-void outputEachMemRefInfo(vector<MemRefInfo> memInfoVector)
+void outputEachMemRefInfo(TraceConfig insertedConfig, vector<MemRefInfo> memInfoVector)
 {
-    cout << "\n";
-    cout << "Addr          Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
-    cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
-    cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
-    for (int i = 0; i != memInfoVector.size(); i++)
+    //Large if/else tree for Virtual Addresses, TLB, L2, L3
+    if(insertedConfig.VirtAddressActive == true)
     {
-        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6s %3x %4s %6s %3x %4s %6s %3x %4s\n", 
-        memInfoVector[i].type.c_str(),
-        memInfoVector[i].address,
-        memInfoVector[i].virtPageNum,
-        memInfoVector[i].pageOffset,
-        memInfoVector[i].TLBTag,
-        memInfoVector[i].TLBIndex,
-        memInfoVector[i].TLBResult.c_str(),
-        memInfoVector[i].PTResult.c_str(),
-        memInfoVector[i].physPageNum,
-        memInfoVector[i].L1Tag.c_str(),
-        memInfoVector[i].L1Index,
-        memInfoVector[i].L1Result.c_str(),
-        memInfoVector[i].L2Tag.c_str(),
-        memInfoVector[i].L2Index,
-        memInfoVector[i].L2Result.c_str(),
-        memInfoVector[i].L3Tag.c_str(),
-        memInfoVector[i].L3Index,
-        memInfoVector[i].L3Result.c_str());
-    }
-    cout << "\n";
+        if(insertedConfig.TLBActive == true)
+        {
+            if(insertedConfig.L2Active == true)
+            {
+                if(insertedConfig.L3Active == true)
+                {
+                    //Virtual Addresses == true
+                    //TLB == true
+                    //L2 == true
+                    //L3 == true
 
+                    cout << "\n";
+                    cout << "Addr          Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2          L3  L3  \n";
+                    cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
+                    cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
+                    for (int i = 0; i != memInfoVector.size(); i++)
+                    {
+                        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6s %3x %4s %6s %3x %4s %6s %3x %4s\n", 
+                        memInfoVector[i].type.c_str(),
+                        memInfoVector[i].address,
+                        memInfoVector[i].virtPageNum,
+                        memInfoVector[i].pageOffset,
+                        memInfoVector[i].TLBTag,
+                        memInfoVector[i].TLBIndex,
+                        memInfoVector[i].TLBResult.c_str(),
+                        memInfoVector[i].PTResult.c_str(),
+                        memInfoVector[i].physPageNum,
+                        memInfoVector[i].L1Tag.c_str(),
+                        memInfoVector[i].L1Index,
+                        memInfoVector[i].L1Result.c_str(),
+                        memInfoVector[i].L2Tag.c_str(),
+                        memInfoVector[i].L2Index,
+                        memInfoVector[i].L2Result.c_str(),
+                        memInfoVector[i].L3Tag.c_str(),
+                        memInfoVector[i].L3Index,
+                        memInfoVector[i].L3Result.c_str());
+                    }
+                    cout << "\n";
+                }
+                else if (insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == true
+                    //L2 == true
+                    //L3 == false
+
+                    cout << "\n";
+                    cout << "Addr          Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC          L2  L2  \n";
+                    cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res. L2 Tag Ind Res.\n";
+                    cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ---- ------ --- ----\n";
+                    for (int i = 0; i != memInfoVector.size(); i++)
+                    {
+                        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6s %3x %4s %6s %3x %4s\n", 
+                        memInfoVector[i].type.c_str(),
+                        memInfoVector[i].address,
+                        memInfoVector[i].virtPageNum,
+                        memInfoVector[i].pageOffset,
+                        memInfoVector[i].TLBTag,
+                        memInfoVector[i].TLBIndex,
+                        memInfoVector[i].TLBResult.c_str(),
+                        memInfoVector[i].PTResult.c_str(),
+                        memInfoVector[i].physPageNum,
+                        memInfoVector[i].L1Tag.c_str(),
+                        memInfoVector[i].L1Index,
+                        memInfoVector[i].L1Result.c_str(),
+                        memInfoVector[i].L2Tag.c_str(),
+                        memInfoVector[i].L2Index,
+                        memInfoVector[i].L2Result.c_str());
+                    }
+                    cout << "\n";
+                }
+            }
+            else 
+            {   
+                if (insertedConfig.L2Active == false && insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == true
+                    //L2 == false
+                    //L3 == false
+
+                    cout << "\n";
+                    cout << "Addr          Virt.  Page TLB    TLB TLB  PT   Phys        DC  DC  \n";
+                    cout << "Type Address  Page # Off  Tag    Ind Res. Res. Pg # DC Tag Ind Res.\n";
+                    cout << "---- -------- ------ ---- ------ --- ---- ---- ---- ------ --- ----\n";
+                    for (int i = 0; i != memInfoVector.size(); i++)
+                    {
+                        printf("%4s %08x %6x %4x %6x %3x %4s %4s %4x %6s %3x %4s\n", 
+                        memInfoVector[i].type.c_str(),
+                        memInfoVector[i].address,
+                        memInfoVector[i].virtPageNum,
+                        memInfoVector[i].pageOffset,
+                        memInfoVector[i].TLBTag,
+                        memInfoVector[i].TLBIndex,
+                        memInfoVector[i].TLBResult.c_str(),
+                        memInfoVector[i].PTResult.c_str(),
+                        memInfoVector[i].physPageNum,
+                        memInfoVector[i].L1Tag.c_str(),
+                        memInfoVector[i].L1Index,
+                        memInfoVector[i].L1Result.c_str());
+                    }
+                    cout << "\n";
+                }
+            }
+        }
+        else if (insertedConfig.TLBActive == false)
+        {
+            if(insertedConfig.L2Active == true)
+            {
+                if(insertedConfig.L3Active == true)
+                {
+                    //Virtual Addresses == true
+                    //TLB == false
+                    //L2 == true
+                    //L3 == true
+
+                    cout << "\n";
+                    cout << "Addr          Virt.  Page PT   Phys        DC  DC          L2  L2          L3  L3  \n";
+                    cout << "Type Address  Page # Off  Res. Pg # DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
+                    cout << "---- -------- ------ ---- ---- ---- ------ --- ---- ------ --- ---- ------ --- ----\n";
+                    for (int i = 0; i != memInfoVector.size(); i++)
+                    {
+                        printf("%4s %08x %6x %4x %4s %4x %6s %3x %4s %6s %3x %4s %6s %3x %4s\n", 
+                        memInfoVector[i].type.c_str(),
+                        memInfoVector[i].address,
+                        memInfoVector[i].virtPageNum,
+                        memInfoVector[i].pageOffset,
+                        memInfoVector[i].PTResult.c_str(),
+                        memInfoVector[i].physPageNum,
+                        memInfoVector[i].L1Tag.c_str(),
+                        memInfoVector[i].L1Index,
+                        memInfoVector[i].L1Result.c_str(),
+                        memInfoVector[i].L2Tag.c_str(),
+                        memInfoVector[i].L2Index,
+                        memInfoVector[i].L2Result.c_str(),
+                        memInfoVector[i].L3Tag.c_str(),
+                        memInfoVector[i].L3Index,
+                        memInfoVector[i].L3Result.c_str());
+                    }
+                    cout << "\n";
+                }
+                else if (insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == false
+                    //L2 == true
+                    //L3 == false
+
+                    cout << "\n";
+                    cout << "Addr          Virt.  Page PT   Phys        DC  DC          L2  L2  \n";
+                    cout << "Type Address  Page # Off  Res. Pg # DC Tag Ind Res. L2 Tag Ind Res.\n";
+                    cout << "---- -------- ------ ---- ---- ---- ------ --- ---- ------ --- ----\n";
+                    for (int i = 0; i != memInfoVector.size(); i++)
+                    {
+                        printf("%4s %08x %6x %4x %4s %4x %6s %3x %4s %6s %3x %4s\n", 
+                        memInfoVector[i].type.c_str(),
+                        memInfoVector[i].address,
+                        memInfoVector[i].virtPageNum,
+                        memInfoVector[i].pageOffset,
+                        memInfoVector[i].PTResult.c_str(),
+                        memInfoVector[i].physPageNum,
+                        memInfoVector[i].L1Tag.c_str(),
+                        memInfoVector[i].L1Index,
+                        memInfoVector[i].L1Result.c_str(),
+                        memInfoVector[i].L2Tag.c_str(),
+                        memInfoVector[i].L2Index,
+                        memInfoVector[i].L2Result.c_str());
+                    }
+                    cout << "\n";
+                }
+            }
+            else 
+            {   
+                if (insertedConfig.L2Active == false && insertedConfig.L3Active == false)
+                {
+                    //Virtual Addresses == true
+                    //TLB == false
+                    //L2 == false
+                    //L3 == false
+
+                    cout << "\n";
+                    cout << "Addr          Virt.  Page PT   Phys        DC  DC  \n";
+                    cout << "Type Address  Page # Off  Res. Pg # DC Tag Ind Res.\n";
+                    cout << "---- -------- ------ ---- ---- ---- ------ --- ----\n";
+                    for (int i = 0; i != memInfoVector.size(); i++)
+                    {
+                        printf("%4s %08x %6x %4x %4s %4x %6s %3x %4s\n", 
+                        memInfoVector[i].type.c_str(),
+                        memInfoVector[i].address,
+                        memInfoVector[i].virtPageNum,
+                        memInfoVector[i].pageOffset,
+                        memInfoVector[i].PTResult.c_str(),
+                        memInfoVector[i].physPageNum,
+                        memInfoVector[i].L1Tag.c_str(),
+                        memInfoVector[i].L1Index,
+                        memInfoVector[i].L1Result.c_str());
+                    }
+                    cout << "\n";
+                }
+            }
+        }
+    }
+    else if (insertedConfig.VirtAddressActive == false && insertedConfig.TLBActive == false)
+    {
+        if(insertedConfig.L2Active == true)
+        {
+            if(insertedConfig.L3Active == true)
+            {
+                //Virtual Addresses == false
+                //TLB == false
+                //L2 == true
+                //L3 == true
+
+                cout << "\n";
+                cout << "Addr                 DC  DC          L2  L2          L3  L3  \n";
+                cout << "Type Address  DC Tag Ind Res. L2 Tag Ind Res. L3 Tag Ind Res.\n";
+                cout << "---- -------- ------ --- ---- ------ --- ---- ------ --- ----\n";
+                for (int i = 0; i != memInfoVector.size(); i++)
+                {
+                    printf("%4s %08x %6s %3x %4s %6s %3x %4s %6s %3x %4s\n", 
+                    memInfoVector[i].type.c_str(),
+                    memInfoVector[i].address,
+                    memInfoVector[i].L1Tag.c_str(),
+                    memInfoVector[i].L1Index,
+                    memInfoVector[i].L1Result.c_str(),
+                    memInfoVector[i].L2Tag.c_str(),
+                    memInfoVector[i].L2Index,
+                    memInfoVector[i].L2Result.c_str(),
+                    memInfoVector[i].L3Tag.c_str(),
+                    memInfoVector[i].L3Index,
+                    memInfoVector[i].L3Result.c_str());
+                }
+                cout << "\n";
+            }
+            else if (insertedConfig.L3Active == false)
+            {
+                //Virtual Addresses == false
+                //TLB == false
+                //L2 == true
+                //L3 == false
+
+                cout << "\n";
+                cout << "Addr                 DC  DC          L2  L2  \n";
+                cout << "Type Address  DC Tag Ind Res. L2 Tag Ind Res.\n";
+                cout << "---- -------- ------ --- ---- ------ --- ----\n";
+                for (int i = 0; i != memInfoVector.size(); i++)
+                {
+                    printf("%4s %08x %6s %3x %4s %6s %3x %4s\n", 
+                    memInfoVector[i].type.c_str(),
+                    memInfoVector[i].address,
+                    memInfoVector[i].L1Tag.c_str(),
+                    memInfoVector[i].L1Index,
+                    memInfoVector[i].L1Result.c_str(),
+                    memInfoVector[i].L2Tag.c_str(),
+                    memInfoVector[i].L2Index,
+                    memInfoVector[i].L2Result.c_str());
+                }
+                cout << "\n";
+            }
+        }
+        else 
+        {   
+            if (insertedConfig.L2Active == false && insertedConfig.L3Active == false)
+            {
+                //Virtual Addresses == false
+                //TLB == false
+                //L2 == false
+                //L3 == false
+
+                cout << "\n";
+                cout << "Addr                 DC  DC  \n";
+                cout << "Type Address  DC Tag Ind Res.\n";
+                cout << "---- -------- ------ --- ----\n";
+                for (int i = 0; i != memInfoVector.size(); i++)
+                {
+                    printf("%4s %08x %6s %3x %4s\n", 
+                    memInfoVector[i].type.c_str(),
+                    memInfoVector[i].address,
+                    memInfoVector[i].L1Tag.c_str(),
+                    memInfoVector[i].L1Index,
+                    memInfoVector[i].L1Result.c_str());
+                }
+                cout << "\n";
+            }
+        }
+    }
 }//end outputEachMemRefInfo()
 
 //generate a cache and resize to the number of sets in config and set each set size from config
@@ -772,7 +1033,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
 
                     //===================================//
                     //Simulation execution code goes here//
-                    //Calc physical page number
                     //Calc L1/DC tag
                     //Calc L1/DC index
                     //Calc L1/DC result (hit/miss)
@@ -804,7 +1064,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
 
                     //===================================//
                     //Simulation execution code goes here//
-                    //Calc physical page number
                     //Calc L1/DC tag
                     //Calc L1/DC index
                     //Calc L1/DC result (hit/miss)

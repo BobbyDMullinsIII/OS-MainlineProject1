@@ -108,7 +108,7 @@ void TraceConfig::outputConfigValues()
     cout << "VirtAddressActive: " << boolalpha << VirtAddressActive << "\n";
     cout << "TLBActive: " << boolalpha << TLBActive << "\n";
     cout << "L2Active: " << boolalpha << L2Active << "\n";
-    cout << "L3Active: " << boolalpha << L3Active << "\n";
+    cout << "L3Active: " << boolalpha << L3Active << "(Not implemented)\n";
     cout << "\n";
     if(VirtAddressActive == true)
     {
