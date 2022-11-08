@@ -823,10 +823,15 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             //Miss if TLB tag and index is not already within TLB
                             memRefs[i].TLBResult = "miss";
                             tlb.insertRecentAddress(memRefs[i].TLBIndex, memRefs[i].TLBTag, memRefs[i].address, physAddrInt);
+
+                            //(Check page table here for tag and index)
+                            //(If already within page table, hit and figure out physical page number)
+                            //(Else: Miss and insert into page table and figure out physical page number)
                         }
                         else
                         {
                             //Hit if TLB tag and index is already within TLB
+                            //(This will skip page table because it should also be in the page table if it is already within TLB)
                             memRefs[i].TLBResult = "hit";
                             memRefs[i].PTResult = "";
                         }
