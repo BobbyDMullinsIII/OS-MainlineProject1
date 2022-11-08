@@ -131,7 +131,7 @@ int main()
     //==Final Output Section==//
     config.outputConfigValues(); //Output config values
     outputEachMemRefInfo(config, MemRefsInfo); //Output information about each memory reference in the simulation
-    stats.outputSimulationStatistics(config.VirtAddressActive ,config.TLBActive, config.L2Active, config.L3Active);  //Output final simulation statistics
+    stats.outputSimulationStatistics(config.VirtAddressActive, config.TLBActive, config.L2Active, config.L3Active);  //Output final simulation statistics
 
     return 0;
 }
@@ -1116,7 +1116,9 @@ SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
     {
         //If both caches miss (or just DC if L2 cache is disabled), increase main memory reference counter
         //(This might be correct???)
-        if(memRefs[i].L1Result == "miss" && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null"))
+        if(memRefs[i].L1Result == "miss" 
+        && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null") 
+        && (memRefs[i].L3Result == "miss" || memRefs[i].L3Result == "null"))
         {
             simStats.mainMemRefsCount++;
         }
@@ -1129,9 +1131,10 @@ SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs)
 
         //If memory reference misses all of the components (including null due to toggleable TLB and L2 cache), increase disk reference counter
         if((memRefs[i].TLBResult == "miss" || memRefs[i].TLBResult == "null")
-        && memRefs[i].PTResult == "miss" 
+        && (memRefs[i].PTResult == "miss" || memRefs[i].PTResult == "null")
         && memRefs[i].L1Result == "miss" 
-        && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null"))
+        && (memRefs[i].L2Result == "miss" || memRefs[i].L2Result == "null")
+        && (memRefs[i].L3Result == "miss" || memRefs[i].L3Result == "null"))
         {
             simStats.diskRefsCount++;
         }
