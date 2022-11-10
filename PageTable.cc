@@ -68,7 +68,7 @@ bool PageTable::checkForEntry(int x)
 {
 	if (x >= this->numEntries)
 	{
-		//throw exception("Seg Fault"); //Threw error for incorrect arguments
+		throw exception("Seg Fault");
 	}
 	if (this->table[x].getValid() == true)
 	{
@@ -142,6 +142,19 @@ int PageTable::placeInTable(PageTableEntry x)
 		this->table[num] = x;
 		this->validBit = true;
 		return num;
+	}
+}
+
+bool PageTable::placeInTable(PageTableEntry x, int y)
+{
+	if (this->table[y].getValid() == true)
+	{
+		return false;
+	}
+	else
+	{
+		this->table[y] = x;
+		this->validBit = true;
 	}
 }
 

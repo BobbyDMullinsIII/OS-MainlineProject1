@@ -58,7 +58,7 @@ bool PageDirectory::checkIfIndexIsValid(int x)
 {
 	if (x >= this->entries)
 	{
-		//throw new exception("Seg fault"); //Threw error for incorrect arguments
+		throw new exception("Seg fault");
 	}
 	if (this->level > 1)
 	{
@@ -182,7 +182,7 @@ PageTableEntry PageDirectory::grabEntry(vector<int> address)
 	tempInt++;
 	if (address.size() != tempInt)
 	{
-		//throw new exception("invalid address"); //Threw error for incorrect arguments
+		throw new exception("invalid address");
 	}
 	if (this->level > 1)
 	{
@@ -227,7 +227,7 @@ PageTableEntry PageDirectory::swapEntry(PageTableEntry x, vector<int> address)
 	tempInt++;
 	if (address.size() != tempInt)
 	{
-		//throw new exception("invalid address"); //Threw error for incorrect arguments
+		throw new exception("invalid address");
 	}
 	if (this->level > 1)
 	{
@@ -272,7 +272,7 @@ void PageDirectory::removeEntry(vector<int> address)
 	tempInt++;
 	if (address.size() != tempInt)
 	{
-		//throw new exception("invalid address"); //Threw error for incorrect arguments
+		throw new exception("invalid address");
 	}
 	if (this->level > 1)
 	{
@@ -370,8 +370,8 @@ vector<int> PageDirectory::findLRUEntry()
 	else
 	{
 		int directoryIndex = -1;
-		int tableIndex = -1; //Had to change because compiler wanted something that wasnt "NULL"
-		int value = -1; //Had to change because compiler wanted something that wasnt "NULL"
+		int tableIndex = NULL;
+		int value = NULL;
 		int tempDI;
 		int tempTI;
 		int tempVal;
@@ -470,9 +470,48 @@ vector<int> PageDirectory::placeEntry(PageTableEntry x)
 		return returnVec;
 	}
 }
-/*
+
+bool PageDirectory::placeEntry(PageTableEntry x, std::vector<int> address)
+{
+	int temp = this->level + 1;
+	if (temp != address.size())
+	{
+		return false;
+	}
+	if (this->level > 1)
+	{
+		if (address[0] > this->entries || address[0] < 0)
+		{
+			return false;
+		}
+		vector<int> temp;
+		for (int i = 1; i < address.size(); i++)
+		{
+			temp.push_back(address[i]);
+		}
+		this->validBit = true;
+		return this->PDTable[address[0]].placeEntry(x, temp);
+	}
+	else
+	{
+		if (address[0] > this->entries || address[0] < 0)
+		{
+			return false;
+		}
+		else if (address[1] > this->childTableSize || address[1] < 0)
+		{
+			return false;
+		}
+		this->validBit = true;
+		return this->PTTable[address[0]].placeInTable(x, address[1]);
+	}
+}
+
+
 int main()
 {
+
+	/*
 	PageDirectory x(-1, 4, 3, 8);
 	PageTableEntry a1(true, true, true, "thisIsA1");
 
@@ -482,7 +521,7 @@ int main()
 		x.updateTimers();
 	}
 
-	
+
 	vector<int> vecTemp = x.placeEntry(a1);
 	for (int i = 0; i < vecTemp.size(); i++)
 	{
@@ -509,10 +548,10 @@ int main()
 	cout << "\n\n";
 
 	cout << x.swapEntry(a1, vecTemp).toString();
-	
+
 	vector<int> vec1 = { 2,1,3,6 };
 	x.removeEntry(vec1);
 	cout << "\n\n";
 	cout << "helloworld";
+	*/
 }
-*/

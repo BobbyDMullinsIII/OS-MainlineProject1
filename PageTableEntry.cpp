@@ -12,10 +12,10 @@ PageTableEntry::PageTableEntry()
 	this->execute = false;
 	this->dirtyBit = false;
 	this->timer = -1;
-	this->physicalAddress = "";
+	this->physicalAddress = -1;
 }
 
-PageTableEntry::PageTableEntry(bool r, bool w, bool x, std::string address)
+PageTableEntry::PageTableEntry(bool r, bool w, bool x, int address)
 {
 	this->validBit = true;
 	this->read = r;
@@ -63,7 +63,7 @@ void PageTableEntry::resetTimer()
 	this->timer = 0;
 }
 
-void PageTableEntry::changeAddress(std::string address)
+void PageTableEntry::changeAddress(int address)
 {
 	this->physicalAddress = address;
 }
@@ -93,7 +93,7 @@ int PageTableEntry::getTimer()
 	return this->timer;
 }
 
-std::string PageTableEntry::getAddress()
+int PageTableEntry::getAddress()
 {
 	return this->physicalAddress;
 }

@@ -7,6 +7,7 @@
 #include "PageTableEntry.hpp"
 #include <string>
 #include <vector>
+#include <bitset>
 class PageDirectory
 {
 	int name;							//Name index of array in the parent directory) if this is the top level directory then name is -1
@@ -31,6 +32,7 @@ public:
 	void removeEntry(std::vector<int> address);							//Removes the entry at the given address and returns it
 	std::vector<int> findLRUEntry();										//Iterates entire array and finds the LRU entry
 	std::vector<int> placeEntry(PageTableEntry x);						//Sticks the entry into the first available position and returns the address in some form
+	bool placeEntry(PageTableEntry x, std::vector<int> address);
 	std::string toString();
 	std::string toString(std::vector<PageTable> x);
 	std::string toString(std::vector<PageDirectory> x);
