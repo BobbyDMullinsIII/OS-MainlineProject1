@@ -29,6 +29,7 @@ using namespace std;
 #include "DTLBEntry.hpp"
 #include "TraceConfig.hpp"
 #include "SimStats.hpp"
+#include "C:\Users\isaia\source\repos\TestForOS\TestForOS\Memory.hpp"
 
 //Access states for memory
 #define NOOP 0 //no action 
@@ -760,6 +761,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
     vector<string> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
     DTLB tlb = DTLB(insertedConfig.numTLBSets, insertedConfig.TLBSetSize);
     //(Insert page table declaration & initialization here)
+    PageDirectory PD = PageDirectory(-1, calcPDSize(insertedConfig.numVirtPages), calcNumLevels(insertedConfig.numVirtPages), calcPTSize(insertedConfig.numVirtPages));
+    Memory mainMem = Memory(insertedConfig.numPhysPages);
+
 
     //Large if/else tree for Virtual Addresses, TLB, L2, L3
     if(insertedConfig.VirtAddressActive == true)
@@ -1272,4 +1276,98 @@ void writeAlloc(vector<string> L1, vector<string> L2, string address, int blocks
             L2[frameNum] = address;
         }
     }
+}
+
+int calcPDSize(int virtPages)
+{
+    int x = log2(virtPages);
+    if (x < 6)
+    {
+        return 1;
+    }
+    else
+    {
+        return 8;
+    }
+}
+
+int calcPTSize(int virtPages)
+{
+    int x = log2(virtPages);
+    int y = x % 3;
+    int z = x / 3;
+    if (x < 6)
+    {
+        return pow(2, x);
+    }
+    else
+    {
+        return pow(2, 3 + y);
+    }
+}
+
+int calcNumLevels(int virtPages)
+{
+    int x = log2(virtPages);
+    int z = x / 3;
+    if (x < 6)
+    {
+        return 1;
+    }
+    else
+    {
+        return z - 1;
+    }
+}
+
+std::vector<int> generatePDTableAddress(int numberOfBits, string virtInHex)
+{
+    vector<int> temp;
+    bitset<32> bits = HextoBinary(virtInHex);
+    bitset<32> tempBits = HextoBinary("0");
+    if (numberOfBits < 6)
+    {
+        temp.push_back(0);
+        temp.push_back(bin32ToInt(bits));
+        return temp;
+    }
+    else 
+    {
+        int levels = numberOfBits / 3;
+        for (int i = 0; i < levels - 1; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (bits[numberOfBits - 1 - j - (3 * i)])
+                {
+                    tempBits[2 - j].flip();
+                }
+            }
+            temp.push_back(bin32ToInt(tempBits));
+            tempBits.reset();
+        }
+        int ptBits = 3 + (numberOfBits % 3);
+        for (int i = ptBits - 1; i >= 0; i--)
+        {
+            if (bits[i])
+            {
+                tempBits[i].flip();
+            }
+        }
+        temp.push_back(bin32ToInt(tempBits));
+        return temp;
+    }
+}
+
+int bin32ToInt(bitset<32> x)
+{
+    int temp = 0;
+    for (int i = 31; i >= 0; i--)
+    {
+        if (x[i])
+        {
+            temp += pow(2, i);
+        }
+    }
+    return temp;
 }

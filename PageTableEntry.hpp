@@ -10,10 +10,10 @@ class PageTableEntry
 	bool execute;
 	bool dirtyBit;							//Tells if Page has been written to
 	int timer;								//Tracks how long page has been in table
-	std::string physicalAddress;			//The physical address of the data
+	int physicalAddress;			//The physical address of the data
 public:
 	PageTableEntry();
-	PageTableEntry(bool r, bool w, bool x, std::string address);
+	PageTableEntry(bool r, bool w, bool x, int address);
 	~PageTableEntry();
 	void changeValid(bool valid);
 	void changeRead(bool r);
@@ -22,13 +22,13 @@ public:
 	void changeDirty(bool dirty);
 	void incrementTimer();
 	void resetTimer();
-	void changeAddress(std::string address);
+	void changeAddress(int address);
 	bool getValid();
 	bool getRead();
 	bool getWrite();
 	bool getExecute();
 	int getTimer();
-	std::string getAddress();
+	int getAddress();
 	std::string toString();
 };
 

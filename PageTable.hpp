@@ -30,6 +30,7 @@ public:
 	void updateTimers();							//Increments the timer variable for all valid entries
 	int checkForEmpty();							//Returns the first empty entry in the table
 	int placeInTable(PageTableEntry x);				//Places the given entry into the first available slot in the table
+	bool placeInTable(PageTableEntry x, int y);		//Places the given entry into the specified index within the table
 	int findLRUEntry();								//returns the index of the entry that was used least recently
 	int getTimer(int index);						//returns the timer of the PTE at the given index
 	std::string toString();								//Returns string representation of the table
