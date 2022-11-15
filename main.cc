@@ -737,7 +737,7 @@ int getTLBTag(int virtAddress, TraceConfig insertedConfig)
     string binary = num.to_string();
 
     string TLBTag = binary.substr(0, (binary.length() - insertedConfig.pageTableIndexBits)-3);
-    cout << TLBTag << "\n";
+    //cout << TLBTag << "\n";
     bitset<32> binTLBTag(TLBTag);
     //cout << BinarytoHex(binTLBTag) << "\n";
 
