@@ -1,7 +1,7 @@
 CC = g++
 
-project1: main.o TraceConfig.o SimStats.o PageDirectory.o PageTable.o PageTableEntry.o DTLB.o DTLBEntry.o
-	$(CC) -o project1 main.o TraceConfig.o SimStats.o PageDirectory.o PageTable.o PageTableEntry.o DTLB.o DTLBEntry.o
+project1: main.o TraceConfig.o SimStats.o PageDirectory.o PageTable.o PageTableEntry.o DTLB.o DTLBEntry.o Memory.o
+	$(CC) -o project1 main.o TraceConfig.o SimStats.o PageDirectory.o PageTable.o PageTableEntry.o DTLB.o DTLBEntry.o Memory.o
 
 main.o: main.cc
 	$(CC) -c main.cc
@@ -26,6 +26,9 @@ DTLB.o: DTLB.cc
 
 DTLBEntry.o: DTLBEntry.cc
 	$(CC) -c DTLBEntry.cc
+
+Memory.o: Memory.cpp
+	$(CC) -c Memory.cpp
 
 
 clean:

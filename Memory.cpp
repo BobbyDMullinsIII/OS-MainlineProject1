@@ -18,6 +18,9 @@ Memory::Memory(int x)
 	}
 }
 
+//Deconstructor
+Memory::~Memory(){}
+
 void Memory::assignLocation(int x)
 {
 	this->memory[x] = true;

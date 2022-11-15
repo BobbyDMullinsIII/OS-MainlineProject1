@@ -106,7 +106,12 @@ SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcHitMissCounters(SimStats simStats, vector<MemRefInfo> memRefs);
 void Evict(string cache, string address, string addReplace, vector<string> L1, vector<string> L2);
-
+void writeAlloc(vector<string> L1, vector<string> L2, string address, int blocks);
+int calcPDSize(int virtPages);
+int calcPTSize(int virtPages);
+int calcNumLevels(int virtPages);
+std::vector<int> generatePDTableAddress(int numberOfBits, string virtInHex);
+int bin32ToInt(bitset<32> x);
 
 
 int main()
@@ -821,6 +826,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         memRefs[i].TLBTag = getTLBTag(memRefs[i].address, insertedConfig);
                         memRefs[i].TLBIndex = getTLBIndex(memRefs[i].address, insertedConfig);
 
+                        PD.updateTimers();
+                        //This command grabs whatever entry is at the given virtual page number
+                        PageTableEntry pte = PD.grabEntry(generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+
                         //Check for tag and index in TLB, insert if not already within TLB
                         if(tlb.checkDTLB(memRefs[i].TLBTag, memRefs[i].TLBIndex) == false)
                         {
@@ -831,9 +840,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             //(Check page table here for tag and index)
                             //(If already within page table, hit and figure out physical page number)
                             
-                            PD.updateTimers();
-                            //This command grabs whatever entry is at the given virtual page number
-                            PageTableEntry pte = PD.grabEntry(generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
                             
                             if (!pte.getValid())                                //If the valid bit is not flipped then the PT missed
                             {
@@ -860,6 +866,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             {
                                 memRefs[i].PTResult = "hit";
                             }
+
+                            memRefs[i].physPageNum = pte.getAddress();
                             
                             //(Else: Miss and insert into page table and figure out physical page number)
                         }
@@ -869,6 +877,7 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             //(This will skip page table because it should also be in the page table if it is already within TLB)
                             memRefs[i].TLBResult = "hit";
                             memRefs[i].PTResult = "";
+                            memRefs[i].physPageNum = pte.getAddress();
                         }
                         
                         //L1 tag (Not correct/done)

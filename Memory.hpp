@@ -2,6 +2,7 @@
 #define MEMORY_HPP
 
 #pragma once
+#include "Memory.hpp"
 #include <vector>
 
 using namespace std;
@@ -30,4 +31,3 @@ public:
 };
 
 #endif
-

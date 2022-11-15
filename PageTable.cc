@@ -68,7 +68,8 @@ bool PageTable::checkForEntry(int x)
 {
 	if (x >= this->numEntries)
 	{
-		throw exception("Seg Fault");
+		//throw exception("Seg Fault");
+		cout << "Seg Fault\n";
 	}
 	if (this->table[x].getValid() == true)
 	{
@@ -155,6 +156,7 @@ bool PageTable::placeInTable(PageTableEntry x, int y)
 	{
 		this->table[y] = x;
 		this->validBit = true;
+		return true;
 	}
 }
 
