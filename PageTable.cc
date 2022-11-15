@@ -69,7 +69,7 @@ bool PageTable::checkForEntry(int x)
 	if (x >= this->numEntries)
 	{
 		//throw exception("Seg Fault");
-		cout << "Seg Fault\n";
+		//cout << "Seg Fault\n";
 	}
 	if (this->table[x].getValid() == true)
 	{

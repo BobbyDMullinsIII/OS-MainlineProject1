@@ -59,7 +59,7 @@ bool PageDirectory::checkIfIndexIsValid(int x)
 	if (x >= this->entries)
 	{
 		//throw new exception("Seg fault");
-		cout << "Seg fault\n";
+		//cout << "Seg fault\n";
 	}
 	if (this->level > 1)
 	{
@@ -184,7 +184,7 @@ PageTableEntry PageDirectory::grabEntry(vector<int> address)
 	if (address.size() != tempInt)
 	{
 		//throw new exception("invalid address");
-		cout << "Invalid address\n";
+		//cout << "Invalid address\n";
 	}
 	if (this->level > 1)
 	{
@@ -230,7 +230,7 @@ PageTableEntry PageDirectory::swapEntry(PageTableEntry x, vector<int> address)
 	if (address.size() != tempInt)
 	{
 		//throw new exception("invalid address");
-		cout << "Invalid address\n";
+		//cout << "Invalid address\n";
 	}
 	if (this->level > 1)
 	{
@@ -276,7 +276,7 @@ void PageDirectory::removeEntry(vector<int> address)
 	if (address.size() != tempInt)
 	{
 		//throw new exception("invalid address");
-		cout << "Invalid address\n";
+		//cout << "Invalid address\n";
 	}
 	if (this->level > 1)
 	{
