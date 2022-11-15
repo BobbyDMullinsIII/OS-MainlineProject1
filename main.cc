@@ -29,7 +29,7 @@ using namespace std;
 #include "DTLBEntry.hpp"
 #include "TraceConfig.hpp"
 #include "SimStats.hpp"
-#include "C:\Users\isaia\source\repos\TestForOS\TestForOS\Memory.hpp"
+#include "Memory.hpp"
 
 //Access states for memory
 #define NOOP 0 //no action 
@@ -830,6 +830,37 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
 
                             //(Check page table here for tag and index)
                             //(If already within page table, hit and figure out physical page number)
+                            
+                            PD.updateTimers();
+                            //This command grabs whatever entry is at the given virtual page number
+                            PageTableEntry pte = PD.grabEntry(generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                            
+                            if (!pte.getValid())                                //If the valid bit is not flipped then the PT missed
+                            {
+                                memRefs[i].PTResult = "miss";
+                                int loc = mainMem.findFree();                   //Attempt to find an empty position in Main memory to assign the new Entry too
+                                if (loc < 0)                                    //If there isn't any free space, we'll find the LRU entry, remove it, and assign the LRU entry's main memory location to the new PTE
+                                {
+                                    vector<int> oldLoc = PD.findLRUEntry();
+                                    PageTableEntry temp = PD.grabEntry(oldLoc);
+                                    PD.removeEntry(oldLoc);
+                                    PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                    pte = temp;
+
+                                }
+                                else                                            //If there is free space in main mem then find the first open slot and assign it to the virtual address we're given
+                                {
+                                    PageTableEntry temp = PageTableEntry(true, true, true, loc);
+                                    PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                    pte = temp;
+                                    mainMem.assignLocation(loc);
+                                }
+                            }
+                            else                                                //If the valid bit is flipped then the PT hit
+                            {
+                                memRefs[i].PTResult = "hit";
+                            }
+                            
                             //(Else: Miss and insert into page table and figure out physical page number)
                         }
                         else
