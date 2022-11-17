@@ -888,14 +888,30 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         bitset<32> L1bitset(L1IndexStr);
                         memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
 
-                        //L2 tag (Not correct/done)
-                        memRefs[i].L2Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
+                        //L1 hit/miss (Not done)
+                        
 
-                        //L2 index
-                        string L2IndexStr = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
-                        bitset<32> L2bitset(L2IndexStr);
-                        memRefs[i].L2Index = toInt(BinarytoHex(L2bitset));
+                        //If L1 hits on current memref, skip L2
+                        if(memRefs[i].L1Result == "hit")
+                        {
+                            //Zero/null out L2 cache if L1 hit
+                            memRefs[i].L2Tag = "";
+                            memRefs[i].L2Index = 0;
+                            memRefs[i].L2Result = "";
+                        }
+                        else //Else, go through L2 cache
+                        {
+                            //L2 tag (Not correct/done)
+                            memRefs[i].L2Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
 
+                            //L2 index
+                            string L2IndexStr = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
+                            bitset<32> L2bitset(L2IndexStr);
+                            memRefs[i].L2Index = toInt(BinarytoHex(L2bitset));
+
+                            //L2 hit/miss (Not done)
+
+                        }
 
                         //===================================//
                         //Simulation execution code goes here//
@@ -904,14 +920,14 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc TLB tag (DONE)
                         //Calc TLB index (DONE)
                         //Calc TLB result (hit/miss) (DONE)
-                        //Calc Page Table result (hit/miss)
-                        //Calc physical page number
+                        //Calc Page Table result (hit/miss) (DONE)
+                        //Calc physical page number (DONE)
                         //Calc L1/DC tag (In Progress)
                         //Calc L1/DC index (DONE)
-                        //Calc L1/DC result (hit/miss) 
+                        //Calc L1/DC result (hit/miss) (In Progress)
                         //Calc L2 tag (In Progress)
                         //Calc L2 index (DONE)
-                        //Calc L2 result (hit/miss) 
+                        //Calc L2 result (hit/miss) (In Progress)
                         //===================================//
                     }
   
