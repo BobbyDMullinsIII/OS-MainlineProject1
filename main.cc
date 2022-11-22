@@ -881,7 +881,17 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         }
                         
                         //L1 tag (Not correct/done)
-                        memRefs[i].L1Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        if(hex.length() == 1)
+                        {
+                            hex = "00" + hex;
+                        }
+                        else if(hex.length() == 2)
+                        {
+                            hex = "0" + hex;
+                        }
+                        string cachePhys = to_string(memRefs[i].physPageNum) + hex.substr(1, (hex.length() - 1));
+                        cachePhys = HextoBinary(cachePhys).to_string().substr(0, 32 - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        memRefs[i].L1Tag = toHex(stoi(cachePhys, 0, 2));
 
                         //L1 index
                         string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
