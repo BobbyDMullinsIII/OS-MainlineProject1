@@ -761,9 +761,11 @@ int getTLBIndex(int virtAddress, TraceConfig insertedConfig)
 SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<MemRefInfo> &memRefs)
 {
     //Caches, DTLB, Page Table (In Progress, Needs to be integrated)
-    vector<string> L1 = generateCache(insertedConfig.L1NumSets, insertedConfig.L1SetSize);
-    vector<string> L2 = generateCache(insertedConfig.L2NumSets, insertedConfig.L2SetSize);
-    vector<string> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
+    vector<MemRefInfo> L1;
+    L1.resize(insertedConfig.L1NumSets);
+    vector<MemRefInfo> L2;
+    L2.resize(insertedConfig.L2NumSets);
+    //vector<MefRefInfo> L3 = generateCache(insertedConfig.L3NumSets, insertedConfig.L3SetSize); //Ignore, not implementing
     DTLB tlb = DTLB(insertedConfig.numTLBSets, insertedConfig.TLBSetSize);
     //(Insert page table declaration & initialization here)
     PageDirectory PD = PageDirectory(-1, calcPDSize(insertedConfig.numVirtPages), calcNumLevels(insertedConfig.numVirtPages), calcPTSize(insertedConfig.numVirtPages));
@@ -880,7 +882,13 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             memRefs[i].physPageNum = pte.getAddress();
                         }
                         
-                        //L1 tag (Not correct/done)
+                        if(i == 0)
+                        {
+                                memRefs[i].L1Result = "miss";
+                                memRefs[i].L2Result = "miss";
+                        }
+
+                        //L1 tag (done)
                         if(hex.length() == 1)
                         {
                             hex = "00" + hex;
@@ -899,6 +907,33 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
 
                         //L1 hit/miss (Not done)
+                        //L2 must hit then L1 can hit
+                        for(int p = i; p > 0; p--)
+                        {
+                            if(memRefs[p].L2Result == "hit")
+                            {
+                                if(memRefs[p].physPageNum == memRefs[i].physPageNum && memRefs[p].L1Tag == memRefs[i].L1Tag)
+                                {
+                                    if(memRefs[p].TLBResult == "hit")
+                                    {
+                                        memRefs[i].L1Result = "hit";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        memRefs[i].L1Result = "miss";
+                                    }
+                                }
+                                else
+                                {
+                                    memRefs[i].L1Result = "miss";
+                                }
+                            }
+                            else
+                            {
+                                    memRefs[i].L1Result = "miss";
+                            }
+                        }
                         
 
                         //If L1 hits on current memref, skip L2
@@ -911,8 +946,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         }
                         else //Else, go through L2 cache
                         {
-                            //L2 tag (Not correct/done)
-                            memRefs[i].L2Tag = physAddr.substr(0, physAddr.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits));
+                            //L2 tag (done)
+                            memRefs[i].L2Tag = to_string(memRefs[i].physPageNum);
 
                             //L2 index
                             string L2IndexStr = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
@@ -920,7 +955,18 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             memRefs[i].L2Index = toInt(BinarytoHex(L2bitset));
 
                             //L2 hit/miss (Not done)
-
+                            for(int p = 0; p < i; p++)
+                            {
+                                if(memRefs[p].L2Tag == memRefs[i].L2Tag && memRefs[p].L2Index == memRefs[i].L2Index)
+                                {
+                                    memRefs[i].L2Result = "hit";
+                                    break;    
+                                }                                
+                                else
+                                {
+                                    memRefs[i].L2Result = "miss";
+                                }
+                            }
                         }
 
                         //===================================//
@@ -1436,4 +1482,16 @@ int bin32ToInt(bitset<32> x)
         }
     }
     return temp;
+}
+
+//reoders cache to put most recently used address at top of cache
+void ReorderCache (vector<MemRefInfo> &a, int loc)
+{
+    MemRefInfo temp = a[loc];
+    for(int i = 0; i < loc - 1; i++)
+    {
+        a[i + 1] = a[i];
+    }
+
+    a[0] = temp;
 }
