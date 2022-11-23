@@ -11,7 +11,7 @@ TraceConfig::TraceConfig()
     //Sets all values to -1 and false (Except where hard-coded) initially before Trace.Config insertion
     this->numTLBSets = -1;
     this->TLBSetSize = -1;
-    this->TLBIndexBits = 1;
+    this->TLBIndexBits = -1;
 
     this->numVirtPages = -1;
     this->numPhysPages = -1;
