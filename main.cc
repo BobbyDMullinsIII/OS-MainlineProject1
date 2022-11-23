@@ -978,10 +978,10 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         //Calc TLB result (hit/miss) (DONE)
                         //Calc Page Table result (hit/miss) (DONE)
                         //Calc physical page number (DONE)
-                        //Calc L1/DC tag (In Progress)
+                        //Calc L1/DC tag (DONE)
                         //Calc L1/DC index (DONE)
                         //Calc L1/DC result (hit/miss) (In Progress)
-                        //Calc L2 tag (In Progress)
+                        //Calc L2 tag (DONE)
                         //Calc L2 index (DONE)
                         //Calc L2 result (hit/miss) (In Progress)
                         //===================================//
