@@ -750,7 +750,7 @@ int getTLBIndex(int virtAddress, TraceConfig insertedConfig)
     bitset<32> num = HextoBinary(toHex(virtAddress));
     string binary = num.to_string();
 
-    string TLBIndex = binary.substr((binary.length() - insertedConfig.pageTableIndexBits)-1, 1);
+    string TLBIndex = binary.substr((binary.length() - insertedConfig.pageTableIndexBits) - insertedConfig.TLBIndexBits, insertedConfig.TLBIndexBits);
     bitset<32> binTLBIndex(TLBIndex);
 
     return toInt(BinarytoHex(binTLBIndex));
