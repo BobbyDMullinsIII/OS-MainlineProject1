@@ -970,7 +970,6 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         }
 
                         //===================================//
-                        //Simulation execution code goes here//
                         //Calc virtual page number (DONE)
                         //Calc page offset (DONE)
                         //Calc TLB tag (DONE)
@@ -1004,21 +1003,118 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Get both hex and binary representation of address in string form
+                        string hex = toHex(memRefs[i].address);
+                        string binary = HextoBinary(hex).to_string();
+
+                        //Get physical address from inserted virtual address
+                        string str1 = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+                        bitset<32> bs3(str1.substr(0, str1.length() - (insertedConfig.L1IndexBits + insertedConfig.L1OffsetBits)));
+                        string physAddr = BinarytoHex(bs3); //String hex representation of physical address
+                        int physAddrInt = toInt(physAddr);  //Integer representation of physical address
+
                         //Increases read or write counters
                         simStats = checkReadOrWrite(i, simStats, memRefs);
 
+                        //Get virtual page number and offset
+                        memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
+                        memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
+
+                        //Get TLB tag and index
+                        memRefs[i].TLBTag = getTLBTag(memRefs[i].address, insertedConfig);
+                        memRefs[i].TLBIndex = getTLBIndex(memRefs[i].address, insertedConfig);
+
+                        PD.updateTimers();
+                        //This command grabs whatever entry is at the given virtual page number
+                        PageTableEntry pte = PD.grabEntry(generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+
+                        //Check for tag and index in TLB, insert if not already within TLB
+                        if(tlb.checkDTLB(memRefs[i].TLBTag, memRefs[i].TLBIndex) == false)
+                        {
+                            //Miss if TLB tag and index is not already within TLB
+                            memRefs[i].TLBResult = "miss";
+                            tlb.insertRecentAddress(memRefs[i].TLBIndex, memRefs[i].TLBTag, memRefs[i].address, physAddrInt);
+
+                            //(Check page table here for tag and index)
+                            //(If already within page table, hit and figure out physical page number)
+                            
+                            
+                            if (!pte.getValid())                                //If the valid bit is not flipped then the PT missed
+                            {
+                                memRefs[i].PTResult = "miss";
+                                int loc = mainMem.findFree();                   //Attempt to find an empty position in Main memory to assign the new Entry too
+                                if (loc < 0)                                    //If there isn't any free space, we'll find the LRU entry, remove it, and assign the LRU entry's main memory location to the new PTE
+                                {
+                                    vector<int> oldLoc = PD.findLRUEntry();
+                                    PageTableEntry temp = PD.grabEntry(oldLoc);
+                                    PD.removeEntry(oldLoc);
+                                    PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                    pte = temp;
+
+                                }
+                                else                                            //If there is free space in main mem then find the first open slot and assign it to the virtual address we're given
+                                {
+                                    PageTableEntry temp = PageTableEntry(true, true, true, loc);
+                                    PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                    pte = temp;
+                                    mainMem.assignLocation(loc);
+                                }
+                            }
+                            else                                                //If the valid bit is flipped then the PT hit
+                            {
+                                memRefs[i].PTResult = "hit";
+                            }
+
+                            memRefs[i].physPageNum = pte.getAddress();
+                            
+                            //(Else: Miss and insert into page table and figure out physical page number)
+                        }
+                        else
+                        {
+                            //Hit if TLB tag and index is already within TLB
+                            //(This will skip page table because it should also be in the page table if it is already within TLB)
+                            memRefs[i].TLBResult = "hit";
+                            memRefs[i].PTResult = "";
+                            memRefs[i].physPageNum = pte.getAddress();
+                        }
+                        
+                        if(i == 0)
+                        {
+                                memRefs[i].L1Result = "miss";
+                                memRefs[i].L2Result = "miss";
+                        }
+
+                        //L1 tag (done)
+                        if(hex.length() == 1)
+                        {
+                            hex = "00" + hex;
+                        }
+                        else if(hex.length() == 2)
+                        {
+                            hex = "0" + hex;
+                        }
+                        string cachePhys = to_string(memRefs[i].physPageNum) + hex.substr(1, (hex.length() - 1));
+                        cachePhys = HextoBinary(cachePhys).to_string().substr(0, 32 - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        memRefs[i].L1Tag = toHex(stoi(cachePhys, 0, 2));
+
+                        //L1 index
+                        string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        bitset<32> L1bitset(L1IndexStr);
+                        memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+
+                        //L1 Hits/Misses will go here when done
+
                         //===================================//
-                        //Simulation execution code goes here//
-                        //Calc virtual page number
-                        //Calc page offset
-                        //Calc TLB tag
-                        //Calc TLB index
-                        //Calc TLB result (hit/miss)
-                        //Calc Page Table result (hit/miss)
-                        //Calc physical page number
-                        //Calc L1/DC tag
-                        //Calc L1/DC index
-                        //Calc L1/DC result (hit/miss)
+                        //Calc virtual page number (DONE)
+                        //Calc page offset (DONE)
+                        //Calc TLB tag (DONE)
+                        //Calc TLB index (DONE)
+                        //Calc TLB result (hit/miss) (DONE)
+                        //Calc Page Table result (hit/miss) (DONE)
+                        //Calc physical page number (DONE)
+                        //Calc L1/DC tag (DONE)
+                        //Calc L1/DC index (DONE)
+                        //Calc L1/DC result (hit/miss) (In Progress)
                         //===================================//
                     }
 
@@ -1060,21 +1156,93 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Get both hex and binary representation of address in string form
+                        string hex = toHex(memRefs[i].address);
+                        string binary = HextoBinary(hex).to_string();
+
+                        //Get physical address from inserted virtual address
+                        string str1 = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+                        bitset<32> bs3(str1.substr(0, str1.length() - (insertedConfig.L1IndexBits + insertedConfig.L1OffsetBits)));
+                        string physAddr = BinarytoHex(bs3); //String hex representation of physical address
+                        int physAddrInt = toInt(physAddr);  //Integer representation of physical address
+
                         //Increases read or write counters
                         simStats = checkReadOrWrite(i, simStats, memRefs);
 
+                        //Get virtual page number and offset
+                        memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
+                        memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
+
+                        PD.updateTimers();
+                        //This command grabs whatever entry is at the given virtual page number
+                        PageTableEntry pte = PD.grabEntry(generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+
+                        if (!pte.getValid())                                //If the valid bit is not flipped then the PT missed
+                        {
+                            memRefs[i].PTResult = "miss";
+                            int loc = mainMem.findFree();                   //Attempt to find an empty position in Main memory to assign the new Entry too
+                            if (loc < 0)                                    //If there isn't any free space, we'll find the LRU entry, remove it, and assign the LRU entry's main memory location to the new PTE
+                            {
+                                vector<int> oldLoc = PD.findLRUEntry();
+                                PageTableEntry temp = PD.grabEntry(oldLoc);
+                                PD.removeEntry(oldLoc);
+                                PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                pte = temp;
+
+                            }
+                            else                                            //If there is free space in main mem then find the first open slot and assign it to the virtual address we're given
+                            {
+                                PageTableEntry temp = PageTableEntry(true, true, true, loc);
+                                PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                pte = temp;
+                                mainMem.assignLocation(loc);
+                            }
+                        }
+                        else                                                //If the valid bit is flipped then the PT hit
+                        {
+                            memRefs[i].PTResult = "hit";
+                        }
+
+                        memRefs[i].physPageNum = pte.getAddress();
+         
+                        if(i == 0)
+                        {
+                                memRefs[i].L1Result = "miss";
+                                memRefs[i].L2Result = "miss";
+                        }
+
+                        //L1 tag (done)
+                        if(hex.length() == 1)
+                        {
+                            hex = "00" + hex;
+                        }
+                        else if(hex.length() == 2)
+                        {
+                            hex = "0" + hex;
+                        }
+                        string cachePhys = to_string(memRefs[i].physPageNum) + hex.substr(1, (hex.length() - 1));
+                        cachePhys = HextoBinary(cachePhys).to_string().substr(0, 32 - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        memRefs[i].L1Tag = toHex(stoi(cachePhys, 0, 2));
+
+                        //L1 index
+                        string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        bitset<32> L1bitset(L1IndexStr);
+                        memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+
+                        //L1 Hits/Misses will go here when done
+                        //L2 Hits/Misses, tag, index will go here when done
+
                         //===================================//
-                        //Simulation execution code goes here//
-                        //Calc virtual page number
-                        //Calc page offset
-                        //Calc Page Table result (hit/miss)
-                        //Calc physical page number
-                        //Calc L1/DC tag
-                        //Calc L1/DC index
-                        //Calc L1/DC result (hit/miss)
-                        //Calc L2 tag
-                        //Calc L2 index
-                        //Calc L2 result (hit/miss)
+                        //Calc virtual page number (DONE)
+                        //Calc page offset (DONE)
+                        //Calc Page Table result (hit/miss) (DONE)
+                        //Calc physical page number (DONE)
+                        //Calc L1/DC tag (DONE)
+                        //Calc L1/DC index (DONE)
+                        //Calc L1/DC result (hit/miss) (In Progress)
+                        //Calc L2 tag (DONE)
+                        //Calc L2 index (DONE)
+                        //Calc L2 result (hit/miss) (In Progress)
                         //===================================//
                     }
 
@@ -1095,18 +1263,89 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                     //Sequentially conducts simulation on each memory reference line
                     for(int i = 0; i < memRefs.size(); i++)
                     {
+                        //Get both hex and binary representation of address in string form
+                        string hex = toHex(memRefs[i].address);
+                        string binary = HextoBinary(hex).to_string();
+
+                        //Get physical address from inserted virtual address
+                        string str1 = HextoBinary(VirtualToPhysical(toHex(memRefs[i].address))).to_string();
+                        bitset<32> bs3(str1.substr(0, str1.length() - (insertedConfig.L1IndexBits + insertedConfig.L1OffsetBits)));
+                        string physAddr = BinarytoHex(bs3); //String hex representation of physical address
+                        int physAddrInt = toInt(physAddr);  //Integer representation of physical address
+
                         //Increases read or write counters
                         simStats = checkReadOrWrite(i, simStats, memRefs);
 
+                        //Get virtual page number and offset
+                        memRefs[i].virtPageNum = getVirtPageNum(memRefs[i].address, insertedConfig);
+                        memRefs[i].pageOffset = getOffset(memRefs[i].address, insertedConfig);
+
+                        PD.updateTimers();
+                        //This command grabs whatever entry is at the given virtual page number
+                        PageTableEntry pte = PD.grabEntry(generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+
+                        if (!pte.getValid())                                //If the valid bit is not flipped then the PT missed
+                        {
+                            memRefs[i].PTResult = "miss";
+                            int loc = mainMem.findFree();                   //Attempt to find an empty position in Main memory to assign the new Entry too
+                            if (loc < 0)                                    //If there isn't any free space, we'll find the LRU entry, remove it, and assign the LRU entry's main memory location to the new PTE
+                            {
+                                vector<int> oldLoc = PD.findLRUEntry();
+                                PageTableEntry temp = PD.grabEntry(oldLoc);
+                                PD.removeEntry(oldLoc);
+                                PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                pte = temp;
+
+                            }
+                            else                                            //If there is free space in main mem then find the first open slot and assign it to the virtual address we're given
+                            {
+                                PageTableEntry temp = PageTableEntry(true, true, true, loc);
+                                PD.placeEntry(temp, generatePDTableAddress(log2(insertedConfig.numVirtPages), toHex(memRefs[i].virtPageNum)));
+                                pte = temp;
+                                mainMem.assignLocation(loc);
+                            }
+                        }
+                        else                                                //If the valid bit is flipped then the PT hit
+                        {
+                            memRefs[i].PTResult = "hit";
+                        }
+
+                        memRefs[i].physPageNum = pte.getAddress();
+         
+                        if(i == 0)
+                        {
+                                memRefs[i].L1Result = "miss";
+                                memRefs[i].L2Result = "miss";
+                        }
+
+                        //L1 tag (done)
+                        if(hex.length() == 1)
+                        {
+                            hex = "00" + hex;
+                        }
+                        else if(hex.length() == 2)
+                        {
+                            hex = "0" + hex;
+                        }
+                        string cachePhys = to_string(memRefs[i].physPageNum) + hex.substr(1, (hex.length() - 1));
+                        cachePhys = HextoBinary(cachePhys).to_string().substr(0, 32 - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                        memRefs[i].L1Tag = toHex(stoi(cachePhys, 0, 2));
+
+                        //L1 index
+                        string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                        bitset<32> L1bitset(L1IndexStr);
+                        memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+
+                        //L1 Hits/Misses will go here when done
+
                         //===================================//
-                        //Simulation execution code goes here//
-                        //Calc virtual page number
-                        //Calc page offset
-                        //Calc Page Table result (hit/miss)
-                        //Calc physical page number
-                        //Calc L1/DC tag
-                        //Calc L1/DC index
-                        //Calc L1/DC result (hit/miss)
+                        //Calc virtual page number (DONE)
+                        //Calc page offset (DONE)
+                        //Calc Page Table result (hit/miss) (DONE)
+                        //Calc physical page number (DONE)
+                        //Calc L1/DC tag (DONE)
+                        //Calc L1/DC index (DONE)
+                        //Calc L1/DC result (hit/miss) (In Progess)
                         //===================================//
                     }
 
@@ -1149,17 +1388,46 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
                 {
+                    //Get both hex and binary representation of address in string form
+                    string hex = toHex(memRefs[i].address);
+                    string binary = HextoBinary(hex).to_string();
+
                     //Increases read or write counters
                     simStats = checkReadOrWrite(i, simStats, memRefs);
 
+                    if(i == 0)
+                    {
+                            memRefs[i].L1Result = "miss";
+                            memRefs[i].L2Result = "miss";
+                    }
+
+                    //L1 tag (done)
+                    if(hex.length() == 1)
+                    {
+                        hex = "00" + hex;
+                    }
+                    else if(hex.length() == 2)
+                    {
+                        hex = "0" + hex;
+                    }
+                    string cachePhys = to_string(memRefs[i].physPageNum) + hex.substr(1, (hex.length() - 1));
+                    cachePhys = HextoBinary(cachePhys).to_string().substr(0, 32 - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits));
+                    memRefs[i].L1Tag = toHex(stoi(cachePhys, 0, 2));
+
+                    //L1 index
+                    string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
+                    bitset<32> L1bitset(L1IndexStr);
+                    memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+
+
+
                     //===================================//
-                    //Simulation execution code goes here//
-                    //Calc L1/DC tag
-                    //Calc L1/DC index
-                    //Calc L1/DC result (hit/miss)
-                    //Calc L2 tag
-                    //Calc L2 index
-                    //Calc L2 result (hit/miss)
+                    //Calc L1/DC tag (DONE)
+                    //Calc L1/DC index (DONE)
+                    //Calc L1/DC result (hit/miss) (In Progress)
+                    //Calc L2 tag (DONE)
+                    //Calc L2 index (DONE)
+                    //Calc L2 result (hit/miss) (In Progress)
                     //===================================//
                 }
 
@@ -1180,14 +1448,17 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                 //Sequentially conducts simulation on each memory reference line
                 for(int i = 0; i < memRefs.size(); i++)
                 {
+                    //Get both hex and binary representation of address in string form
+                    string hex = toHex(memRefs[i].address);
+                    string binary = HextoBinary(hex).to_string();
+
                     //Increases read or write counters
                     simStats = checkReadOrWrite(i, simStats, memRefs);
 
                     //===================================//
-                    //Simulation execution code goes here//
-                    //Calc L1/DC tag
-                    //Calc L1/DC index
-                    //Calc L1/DC result (hit/miss)
+                    //Calc L1/DC tag (DONE)
+                    //Calc L1/DC index (DONE)
+                    //Calc L1/DC result (hit/miss) (In Progress)
                     //===================================//
                 }
 
