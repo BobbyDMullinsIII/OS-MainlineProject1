@@ -113,6 +113,8 @@ int calcNumLevels(int virtPages);
 std::vector<int> generatePDTableAddress(int numberOfBits, string virtInHex);
 int bin32ToInt(bitset<32> x);
 
+void ReorderCache (vector<MemRefInfo> &LCache, int loc, vector<MemRefInfo> &MemRefs);
+
 
 int main()
 {
@@ -771,6 +773,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
     PageDirectory PD = PageDirectory(-1, calcPDSize(insertedConfig.numVirtPages), calcNumLevels(insertedConfig.numVirtPages), calcPTSize(insertedConfig.numVirtPages));
     Memory mainMem = Memory(insertedConfig.numPhysPages);
 
+    //bitset<32> L1bitset;
+
 
     //Large if/else tree for Virtual Addresses, TLB, L2, L3
     if(insertedConfig.VirtAddressActive == true)
@@ -905,8 +909,8 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
                         bitset<32> L1bitset(L1IndexStr);
                         memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
-
-                        //L1 hit/miss (Not done)
+                        
+                        //L1 hit/miss 
                         //L2 must hit then L1 can hit
                         for(int p = i; p > 0; p--)
                         {
@@ -917,21 +921,25 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                                     if(memRefs[p].TLBResult == "hit")
                                     {
                                         memRefs[i].L1Result = "hit";
+                                        ReorderCache(L1, i, memRefs);
                                         break;
                                     }
                                     else
                                     {
                                         memRefs[i].L1Result = "miss";
+                                        ReorderCache(L1, i, memRefs);
                                     }
                                 }
                                 else
                                 {
                                     memRefs[i].L1Result = "miss";
+                                    ReorderCache(L1, i, memRefs);
                                 }
                             }
                             else
                             {
                                     memRefs[i].L1Result = "miss";
+                                    ReorderCache(L1, i, memRefs);
                             }
                         }
                         
@@ -954,17 +962,19 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                             bitset<32> L2bitset(L2IndexStr);
                             memRefs[i].L2Index = toInt(BinarytoHex(L2bitset));
 
-                            //L2 hit/miss (Not done)
+                            //L2 hit/miss 
                             for(int p = 0; p < i; p++)
                             {
                                 if(memRefs[p].L2Tag == memRefs[i].L2Tag && memRefs[p].L2Index == memRefs[i].L2Index)
                                 {
                                     memRefs[i].L2Result = "hit";
+                                    ReorderCache(L2, i, memRefs);
                                     break;    
                                 }                                
                                 else
                                 {
                                     memRefs[i].L2Result = "miss";
+                                    ReorderCache(L2, i, memRefs);
                                 }
                             }
                         }
@@ -1101,8 +1111,35 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
                         bitset<32> L1bitset(L1IndexStr);
                         memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+                        
+                        //L1 hit/miss 
+                        //L2 must hit then L1 can hit
+                        for(int p = i; p > 0; p--)
+                        {
+                            if(memRefs[p].physPageNum == memRefs[i].physPageNum && memRefs[p].L1Tag == memRefs[i].L1Tag)
+                            {
+                                if(memRefs[p].TLBResult == "hit")
+                                {
+                                    memRefs[i].L1Result = "hit";
+                                    ReorderCache(L1, i, memRefs);
+                                    break;
+                                }
+                                else
+                                {
+                                    memRefs[i].L1Result = "miss";
+                                    ReorderCache(L1, i, memRefs);
+                                }
+                            }
+                            else
+                            {
+                                memRefs[i].L1Result = "miss";
+                                ReorderCache(L1, i, memRefs);
+                            }
+                            
+                        }
+                        
 
-                        //L1 Hits/Misses will go here when done
+                        
 
                         //===================================//
                         //Calc virtual page number (DONE)
@@ -1228,9 +1265,75 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         string L1IndexStr = binary.substr(binary.length() - (insertedConfig.L1OffsetBits + insertedConfig.L1IndexBits), insertedConfig.L1IndexBits);
                         bitset<32> L1bitset(L1IndexStr);
                         memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
+                        
+                        //L1 hit/miss 
+                        //L2 must hit then L1 can hit
+                        for(int p = i; p > 0; p--)
+                        {
+                            if(memRefs[p].L2Result == "hit")
+                            {
+                                if(memRefs[p].physPageNum == memRefs[i].physPageNum && memRefs[p].L1Tag == memRefs[i].L1Tag)
+                                {
+                                    if(memRefs[p].TLBResult == "hit")
+                                    {
+                                        memRefs[i].L1Result = "hit";
+                                        ReorderCache(L1, i, memRefs);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        memRefs[i].L1Result = "miss";
+                                        ReorderCache(L1, i, memRefs);
+                                    }
+                                }
+                                else
+                                {
+                                    memRefs[i].L1Result = "miss";
+                                    ReorderCache(L1, i, memRefs);
+                                }
+                            }
+                            else
+                            {
+                                    memRefs[i].L1Result = "miss";
+                                    ReorderCache(L1, i, memRefs);
+                            }
+                        }
+                        
 
-                        //L1 Hits/Misses will go here when done
-                        //L2 Hits/Misses, tag, index will go here when done
+                        //If L1 hits on current memref, skip L2
+                        if(memRefs[i].L1Result == "hit")
+                        {
+                            //Zero/null out L2 cache if L1 hit
+                            memRefs[i].L2Tag = "";
+                            memRefs[i].L2Index = 0;
+                            memRefs[i].L2Result = "";
+                        }
+                        else //Else, go through L2 cache
+                        {
+                            //L2 tag (done)
+                            memRefs[i].L2Tag = to_string(memRefs[i].physPageNum);
+
+                            //L2 index
+                            string L2IndexStr = binary.substr(binary.length() - (insertedConfig.L2OffsetBits + insertedConfig.L2IndexBits), insertedConfig.L2IndexBits);
+                            bitset<32> L2bitset(L2IndexStr);
+                            memRefs[i].L2Index = toInt(BinarytoHex(L2bitset));
+
+                            
+                            for(int p = 0; p < i; p++)
+                            {
+                                if(memRefs[p].L2Tag == memRefs[i].L2Tag && memRefs[p].L2Index == memRefs[i].L2Index)
+                                {
+                                    memRefs[i].L2Result = "hit";
+                                    ReorderCache(L2, i, memRefs);
+                                    break;    
+                                }                                
+                                else
+                                {
+                                    memRefs[i].L2Result = "miss";
+                                    ReorderCache(L2, i, memRefs);
+                                }
+                            }
+                        }
 
                         //===================================//
                         //Calc virtual page number (DONE)
@@ -1336,7 +1439,29 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                         bitset<32> L1bitset(L1IndexStr);
                         memRefs[i].L1Index = toInt(BinarytoHex(L1bitset));
 
-                        //L1 Hits/Misses will go here when done
+                        for(int p = i; p > 0; p--)
+                        {
+                            if(memRefs[p].physPageNum == memRefs[i].physPageNum && memRefs[p].L1Tag == memRefs[i].L1Tag)
+                            {
+                                if(memRefs[p].TLBResult == "hit")
+                                {
+                                    memRefs[i].L1Result = "hit";
+                                    ReorderCache(L1, i, memRefs);
+                                    break;
+                                }
+                                else
+                                {
+                                    memRefs[i].L1Result = "miss";
+                                    ReorderCache(L1, i, memRefs);
+                                }
+                            }
+                            else
+                            {
+                                memRefs[i].L1Result = "miss";
+                                ReorderCache(L1, i, memRefs);
+                            }
+                            
+                        }
 
                         //===================================//
                         //Calc virtual page number (DONE)
@@ -1756,13 +1881,13 @@ int bin32ToInt(bitset<32> x)
 }
 
 //reoders cache to put most recently used address at top of cache
-void ReorderCache (vector<MemRefInfo> &a, int loc)
+void ReorderCache (vector<MemRefInfo> &LCache, int loc, vector<MemRefInfo> &MemRefs)
 {
-    MemRefInfo temp = a[loc];
-    for(int i = 0; i < loc - 1; i++)
+    MemRefInfo temp = MemRefs[loc];
+    for(int i = 0; i < LCache.size() - 1; i++)
     {
-        a[i + 1] = a[i];
+        LCache[i + 1] = LCache[i];
     }
 
-    a[0] = temp;
+    LCache[0] = temp;
 }
