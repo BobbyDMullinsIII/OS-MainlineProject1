@@ -106,7 +106,7 @@ SimStats checkReadOrWrite(int i, SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcMemPageDiskRefs(SimStats simStats, vector<MemRefInfo> memRefs);
 SimStats calcHitMissCounters(SimStats simStats, vector<MemRefInfo> memRefs);
 void Evict(string cache, string address, string addReplace, vector<string> L1, vector<string> L2);
-void writeAlloc(vector<string> L1, vector<string> L2, string address, int blocks);
+void writeAlloc(vector<MemRefInfo> L1, vector<MemRefInfo> L2, int address, vector<MemRefInfo> &MemRefs);
 int calcPDSize(int virtPages);
 int calcPTSize(int virtPages);
 int calcNumLevels(int virtPages);
@@ -974,7 +974,9 @@ SimStats runSimulation(TraceConfig insertedConfig, SimStats simStats,  vector<Me
                                 else
                                 {
                                     memRefs[i].L2Result = "miss";
-                                    ReorderCache(L2, i, memRefs);
+                                    writeAlloc(L1, L2, i, memRefs);
+                                    //ReorderCache(L2, i, memRefs);
+
                                 }
                             }
                         }
@@ -1763,27 +1765,10 @@ void Evict(string cache, string address, string addReplace, vector<string> L1, v
 
 }
 
-void writeAlloc(vector<string> L1, vector<string> L2, string address, int blocks)
+void writeAlloc(vector<MemRefInfo> L1, vector<MemRefInfo> L2, int address, vector<MemRefInfo> &MemRefs)
 {
-    int frameNum = getFrameNumber(address, blocks);
-    for(int i = 0; i < L1.size(); i++)
-    {
-        if(L1[i].compare(address) == 0)
-        {
-            break;
-        }
-
-        else if(L2[i].compare(address) == 0)
-        {
-            break;
-        }
-
-        else
-        {
-            L1[frameNum] = address;
-            L2[frameNum] = address;
-        }
-    }
+    ReorderCache(L1, address, MemRefs);
+    ReorderCache(L2, address, MemRefs);
 }
 
 int calcPDSize(int virtPages)
